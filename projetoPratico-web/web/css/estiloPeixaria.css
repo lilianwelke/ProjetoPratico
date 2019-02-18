@@ -1,3 +1,286 @@
-img {
-    width: 600px;
+@charset "UTF-8";
+html {
+    font: 16px Hind, Arial, sans-serif;	
+    color:#0b3767;
 }
+body {
+    background-color: #eeefef;
+}
+header {
+    border-bottom: solid 0.2em rgba(11, 55, 103, .75);
+    margin-bottom: -1.5em;
+    height: 6.5em;
+}
+#logoHeader {
+    display: inline-block;
+    width: 5em;
+    margin: .25em .5em .25em 3em;
+}
+#logoHeader img {
+    width: 5em;
+}
+header h1, h2 {
+    font-family: 'Special Elite', cursive;
+    font-weight: 500;   
+    margin: 0;
+}
+header h1 {
+    font-size: 2em;
+    position: relative;
+    top: -.7em;
+}
+header h2 {
+    font-size: .88em;
+    position: relative;
+    top: -1.9em;
+}
+#nomeHeader {
+    width: 9em;
+    height: 2em;
+    margin: 0;
+    display: inline-block;
+}
+.formPesquisa {
+    width: 32em;
+    display: inline-block;
+    position: relative;
+    left: 5em;
+    background-color: #cbd1d7;
+    top: -3.5em;
+}
+.pesquisa {
+    padding: .6em 2.1em .6em .6em;
+    width: 32em;
+    border-radius: .2em;
+    background-color: #cbd1d7;
+    transition: .8s;
+    border: .09em solid transparent;
+    font-size: 1.05em;
+}
+.pesquisa:focus {
+    background-color: #fefefe;
+    outline:none;
+    border: .09em solid rgba(11, 55, 103, .75);
+}
+.lupa {
+    position:relative;
+    top: -3.35em;
+    left: 4.4em;
+    color: #0b3767;
+    cursor: pointer;
+}
+.lupa:hover {
+    color: #6e808b;
+}
+.carrinho {
+    position: relative;
+    top: -4em;
+    left: 17em;
+    color: #0b3767;
+    cursor: pointer;
+}
+.carrinho:hover { 
+    color: #6e808b;
+}
+.cadastrar {
+    position: relative;
+    top: -4em;
+    left: 16em;
+    color: #0b3767;
+    cursor: pointer;
+}
+.cadastrar:hover { 
+    color: #6e808b;
+}
+.separador {
+    position: relative;
+    top: -2.4em;
+    left: 9.4em;
+    color: #0b3767;
+    font-size: 1.7em;
+}
+.logar {
+    position: relative;
+    top: -4em;
+    left: 16em;
+    color: #0b3767;
+    cursor: pointer;
+}
+.logar:hover { 
+    color: #6e808b;
+}
+nav {
+    position: relative;
+    top: -1.5em;
+    left: 20.5em;
+    width: 43em;
+    height: 1.5em;
+    text-align: center;
+}
+nav ul {
+    padding: 0;
+    margin: 0;
+}
+nav li {
+    font-size: 1.2em;
+    display: inline-block;
+    margin: 0.75em 3.7em .25em 0;
+    cursor: pointer;
+    text-shadow: 1px 1px #c5cbd3;
+}
+nav li:hover {	
+    color: #6e808b;
+}
+article {
+    height: 750px;
+}
+/* PÁGINA INICIAL */
+.fundoInicio {
+    width: 100%;
+    height: 750px;
+    position: relative;
+    background-image: url('../img/peixe2.png');    
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+}
+.overlay {
+    width: 80%;
+    height: 300px;
+    position: absolute;
+    opacity: .5;
+    background-color: #fff;
+    margin: 0 10%;
+    top: 8em;
+}
+.planosInicio {
+    width: 60%;
+    margin: 1.25em 20%;
+    position: absolute;
+    top: 8em;
+}
+.planosInicio h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: #0b3767;
+    font-weight: 500;
+    text-shadow: 1px 1px #6e808b;
+    margin: .25em;
+}
+/* LISTAGEM PRODUTOS */
+.divMenu {
+    position: relative;
+    width: 15%;
+    top: 2em;
+    display: inline-block;
+}
+.divMenu div {
+    border-bottom: .09em solid rgba(11, 55, 103, .75);
+    position: relative;
+    left: 1em;
+    margin-top: 0;
+}
+.labelMenu {
+    font-size: 1.5em;
+    line-height: 1.7em;
+    position: relative;
+    left: 1em;
+}
+.divMenu li {
+    list-style-type:none;
+    margin: .63em .9em .45em 3.15em;  
+    font-size: .9em;
+    position: relative;
+    left: -1.99em;
+    transition: .075s;
+    cursor: pointer;    
+    color:#363f46;
+}
+.listaProdutos {
+    display: inline-block;
+    width: 80%;
+    position: relative;
+    top: 3em;
+    left: 4em;
+}
+.produtoMini {
+    position: relative;
+    border: solid 0.1em rgba(11, 55, 103, .75);
+    width: 30%;
+    border-radius: .2em;
+    display: inline-block;
+}
+.fotoMini {
+    width: 5em;
+    display: inline-block;
+    padding: .25em;
+}
+.produtoMini h1 {
+    display: inline-block;
+    position: relative;
+    top: -2.5em;
+    left: .5em;
+    margin: 0;
+    font-weight: 400;
+}
+.produtoMini p {
+    display: inline-block;
+    position: relative;
+    top: -2.4em;
+    left: -4.6em;
+    margin: 0;
+}
+.produtoMini div {
+    display: inline-block;
+    position: relative;
+    top: -1em;
+    left: -8.8em;
+}
+footer {
+    width: 100%;
+    height: 25em;
+    border-top: solid 0.2em rgba(11, 55, 103, .75);
+}
+.logoGrande {
+    width: 15em;
+    position:relative;
+    top: 2em;
+    display:block;
+    margin:0 auto;
+}
+.iconesSociais {
+    position: relative;
+    top: 1em;
+    text-align: center;
+}
+.iconesSociais i {
+    color:#363f46;
+    margin:0 .5em;
+    padding: .0725em .15em;
+}
+.youtube:hover i { 
+    color: #6e808b;
+    cursor: pointer;
+}
+.twitter:hover i { 
+    color: #6e808b;
+    cursor: pointer;
+}
+.face:hover i { 
+    color: #6e808b;
+    cursor: pointer;
+}
+.insta:hover i { 
+    color: #6e808b;
+    cursor: pointer;
+}
+footer p {
+    text-align: center;
+    color: #363f46;
+    position: relative;
+    top: 3em;
+    padding: 0;
+    margin: 0;
+    font-size: .9em;
+    line-height: 1.25em;
+}
+

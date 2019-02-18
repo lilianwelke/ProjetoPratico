@@ -1,13 +1,81 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Peixaria</title>
+        <title>Píer 95 - Peixaria Online</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="imagem/png" href="../img/peixeLogo.png" />
         <link rel="stylesheet" href="../css/estiloPeixaria.css">
+        <link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
     </head>
     <body>
-        <img src="../img/peixe.png">
-        
+        <header>
+            <div id="logoHeader"><img src="../img/peixeLogo.png"></div>
+            <div id="nomeHeader"><h1>PÍER 95</h1>
+                <h2>PEIXARIA ONLINE</h2></div>
+            <form class="formPesquisa">
+                <input class="pesquisa" type="search" placeholder="O que você deseja pescar hoje?">
+            </form>
+            <span class="lupa"><i class="fa fa-search" style="font-size:20px" id="lupa-pesquisa"></i></span>
+            <span class="cadastrar">Cadastrar <i class="fas fa-user-plus" style="font-size:20px"></i></span>
+            <span class="separador"> |</span>
+            <span class="logar">Logar <i class="fas fa-sign-in-alt"style="font-size:20px" ></i></span>
+            <span class="carrinho"><i class="fa fa-shopping-cart" style="font-size:20px"></i></span>
+        </header>
+        <nav>
+            <ul>
+                <li>conheça os planos</li><li>conheça os peixes</li><li>conheça a gente</li>
+            </ul>
+        </nav>
+        <article>
+            <div class="fundoInicio">
+                <div class="overlay"></div>
+                <div class="planosInicio">
+                    <h1>Escolha um plano mensal</h1>
+                    <h1>FAMÍLIA |  CASAL | SOLTEIRO</h1>
+                    <h1>ou</h1>
+                    <h1>compre individualmente.</h1>
+                </div>
+            </div>
+            <div style="display: none" class="divMenu"><div><label class="labelMenu">Tipos</label></div>
+                <ul>
+                    <li>Água Doce</li>
+                    <li>Água Salgada</li>
+                </ul></div>                
+            <div style="display: none" class="listaProdutos">
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMais">Ver +</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMais">Ver +</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMais">Ver +</div>
+                </div>
+            </div>
+        </article>
+        <footer>
+            <div class="iconesSociais">
+                <span class="insta"><i class="fab fa-instagram" style="font-size:24px" title="Instagram"></i></span>
+                <span class="face"><i class="fab fa-facebook-f" style="font-size:24px" title="Facebook"></i></span>
+                <span class="twitter"><i class="fab fa-twitter" style="font-size:24px" title="Twitter"></i></span>
+                <span class="youtube"><i class="fab fa-youtube" style="font-size:24px" title="YouTube"></i></span>
+            </div>
+            <img class="logoGrande" src="../img/peixeLogo.png">
+            <p>Píer 95 - Comércio de Peixes Online</p>
+            <p>Rua Principal, 95, Novo Machado, RS, CEP 95955-00</p>
+            <p>CNPJ 22.248.62/1517-52</p>
+        </footer>      
     </body>
 </html>
