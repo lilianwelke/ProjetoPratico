@@ -8,7 +8,6 @@ body {
 }
 header {
     border-bottom: solid 0.2em rgba(11, 55, 103, .75);
-    margin-bottom: -1.5em;
     height: 6.5em;
 }
 #logoHeader {
@@ -39,6 +38,11 @@ header h2 {
     height: 2em;
     margin: 0;
     display: inline-block;
+}
+.divPesquisa{
+    position: absolute;
+    top: 5em;
+    left: 22%;
 }
 .formPesquisa {
     width: 32em;
@@ -72,10 +76,15 @@ header h2 {
 .lupa:hover {
     color: #6e808b;
 }
+.divUser{
+    position: absolute;
+    top: 0;
+    right: 12%;
+}
 .carrinho {
-    position: relative;
-    top: -4em;
-    left: 17em;
+    position: absolute;
+    top: .5em;
+    right: 6%;
     color: #0b3767;
     cursor: pointer;
 }
@@ -83,9 +92,6 @@ header h2 {
     color: #6e808b;
 }
 .cadastrar {
-    position: relative;
-    top: -4em;
-    left: 16em;
     color: #0b3767;
     cursor: pointer;
 }
@@ -93,16 +99,10 @@ header h2 {
     color: #6e808b;
 }
 .separador {
-    position: relative;
-    top: -2.4em;
-    left: 9.4em;
     color: #0b3767;
     font-size: 1.7em;
 }
 .logar {
-    position: relative;
-    top: -4em;
-    left: 16em;
     color: #0b3767;
     cursor: pointer;
 }
@@ -110,9 +110,9 @@ header h2 {
     color: #6e808b;
 }
 nav {
-    position: relative;
-    top: -1.5em;
-    left: 20.5em;
+    position: absolute;
+    top: 4.5em;
+    left: 25%;
     width: 43em;
     height: 1.5em;
     text-align: center;
@@ -140,16 +140,17 @@ article {
     height: 750px;
     position: relative;
     background-image: url('../img/peixe2.png');    
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-attachment: scroll;
+    background-position: center;
 }
 .overlay {
-    width: 80%;
+    width: 70%;
     height: 300px;
     position: absolute;
     opacity: .5;
     background-color: #fff;
-    margin: 0 10%;
+    margin: 0 15%;
     top: 8em;
 }
 .planosInicio {
