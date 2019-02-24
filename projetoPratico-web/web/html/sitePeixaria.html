@@ -16,12 +16,12 @@
             <div id="nomeHeader"><h1>PÍER 95</h1>
                 <h2>PEIXARIA ONLINE</h2></div>
             <div class="divPesquisa"><form class="formPesquisa">
-                <input class="pesquisa" type="search" placeholder="O que você deseja pescar hoje?">
-            </form>
-            <span class="lupa"><i class="fa fa-search" style="font-size:20px" id="lupa-pesquisa"></i></span></div>
+                    <input class="pesquisa" type="search" placeholder="O que você deseja pescar hoje?">
+                </form>
+                <span class="lupa"><i class="fa fa-search" style="font-size:20px" id="lupa-pesquisa"></i></span></div>
             <div class="divUser"><span class="cadastrar">Cadastrar <i class="fas fa-user-plus" style="font-size:20px"></i></span>
-            <span class="separador"> |</span>
-            <span class="logar">Logar <i class="fas fa-sign-in-alt"style="font-size:20px" ></i></span></div>
+                <span class="separador"> |</span>
+                <span class="logar">Logar <i class="fas fa-sign-in-alt"style="font-size:20px" ></i></span></div>
             <span class="carrinho"><i class="fa fa-shopping-cart" style="font-size:20px"></i></span>
         </header>
         <nav>
@@ -30,38 +30,129 @@
             </ul>
         </nav>
         <article>
-            <div class="fundoInicio">
+            <div style="display: none" class="fundoInicio">
                 <div class="overlay"></div>
                 <div class="planosInicio">
                     <h1>Escolha um plano mensal</h1>
                     <h1>FAMÍLIA |  CASAL | SOLTEIRO</h1>
                     <h1>ou</h1>
-                    <h1>compre individualmente.</h1>
+                    <h1>compre individualmente</h1>
                 </div>
             </div>
-            <div style="display: none" class="divMenu"><div><label class="labelMenu">Tipos</label></div>
+            <div style="display: none" class="divMenu"><div><label class="labelMenu">Categorias</label></div>
                 <ul>
-                    <li>Água Doce</li>
-                    <li>Água Salgada</li>
+                    <li>Pescados</li>
+                    <li>Frutos do Mar</li>
+                    <li>Camarão</li>
                 </ul></div>                
-            <div style="display: none" class="listaProdutos">
+            <div class="listaProdutos" style="display: none">
                 <div class="produtoMini">
                     <img class="fotoMini" src="../img/peixeLogo.png"/> 
                     <h1>Salmão</h1>
                     <p>R$ 50,00</p>
-                    <div class="verMais">Ver +</div>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
                 </div>
                 <div class="produtoMini">
                     <img class="fotoMini" src="../img/peixeLogo.png"/> 
                     <h1>Salmão</h1>
                     <p>R$ 50,00</p>
-                    <div class="verMais">Ver +</div>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
                 </div>
                 <div class="produtoMini">
                     <img class="fotoMini" src="../img/peixeLogo.png"/> 
                     <h1>Salmão</h1>
                     <p>R$ 50,00</p>
-                    <div class="verMais">Ver +</div>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+                <div class="produtoMini">
+                    <img class="fotoMini" src="../img/peixeLogo.png"/> 
+                    <h1>Salmão</h1>
+                    <p>R$ 50,00</p>
+                    <div class="verMaisMini">Ver+</div>
+                    <div class="comprarMini">Comprar</div>
+                </div>
+            </div>
+            <div style="display: none" class="produtoMais">
+                <div class="divFotoMais"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div>
+                <div class="detalhesProduto">
+                    <p>Pescados</p>
+                    <h1>Salmão</h1>
+                    <p>Salmão muito maravilhoso e macio</p>							
+                    <p class="precoMais">R$ 50,00</p>                    
+                    <input type="number" class="qtdeCompraMais" value="1"/><p class="unidadeMais">UN</p><br>
+                    <div class="comprarMais">Comprar</div>
+                </div>
+            </div>
+            <div class="divCarrinho">
+                <div class="h1DivCarrinho"><h1>Carrinho</h1><span><i class="fas fa-sync-alt"></i></span></div>
+                <div class="carrinhoTable">	
+                    <table>
+                        <tr>
+                            <th colspan="2" class="thProduto">Produto</th>
+                            <th>Preço</th>
+                            <th class="thQtde">Quantidade</th>
+                            <th>Total</th>
+                        </tr>
+                        <tr>
+                            <td class="tdImg"><div class="divProdutoCar"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div></td>
+                            <td class="tdPprod">Pescados<br>Salmão<br>Salmão muito maravilhoso e macio</td>
+                            <td>R$ 50,00</td>
+                            <td><input type="number" class="qtdeCompra" value="1"/></td>
+                            <td>R$ 50,00<span class="removerPedido"><i class="fas fa-times"></i></span></td>
+                        </tr>
+                        <tr>
+                            <td class="tdImg"><div class="divProdutoCar"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div></td>
+                            <td class="tdPprod">Pescados<br>Salmão<br>Salmão muito maravilhoso e macio</td>
+                            <td>R$ 50,00</td>
+                            <td><input type="number" class="qtdeCompra" value="1"/></td>
+                            <td>R$ 50,00<span class="removerPedido"><i class="fas fa-times"></i></span></td>
+                        </tr>
+                        <tr class="totalizadorCarrinho">
+                            <td colspan="4"></td>
+                            <td>R$ 100,00</td>
+                        </tr>
+                    </table>
+
+                    <div id="finalizarCompra">Finalizar Compra</div>
+
                 </div>
             </div>
         </article>
