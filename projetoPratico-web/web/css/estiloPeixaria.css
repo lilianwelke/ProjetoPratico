@@ -14,21 +14,23 @@ header {
     display: inline-block;
     width: 5em;
     margin: .25em .5em .25em 3em;
+    cursor: pointer;
 }
 #logoHeader img {
     width: 5em;
 }
-header h1, h2 {
+#nomeHeader h1, h2 {
     font-family: 'Special Elite', cursive;
     font-weight: 500;   
     margin: 0;
+    cursor: pointer;
 }
-header h1 {
+#nomeHeader h1 {
     font-size: 2em;
     position: relative;
     top: -.7em;
 }
-header h2 {
+#nomeHeader h2 {
     font-size: .88em;
     position: relative;
     top: -1.9em;
@@ -123,7 +125,7 @@ nav li {
     margin: 0.75em 3.7em .25em 0;
     cursor: pointer;
 }
-nav li:hover {	
+nav li:hover, #esqueciSenha:hover {	
     color: #6e808b;
 }
 article {
@@ -241,7 +243,7 @@ article {
     width: 36%;
     cursor: pointer;
 }
-.verMaisMini:hover, .comprarMini:hover, .comprarMais:hover {
+.verMaisMini:hover, .comprarMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -285,7 +287,7 @@ article {
     display: inline-block;
 }
 .comprarMais {
-    padding: .5em 2.25em;
+    padding: .5em 3em;
     border: solid 0.09em rgba(11, 55, 103, .75);
     display: inline-block;
     cursor: pointer;
@@ -325,8 +327,10 @@ article {
 .carrinhoTable table {
     border-collapse: collapse;
 }
-.carrinhoTable tr {    
+.carrinhoTable tr {
     line-height: 2;
+}
+.itemCarrinho {
     border-bottom: .05em solid rgba(11, 55, 103, .7);
 }
 .carrinhoTable th {
@@ -348,17 +352,123 @@ article {
     left: 1.75em;
     cursor: pointer;
 }
-.totalizadorCarrinho {
-    border-bottom: .05em solid rgba(11, 55, 103, 0);
-} 
+#finalizarCompra {
+    margin: 2em 0 0 auto;
+    max-width: 15%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+}
 
+/* LOGIN */
+section {
+    min-height: 750px;
+}
+.divIconLogin {
+    margin: 5em auto 0 auto;
+    width: 47%;
+    font-size: 1.5em;
+}
+.divLoginCentro { 
+    width: 50%;
+    height: 400px;
+    position: relative;
+    margin: 2em auto;
+    background-color: rgba(203, 209, 215, .1);
+}
+.divCamposLogin {
+    width: 60%;
+    margin: 0 auto;   
+}
+.camposLogin {
+    border-style: none none solid none;
+    border-width: 0.09em;
+    border-color: rgba(11, 55, 103, .5);
+    background-color: rgba(239, 239, 239, 0.05);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1.25em;
+    min-width: 20em;
+    margin-top: 2em;
+}
+.camposLogin:focus {
+    border-color: rgba(11, 55, 103, .95);
+}
+#entrarLogin {
+    margin: 3em auto .5em;
+    max-width: 15%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+}
+#esqueciSenha {
+    margin: 0 auto 2em;
+    max-width: 25%;
+    text-align: center;
+    cursor: pointer;
+}
+#naoTemConta {
+    margin: 0 auto .5em;
+    max-width: 28%;
+    text-align: center;
+}
+#criarContaLogin {
+    margin: 0 auto;
+    max-width: 15%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+}
+
+/* CADASTRO CLIENTE */
+.divIconCriarConta {
+    margin: 5em auto 0 auto;
+    width: 43%;
+    font-size: 1.5em;
+}
+.divCriarContaCentro { 
+    width: 50%;
+    height: 400px;
+    position: relative;
+    margin: 2em auto;
+    background-color: rgba(203, 209, 215, .1);
+}
+.divCamposCriarConta {
+    width: 60%;
+    margin: 0 auto;   
+}
+#criarConta {
+    margin: 3em auto;
+    max-width: 15%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+}
+.camposCriarConta {
+    border-style: none none solid none;
+    border-width: 0.09em;
+    border-color: rgba(11, 55, 103, .5);
+    background-color: rgba(239, 239, 239, 0.05);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1.25em;
+    min-width: 20em;
+    margin-top: 2em;
+}
+.camposCriarConta:focus {
+    border-color: rgba(11, 55, 103, .95);
+}
 
 /* RODAPE */
 footer {
     width: 100%;
     height: 25em;
     border-top: solid 0.1em rgba(11, 55, 103, .7);
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .1);   
 }
 .logoGrande {
     width: 15em;
@@ -377,19 +487,7 @@ footer {
     margin:0 .5em;
     padding: .0725em .15em;
 }
-.youtube:hover i { 
-    color: #6e808b;
-    cursor: pointer;
-}
-.twitter:hover i { 
-    color: #6e808b;
-    cursor: pointer;
-}
-.face:hover i { 
-    color: #6e808b;
-    cursor: pointer;
-}
-.insta:hover i { 
+.youtube:hover i, .twitter:hover i, .face:hover i, .insta:hover i { 
     color: #6e808b;
     cursor: pointer;
 }

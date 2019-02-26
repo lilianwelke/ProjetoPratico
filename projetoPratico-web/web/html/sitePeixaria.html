@@ -19,18 +19,30 @@
                     <input class="pesquisa" type="search" placeholder="O que você deseja pescar hoje?">
                 </form>
                 <span class="lupa"><i class="fa fa-search" style="font-size:20px" id="lupa-pesquisa"></i></span></div>
-            <div class="divUser"><span class="cadastrar">Cadastrar <i class="fas fa-user-plus" style="font-size:20px"></i></span>
+            <div class="divUser"><span class="cadastrar">Criar Conta <i class="fas fa-user-plus" style="font-size:20px"></i></span>
                 <span class="separador"> |</span>
-                <span class="logar">Logar <i class="fas fa-sign-in-alt"style="font-size:20px" ></i></span></div>
+                <span class="logar">Entrar <i class="fas fa-sign-in-alt"style="font-size:25px" ></i></span></div>
             <span class="carrinho"><i class="fa fa-shopping-cart" style="font-size:20px"></i></span>
         </header>
         <nav>
             <ul>
-                <li>conheça os planos</li><li>conheça os peixes</li><li>conheça a gente</li>
+                <li>conheça os peixes</li><li>conheça os planos</li><li>conheça a gente</li>
             </ul>
         </nav>
         <article>
-            <div style="display: none" class="fundoInicio">
+            <div class="divLogin" >
+                <div class="divIconLogin">
+                    <h1>Envie uma mensagem</h1></div>
+                <div class="divLoginCentro">
+                    <form>
+                        <div class="divCamposLogin"><input class="camposLogin" type="text" placeholder="Nome*"></div>
+                        <div class="divCamposLogin"><input class="camposLogin" type="email" placeholder="E-mail*"></div>
+                        <div class="divCamposLogin"><textarea>Mensagem*</textarea></div>
+                    </form>
+                    <div id="entrarLogin">Enviar</div>                    
+                </div>
+            </div>    
+            <div class="fundoInicio">
                 <div class="overlay"></div>
                 <div class="planosInicio">
                     <h1>Escolha um plano mensal</h1>
@@ -39,13 +51,13 @@
                     <h1>compre individualmente</h1>
                 </div>
             </div>
-            <div style="display: none" class="divMenu"><div><label class="labelMenu">Categorias</label></div>
+            <div class="divMenu"><div><label class="labelMenu">Categorias</label></div>
                 <ul>
                     <li>Pescados</li>
                     <li>Frutos do Mar</li>
                     <li>Camarão</li>
                 </ul></div>                
-            <div class="listaProdutos" style="display: none">
+            <div class="listaProdutos">
                 <div class="produtoMini">
                     <img class="fotoMini" src="../img/peixeLogo.png"/> 
                     <h1>Salmão</h1>
@@ -110,7 +122,7 @@
                     <div class="comprarMini">Comprar</div>
                 </div>
             </div>
-            <div style="display: none" class="produtoMais">
+            <div class="produtoMais">
                 <div class="divFotoMais"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div>
                 <div class="detalhesProduto">
                     <p>Pescados</p>
@@ -131,14 +143,14 @@
                             <th class="thQtde">Quantidade</th>
                             <th>Total</th>
                         </tr>
-                        <tr>
+                        <tr class="itemCarrinho">
                             <td class="tdImg"><div class="divProdutoCar"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div></td>
                             <td class="tdPprod">Pescados<br>Salmão<br>Salmão muito maravilhoso e macio</td>
                             <td>R$ 50,00</td>
                             <td><input type="number" class="qtdeCompra" value="1"/></td>
                             <td>R$ 50,00<span class="removerPedido"><i class="fas fa-times"></i></span></td>
                         </tr>
-                        <tr>
+                        <tr class="itemCarrinho">
                             <td class="tdImg"><div class="divProdutoCar"><img class="fotoMais" src="../img/peixeLogo.png" title=""></div></td>
                             <td class="tdPprod">Pescados<br>Salmão<br>Salmão muito maravilhoso e macio</td>
                             <td>R$ 50,00</td>
@@ -150,12 +162,41 @@
                             <td>R$ 100,00</td>
                         </tr>
                     </table>
-
                     <div id="finalizarCompra">Finalizar Compra</div>
-
                 </div>
-            </div>
+            </div>            
         </article>
+        <section>
+            <div id="logoHeader"><img src="../img/peixeLogo.png"></div>
+            <div id="nomeHeader"><h1>PÍER 95</h1>
+                <h2>PEIXARIA ONLINE</h2></div>
+            <div class="divLogin">
+                <div class="divIconLogin">
+                    <span><i class="fas fa-sign-in-alt" style="font-size:30px;padding-right: .5em;"></i>Olá! Para continuar, digite o seu e-mail e a sua senha</span></div>
+                <div class="divLoginCentro">
+                    <form>
+                        <div class="divCamposLogin"><input class="camposLogin" type="email" placeholder="E-mail"></div>
+                        <div class="divCamposLogin"><input class="camposLogin" type="password" placeholder="Senha"></div>
+                    </form>
+                    <div id="entrarLogin">Entrar</div>
+                    <div id="esqueciSenha">Esqueci minha senha</div>
+                    <div id="naoTemConta">Ainda não possui conta?</div>
+                    <div id="criarContaLogin">Criar Conta </div>
+                </div>
+            </div>    
+            <div class="divLogin">
+                <div class="divIconCriarConta">
+                    <span><i class="fas fa-user-plus" style="font-size:30px;padding-right: .5em;"></i>Olá! Para continuar, complete com seus dados</span></div>
+                <div class="divCriarContaCentro">
+                    <form>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" type="text" placeholder="Nome Completo"></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" type="email" placeholder="E-mail"></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" type="password" placeholder="Senha"></div>
+                    </form>
+                    <div id="criarConta">Criar Conta </div>
+                </div>
+            </div>             
+        </section>
         <footer>
             <div class="iconesSociais">
                 <span class="insta"><i class="fab fa-instagram" style="font-size:24px" title="Instagram"></i></span>
