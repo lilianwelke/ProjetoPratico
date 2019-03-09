@@ -16,10 +16,10 @@ header {
     margin: .25em .5em .25em 3em;
     cursor: pointer;
 }
-#logoHeader img {
+#imgHeader {
     width: 5em;
 }
-#nomeHeader h1, h2 {
+#h1Header, #h2Header {
     font-family: 'Special Elite', cursive;
     font-weight: 500;   
     margin: 0;
@@ -211,9 +211,9 @@ article {
     background-color: rgba(203, 209, 215, .1);
 }
 .fotoMini {
-    width: 13.3em;
+    width: 86%;
     display: inline-block;
-    padding: 1em;
+    padding: 7%;
     position: relative;
 }
 .produtoMini h1 {
@@ -430,15 +430,16 @@ section {
     font-size: 1.5em;
 }
 .divCriarContaCentro { 
-    width: 50%;
+    width: 80%;
     height: 400px;
     position: relative;
     margin: 2em auto;
     background-color: rgba(203, 209, 215, .1);
 }
 .divCamposCriarConta {
-    width: 60%;
-    margin: 0 auto;   
+    width: 37%;
+    margin: 0 6.2%;
+    display: inline-block;  
 }
 #criarConta {
     margin: 3em auto;
@@ -461,6 +462,20 @@ section {
 }
 .camposCriarConta:focus {
     border-color: rgba(11, 55, 103, .95);
+}
+
+/* SOBRE */
+.divSobreLabel {
+    margin: 5em auto 0 auto;
+    width: 47%;
+    font-size: 1.5em;
+}
+.divSobreCentro {
+    width: 50%;
+    height: 400px;
+    position: relative;
+    margin: 2em auto;
+    background-color: rgba(203, 209, 215, .1);
 }
 
 /* RODAPE */

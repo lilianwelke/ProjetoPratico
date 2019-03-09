@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.j2ee.ejbjarproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/j2ee-ejbjarproject/3">
+            <name>projetoPratico</name>
+            <minimum-ant-version>1.6.5</minimum-ant-version>
+            <included-library dirs="200">file.reference.ArquivosConfiguracao.jar</included-library>
+            <included-library dirs="200">file.reference.ComponenteHtml.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconExcecoes.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconFileUtils.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconInformacoes.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconInterfaces.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconJson.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconLookup.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconMail.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconPolice.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconTDataSet.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconTSessao.jar</included-library>
+            <included-library dirs="200">file.reference.TecniconUtils.jar</included-library>
+            <included-library dirs="200">file.reference.ArquivosConfiguracao.jar-1</included-library>
+            <included-library dirs="200">file.reference.ComponenteHtml.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconExcecoes.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconFileUtils.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconInformacoes.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconJson.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconLookup.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconMail.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconPolice.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconTDataSet.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconTSessao.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconUtils.jar-1</included-library>
+            <included-library dirs="200">file.reference.TecniconInterfaces.jar-1</included-library>
+            <source-roots>
+                <root id="src.dir" name="Pacotes de Códigos-fonte"/>
+            </source-roots>
+            <test-roots>
+                <root id="test.src.dir" name="Pacotes de Teste"/>
+            </test-roots>
+        </data>
+    </configuration>
+</project>
