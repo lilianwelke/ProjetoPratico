@@ -23,11 +23,24 @@ function irPeixes() {
     document.querySelector(".listaProdutos").style.display = "block";
 
     listarTodos();
+    listarCategoria();
 }
 
 function listarTodos() {
     requisicaoHTTP("projetoPratico", "produtos", "listarProdutos", listarTodosProdutos, alert, "&CSUBGRUPO=31");
+}
 
+function listarCategoria() {
+    requisicaoHTTP("projetoPratico", "produtos", "listarCategorias", listarCategorias, alert, "&CODIGOREF='PX'");
+}
+
+function listarProdCategoria(e) {
+    var categoria = e.target.id;
+    if (categoria !== "31") {
+        requisicaoHTTP("projetoPratico", "produtos", "listarProdCategoria", listarTodosProdutos, alert, "&CSUBGRUPO=31&CGRUPO=" + categoria);
+    } else {
+        requisicaoHTTP("projetoPratico", "produtos", "listarProdutos", listarTodosProdutos, alert, "&CSUBGRUPO=31");
+    }
 }
 
 function listarTodosProdutos(produtos) {
@@ -41,14 +54,8 @@ function listarTodosProdutos(produtos) {
         dv.setAttribute('class', 'produtoMini');
         div.appendChild(dv);
 
-        var reader = new FileReader();
-        reader.readAsDataURL("/tecnicon/arquivos/imagem-produto/62.jpg".files[0]);
-        reader.onload = function () {
-            console.log(reader.result);
-        };
-
         img = document.createElement('img');
-        img.src = "/tecnicon/arquivos/imagem-produto//62.JPG";//produtos[i]['IMAGEM'];
+        img.src = 'data:image/jpg;base64,' + produtos[i]['IMAGEM'];
         img.setAttribute('class', 'fotoMini');
         dv.appendChild(img);
 
@@ -75,7 +82,25 @@ function listarTodosProdutos(produtos) {
     }
 }
 
+function listarCategorias(categorias) {
+    var li;
+    var ul = document.querySelector('.divMenu ul');
+    ul.innerHTML = "";
 
+    for (var i = 0; i < categorias.length; i++)
+    {
+        li = document.createElement('li');
+        li.innerText = categorias[i]['GRUPO'];
+        li.setAttribute('id', categorias[i]['CGRUPO']);
+        ul.appendChild(li);
+    }
+
+    var lis = document.querySelectorAll(".divMenu li");
+    for (var i = 0; i < lis.length; i++)
+    {
+        lis[i].addEventListener("click", listarProdCategoria);
+    }
+}
 
 
 

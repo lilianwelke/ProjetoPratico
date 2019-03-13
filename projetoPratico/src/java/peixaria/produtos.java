@@ -1,128 +1,134 @@
 package peixaria;
 
+import br.com.tecnicon.server.context.TecniconLookup;
 import br.com.tecnicon.server.dataset.TSQLDataSetEmp;
+import br.com.tecnicon.server.execoes.ExcecaoMsg;
 import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
 import br.com.tecnicon.server.sessao.VariavelSessao;
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Base64;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 @Stateless
 @LocalBean
 public class produtos {
 
-    public JSONArray listarProdutos(VariavelSessao vs) throws ExcecaoTecnicon {
-
+    public JSONArray listarProdutos(VariavelSessao vs) throws ExcecaoTecnicon, Exception {
         TSQLDataSetEmp produto = TSQLDataSetEmp.create(vs);
-        produto.createDataSet();
-
         JSONObject produtos = new JSONObject();
         JSONArray produtosArray = new JSONArray();
         int i = 0;
+        Object produto2 = TecniconLookup.lookup("Produto2/Produto2");
+        String baseImg = "";
+        JSONObject retornoImg = new JSONObject();
 
-        produto.commandText("SELECT "
-                + " (CASE WHEN PARAMETROS.PRODIMAGEMLOCALLINUX <> '' THEN\n"
-                + "		(CASE\n"
-                + "			WHEN PARAMETROS.PRODIMAGEMARQ = 'R' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCALLINUX #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = 'D' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCALLINUX #TCONC# '/' #TCONC# PRODUTO.CDESENHO #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = '1' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCALLINUX #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '_' #TCONC# DESENHO.REVISAO #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = '2' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCALLINUX #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '_' #TCONC#\n"
-                + "	 					CAST((SELECT first 1 P_PRODREV.REVISAO FROM P_PRODREV(PRODUTO.CPRODUTO)) AS VARCHAR(10)) #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "		 		WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "	 				PARAMETROS.EXTENSAODES ELSE 'JPG' END )\n"
-                + "	 			ELSE PARAMETROS.PRODIMAGEMLOCALLINUX #TCONC# '/' #TCONC#\n"
-                + "	 				CAST(PRODUTO.CPRODUTO AS VARCHAR(10)) #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "		 		WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "	 				PARAMETROS.EXTENSAODES\n"
-                + "	 		ELSE\n"
-                + "	 			'JPG'\n"
-                + "		 	END )\n"
-                + "		 END )\n"
-                + "	 ELSE\n"
-                + "		(CASE\n"
-                + "			WHEN PARAMETROS.PRODIMAGEMARQ = 'R' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCAL #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = 'D' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCAL #TCONC# '/' #TCONC# PRODUTO.CDESENHO #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = '1' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCAL #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '_' #TCONC# DESENHO.REVISAO #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "				WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "					PARAMETROS.EXTENSAODES\n"
-                + "				ELSE\n"
-                + "					'JPG'\n"
-                + "			END )\n"
-                + "				WHEN PARAMETROS.PRODIMAGEMARQ = '2' THEN\n"
-                + "					PARAMETROS.PRODIMAGEMLOCAL #TCONC# '/' #TCONC# PRODUTO.REF_FORNECE #TCONC# '_' #TCONC#\n"
-                + "	 					CAST((SELECT first 1 P_PRODREV.REVISAO FROM P_PRODREV(PRODUTO.CPRODUTO)) AS VARCHAR(10)) #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "		 		WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "	 				PARAMETROS.EXTENSAODES ELSE 'JPG' END )\n"
-                + "	 			ELSE PARAMETROS.PRODIMAGEMLOCAL #TCONC# '/' #TCONC#\n"
-                + "	 				CAST(PRODUTO.CPRODUTO AS VARCHAR(10)) #TCONC# '.' #TCONC#\n"
-                + "			(CASE\n"
-                + "		 		WHEN PARAMETROS.EXTENSAODES = PARAMETROS.EXTENSAODES THEN\n"
-                + "	 				PARAMETROS.EXTENSAODES\n"
-                + "	 		ELSE\n"
-                + "	 			'JPG'\n"
-                + "		 	END )\n"
-                + "		 END )\n"
-                + "	 END) AS IMAGEM,"
-                + " PRODUTO.CPRODUTO, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO "
+        produto.close();
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO "
                 + " FROM PRODUTO "
-                + " LEFT JOIN DESENHO ON(DESENHO.CPRODUTO = PRODUTO.CPRODUTO)"
-                + " LEFT JOIN PARAMETROS ON(PARAMETROS.CFILIAL=1)"
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO"));
         produto.open();
 
+        produto.first();
         while (!produto.eof()) {
+
+            vs.addParametros("CPRODUTO", produto.fieldByName("CPRODUTO").asString());
+            vs.addParametros("filial", "1");
+            produto2 = TecniconLookup.lookup("Produto2/Produto2");
+            baseImg = (String) produto2.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produto2, vs);
+            retornoImg = new JSONObject(baseImg);
+
             produtos = new JSONObject();
-            produtos.put("CODIGO", produto.fieldByName("CPRODUTO").asInteger());
+            produtos.put("CPRODUTO", produto.fieldByName("CPRODUTO").asInteger());
             produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
             produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
-            produtos.put("IMAGEM", produto.fieldByName("IMAGEM").asString());
+
+            if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
+                produtos.put("IMAGEM", retornoImg.getString("src"));
+            } else {
+                produtos.put("IMAGEM", "");
+            }
+
             produtosArray.put(i, produtos);
+            vs.removeParametro("CPRODUTO");
             i++;
             produto.next();
         }
+        return produtosArray;
+    }
 
+    public JSONArray listarCategorias(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp categoria = TSQLDataSetEmp.create(vs);
+        JSONObject categorias = new JSONObject();
+        JSONArray categoriasArray = new JSONArray();
+        int i = 0;
+
+        categoria.close();
+        categoria.commandText(" SELECT GRUPO.CGRUPO, GRUPO.GRUPO "
+                + " FROM GRUPO "
+                + " WHERE GRUPO.CODIGOREF = " + vs.getParameter("CODIGOREF"));
+        categoria.open();
+
+        categoria.first();
+        while (!categoria.eof()) {
+            categorias = new JSONObject();
+            categorias.put("CGRUPO", categoria.fieldByName("CGRUPO").asInteger());
+            categorias.put("GRUPO", categoria.fieldByName("GRUPO").asString());
+            categoriasArray.put(i, categorias);
+
+            i++;
+            categoria.next();
+        }
+        return categoriasArray;
+    }
+    
+    public JSONArray listarProdCategoria(VariavelSessao vs) throws ExcecaoTecnicon, Exception
+    {
+        TSQLDataSetEmp produto = TSQLDataSetEmp.create(vs);
+        JSONObject produtos = new JSONObject();
+        JSONArray produtosArray = new JSONArray();
+        int i = 0;
+        Object produto2 = TecniconLookup.lookup("Produto2/Produto2");
+        String baseImg = "";
+        JSONObject retornoImg = new JSONObject();
+
+        produto.close();
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO "
+                + " FROM PRODUTO "
+                + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
+                + " AND PRODUTO.CGRUPO = " + vs.getParameter("CGRUPO"));
+        produto.open();
+
+        produto.first();
+        while (!produto.eof()) {
+
+            vs.addParametros("CPRODUTO", produto.fieldByName("CPRODUTO").asString());
+            vs.addParametros("filial", "1");
+            produto2 = TecniconLookup.lookup("Produto2/Produto2");
+            baseImg = (String) produto2.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produto2, vs);
+            retornoImg = new JSONObject(baseImg);
+
+            produtos = new JSONObject();
+            produtos.put("CPRODUTO", produto.fieldByName("CPRODUTO").asInteger());
+            produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
+            produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
+
+            if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
+                produtos.put("IMAGEM", retornoImg.getString("src"));
+            } else {
+                produtos.put("IMAGEM", "");
+            }
+
+            produtosArray.put(i, produtos);
+            vs.removeParametro("CPRODUTO");
+            i++;
+            produto.next();
+        }
         return produtosArray;
     }
 
