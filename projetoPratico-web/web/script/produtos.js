@@ -3,35 +3,28 @@ function init() {
     document.querySelector("#h1Header").addEventListener("click", irInicio);
     document.querySelector("#h2Header").addEventListener("click", irInicio);
     document.querySelector("#conhecaPeixes").addEventListener("click", irPeixes);
+    document.querySelector(".lupa").addEventListener("click", pesquisarProdutos);
 }
-
-var indice = 1;
 
 function irInicio() {
     document.querySelector(".fundoInicio").style.display = "block";
-
-    document.querySelector(".fundoInicio").style.zIndex = indice++;
-    indice = indice++;
-
     document.querySelector(".divMenu").style.display = "none";
     document.querySelector(".listaProdutos").style.display = "none";
+    document.querySelector(".divSobre").style.display = "none";
 }
 
-function irPeixes() {
+function irPeixes(pesquisa) {
     document.querySelector(".fundoInicio").style.display = "none";
+    document.querySelector(".divSobre").style.display = "none";
+    document.querySelector(".produtoMais").style.display = "none";
     document.querySelector(".divMenu").style.display = "block";
     document.querySelector(".listaProdutos").style.display = "block";
 
-    listarTodos();
-    listarCategoria();
-}
-
-function listarTodos() {
-    requisicaoHTTP("projetoPratico", "produtos", "listarProdutos", listarTodosProdutos, alert, "&CSUBGRUPO=31");
-}
-
-function listarCategoria() {
     requisicaoHTTP("projetoPratico", "produtos", "listarCategorias", listarCategorias, alert, "&CODIGOREF='PX'");
+    if (pesquisa)
+    {
+        requisicaoHTTP("projetoPratico", "produtos", "listarProdutos", listarTodosProdutos, alert, "&CSUBGRUPO=31");
+    }
 }
 
 function listarProdCategoria(e) {
@@ -40,6 +33,26 @@ function listarProdCategoria(e) {
         requisicaoHTTP("projetoPratico", "produtos", "listarProdCategoria", listarTodosProdutos, alert, "&CSUBGRUPO=31&CGRUPO=" + categoria);
     } else {
         requisicaoHTTP("projetoPratico", "produtos", "listarProdutos", listarTodosProdutos, alert, "&CSUBGRUPO=31");
+    }
+}
+
+function pesquisarProdutos(e) {
+    var conteudo = document.querySelector(".pesquisa").value;
+    if (conteudo.trim() !== "") {
+        irPeixes(false);
+        requisicaoHTTP("projetoPratico", "produtos", "pesquisarProduto", listarTodosProdutos, alert, "&CSUBGRUPO=31&DESCRICAO=" + conteudo);
+    }
+}
+
+function irDetalhes(e) {
+    var cproduto = e.target.id;
+    document.querySelector(".fundoInicio").style.display = "none";
+    document.querySelector(".divSobre").style.display = "none";
+    document.querySelector(".divMenu").style.display = "none";
+    document.querySelector(".listaProdutos").style.display = "none";
+    document.querySelector(".produtoMais").style.display = "block";
+    if (cproduto.trim() !== "") {
+        requisicaoHTTP("projetoPratico", "produtos", "retornarProduto", listarProduto, alert, "&CPRODUTO=" + cproduto);
     }
 }
 
@@ -78,7 +91,11 @@ function listarTodosProdutos(produtos) {
         dvComprarMini.setAttribute('id', produtos[i]['CPRODUTO']);
         dvComprarMini.innerText = 'Comprar';
         dv.appendChild(dvComprarMini);
-
+    }
+    var prods = document.querySelectorAll(".verMaisMini");
+    for (var j = 0; j < prods.length; j++)
+    {
+        prods[j].addEventListener("click", irDetalhes);
     }
 }
 
@@ -96,12 +113,64 @@ function listarCategorias(categorias) {
     }
 
     var lis = document.querySelectorAll(".divMenu li");
-    for (var i = 0; i < lis.length; i++)
+    for (var j = 0; j < lis.length; j++)
     {
-        lis[i].addEventListener("click", listarProdCategoria);
+        lis[j].addEventListener("click", listarProdCategoria);
     }
 }
 
+function listarProduto(produto) {
+    var dv, hUm, p, pp, ppp, pppp, dvImg, dvComprarMais, img, input;
+    var div = document.querySelector('.produtoMais');
+    div.innerHTML = "";
 
+    dvImg = document.createElement('div');
+    dvImg.setAttribute('class', 'divFotoMais');
+    div.appendChild(dvImg);
+
+    img = document.createElement('img');
+    img.src = 'data:image/jpg;base64,' + produto[0]['IMAGEM'];
+    img.setAttribute('class', 'fotoMais');
+    dvImg.appendChild(img);
+
+    dv = document.createElement('div');
+    dv.setAttribute('class', 'detalhesProduto');
+    div.appendChild(dv);
+
+    p = document.createElement('p');
+    p.innerText = produto[0]['CATEGORIA'];
+    dv.appendChild(p);
+
+    hUm = document.createElement('h1');
+    hUm.innerText = produto[0]['MERCADORIA'];
+    dv.appendChild(hUm);
+
+    pp = document.createElement('p');
+    pp.innerText = produto[0]['PRODUTO'];
+    dv.appendChild(pp);
+
+    ppp = document.createElement('p');
+    ppp.innerText = 'R$ ' + produto[0]['PRECO'].toFixed(2).replace('.', ',');
+    dv.appendChild(ppp);
+
+    input = document.createElement('input');
+    input.setAttribute('class', 'qtdeCompraMais');
+    input.setAttribute('type', 'number');
+    input.setAttribute('value', '1');
+    dv.appendChild(input);
+
+    pppp = document.createElement('p');
+    pppp.setAttribute('class', 'unidadeMais');
+    pppp.innerText = produto[0]['UN'];
+    dv.appendChild(pppp);
+
+    dv.appendChild(document.createElement('br'));
+
+    dvComprarMais = document.createElement('div');
+    dvComprarMais.setAttribute('class', 'comprarMais');
+    dvComprarMais.setAttribute('id', produto[0]['CPRODUTO']);
+    dvComprarMais.innerText = 'Comprar';
+    dv.appendChild(dvComprarMais);
+}
 
 init();
