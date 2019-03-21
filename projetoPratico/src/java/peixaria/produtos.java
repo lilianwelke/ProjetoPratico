@@ -185,7 +185,7 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UN "
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UNIDADE "
                 + " FROM PRODUTO "
                 + " INNER JOIN GRUPO ON (GRUPO.CGRUPO = PRODUTO.CGRUPO)"
                 + " WHERE PRODUTO.CPRODUTO = " + vs.getParameter("CPRODUTO"));
@@ -202,7 +202,7 @@ public class produtos {
         produtos.put("MERCADORIA", produto.fieldByName("MERCADORIA").asString());
         produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
         produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
-        produtos.put("UN", produto.fieldByName("UN").asString());
+        produtos.put("UN", produto.fieldByName("UNIDADE").asString());
 
         if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
             produtos.put("IMAGEM", retornoImg.getString("src"));

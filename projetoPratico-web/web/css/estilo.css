@@ -4,7 +4,7 @@ html {
     color:#0b3767;
 }
 body {
-    background-color: rgba(239, 239, 239, 0.05);
+    background-color: frgba(239, 239, 239, 0.05);
 }
 header {
     border-bottom: solid 0.1em rgba(11, 55, 103, 0.7);
@@ -227,10 +227,9 @@ article {
 }
 .verMaisMini {
     text-align: center;
-    margin: .5em .5em .5em .5em;
+    margin: 4% auto;
     padding: .5em;
     border: solid 0.09em rgba(11, 55, 103, .75);
-    display: inline-block;
     width: 36%;
     cursor: pointer;
 }
@@ -243,7 +242,7 @@ article {
     width: 36%;
     cursor: pointer;
 }
-.verMaisMini:hover, .comprarMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover {
+.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -347,9 +346,7 @@ article {
     border: solid 0.09em rgba(11, 55, 103, .75);
     background-color: rgba(203, 209, 215, 0);
 }
-.removerPedido {
-    position: relative;
-    left: 1.75em;
+.removerPedido, .atualizaCarrinho {
     cursor: pointer;
 }
 #finalizarCompra {
@@ -359,6 +356,22 @@ article {
     padding: .5em 2.25em;
     border: solid 0.09em rgba(11, 55, 103, .75);
     cursor: pointer;
+}
+.fotoCarrinho { 
+    width: 100%;
+}
+.carrinhoVazio {
+    width: 100%;
+    height: 100px;
+    background-color: rgba(203, 209, 215, .1);
+}
+.carrinhoVazioText {
+    line-height: 1.5em;
+    color: #6e808b;
+    font-weight: 400;
+    margin: 0;
+    text-align: center;
+    padding: 3%;
 }
 
 /* LOGIN */
