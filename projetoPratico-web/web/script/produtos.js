@@ -73,7 +73,7 @@ function irCarrinho(e) {
 }
 
 function listarTodosProdutos(produtos) {
-    var dv, hUm, p, dvVerMais, dvComprarMini, img;
+    var dv, hUm, p, dvVerMais, img;
     var div = document.querySelector('.listaProdutos');
     div.innerHTML = "";
 
@@ -401,7 +401,7 @@ function listarCarrinho() {
     document.querySelector('.atualizaCarrinho').addEventListener('click', listarCarrinho);
     document.querySelector('.qtdeCompra').addEventListener('blur', atualizarQtde);
 
-//        document.querySelector('#finalizar-compra').parentNode.addEventListener('click', fazerPush);
+    document.querySelector('#finalizarCompra').addEventListener('click', finalizarCompra);
 
 }
 
@@ -463,5 +463,15 @@ function atualizarQtde(e) {
     irCarrinho();
 }
 
+function finalizarCompra() {
+
+    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=1434");
+
+
+}
+
+function compraConcluida() {
+    alert("Compra OK!");
+}
 
 init();

@@ -4,7 +4,7 @@ html {
     color:#0b3767;
 }
 body {
-    background-color: frgba(239, 239, 239, 0.05);
+    background-color: rgba(239, 239, 239, 0.05);
 }
 header {
     border-bottom: solid 0.1em rgba(11, 55, 103, 0.7);
@@ -16,10 +16,10 @@ header {
     margin: .25em .5em .25em 3em;
     cursor: pointer;
 }
-#imgHeader {
-    width: 5em;
+#imgHeader, #imgHeaderSec {
+    width: 100%;
 }
-#h1Header, #h2Header {
+#h1Header, #h2Header, #h1HeaderSec, #h2HeaderSec {
     font-family: 'Special Elite', cursive;
     font-weight: 500;   
     margin: 0;
@@ -242,7 +242,7 @@ article {
     width: 36%;
     cursor: pointer;
 }
-.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover {
+.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -438,13 +438,13 @@ section {
 
 /* CADASTRO CLIENTE */
 .divIconCriarConta {
-    margin: 5em auto 0 auto;
-    width: 43%;
+    margin: 1em auto 0 auto;
+    width: 33%;
     font-size: 1.5em;
 }
 .divCriarContaCentro { 
     width: 80%;
-    height: 400px;
+    height: 275px;
     position: relative;
     margin: 2em auto;
     background-color: rgba(203, 209, 215, .1);
@@ -454,7 +454,7 @@ section {
     margin: 0 6.2%;
     display: inline-block;  
 }
-#criarConta {
+#criarConta, #salvarDadosConta {
     margin: 3em auto;
     max-width: 15%;
     text-align: center;
@@ -473,7 +473,88 @@ section {
     min-width: 20em;
     margin-top: 2em;
 }
-.camposCriarConta:focus {
+.divIconContinuarConta {
+    margin: 1em auto 0 auto;
+    width: 80%;
+    font-size: 1.5em;
+}
+.divContinuarContaCentro {
+    width: 80%;
+    height: 430px;
+    position: relative;
+    margin: 2em auto;
+    background-color: rgba(203, 209, 215, .1);
+}
+.divCamposContinuarConta {
+    margin: 0 5%;
+    display: inline-block;  
+}
+.divCamposContinuarConta1 {
+    width: 23%;
+}
+.divCamposContinuarConta2 {
+    width: 42%;
+}
+.divCamposContinuarConta3 {
+    width: 4%;
+}
+.divCamposContinuarConta4 {
+    width: 47%;
+}
+.divCamposContinuarConta5 {
+    width: 32.5%;
+}
+.divCamposContinuarConta6 {
+    width: 11%;
+}
+.divCamposContinuarConta7 {
+    width: 68.5%;
+}
+.camposContinuarConta {
+    border-width: 0.09em;
+    border-color: rgba(11, 55, 103, .5);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1.25em;
+    margin-top: 2em;
+}
+.camposContinuarConta1 { 
+    border-style: none none solid none;    
+    background-color: rgba(239, 239, 239, 0.05);    
+    min-width: 12em;
+}
+.camposContinuarConta2 {
+    border-style: solid;    
+    background-color: rgba(239, 239, 239, .3);     
+    padding-left: .25em;
+}
+.camposContinuarConta21 {  
+    min-width: 26em;    
+}
+.camposContinuarConta22 {  
+    width: 2em;    
+}
+.camposContinuarConta3 {
+    border-style: none none solid none;
+    background-color: rgba(239, 239, 239, .05);    
+    min-width: 25em;    
+}
+.camposContinuarConta4 {
+    border-style: none none solid none;
+    background-color: rgba(239, 239, 239, .05);    
+    min-width: 17.5em;
+}
+.camposContinuarConta5 {
+    border-style: none none solid none;
+    background-color: rgba(239, 239, 239, .05);    
+    width: 6em;
+}
+.camposContinuarConta6 {
+    border-style: none none solid none;
+    background-color: rgba(239, 239, 239, .05);    
+    min-width: 37em;
+}
+.camposCriarConta:focus, .camposContinuarConta:focus {
     border-color: rgba(11, 55, 103, .95);
 }
 
