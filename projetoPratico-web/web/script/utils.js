@@ -42,3 +42,16 @@ function serializeForm(idForm, classCampos) {
     }
     return '&' + arrParams.join('&');
 }
+
+function setVisible(classe) {
+    document.querySelector(classe).classList.add('setVisible');
+}
+
+function setInvisible() {
+    var ar = document.querySelectorAll(".setVisible");
+    for (var k = 0; k < ar.length; k++)
+    {
+        ar[k].classList.remove('setVisible');
+        ar[k].style.display = "none";
+    }
+}

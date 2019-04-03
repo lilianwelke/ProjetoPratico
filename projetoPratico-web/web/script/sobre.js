@@ -3,12 +3,15 @@ function init() {
 }
 
 function irSobre() {
-    document.querySelector(".fundoInicio").style.display = "none";
-    document.querySelector(".divMenu").style.display = "none";
-    document.querySelector(".listaProdutos").style.display = "none";
-    document.querySelector(".produtoMais").style.display = "none";
-    document.querySelector(".divCarrinho").style.display = "none";
+//    document.querySelector(".fundoInicio").style.display = "none";
+//    document.querySelector(".divMenu").style.display = "none";
+//    document.querySelector(".listaProdutos").style.display = "none";
+//    document.querySelector(".produtoMais").style.display = "none";
+//    document.querySelector(".divCarrinho").style.display = "none";
+    setInvisible();
     document.querySelector(".divSobre").style.display = "block";
+    setVisible(".divSobre");
+
 }
 
 init();

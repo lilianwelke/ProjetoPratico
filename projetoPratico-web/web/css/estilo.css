@@ -242,7 +242,7 @@ article {
     width: 36%;
     cursor: pointer;
 }
-.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover {
+.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -379,7 +379,7 @@ section {
     min-height: 750px;
 }
 .divIconLogin {
-    margin: 5em auto 0 auto;
+    margin: 1em auto 0 auto;
     width: 47%;
     font-size: 1.5em;
 }
@@ -563,13 +563,15 @@ section {
     margin-bottom: 5%;
 }
 .imgSobre {
+    width: 71.3%;
+    margin: 2em auto;
+}
+.fotoSobre {
     width: 100%;
-    position: relative;
-    left: 11.5%;
 }
 .overlaySobre {
     width: 77%;
-    height: 375px;
+    height: 23em;
     position: relative;
     margin: 3em 11.5%;
     border: solid .01em rgb(203, 209, 215);
@@ -577,9 +579,9 @@ section {
 .infosSobre {
     width: 60%;
     position: absolute;
-    display: inline-block;
+    /* display: inline-block; */
     top: 12em;
-    left: 17em;
+    margin: 0 20%;
 }
 .infosSobre h1 {
     text-align: center;
@@ -621,6 +623,14 @@ section {
 #mensagemSobre:focus {
     border-color: rgba(11, 55, 103, .95);
 }
+#enviarMensagem {
+    margin: 3em auto .5em;
+    max-width: 15%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+}
 
 /* RODAPE */
 footer {
@@ -661,5 +671,13 @@ footer p {
     line-height: 1.25em;
 }
 
+/* UTILS */
+.setVisible { 
+    display: block;
+}
+
+.setInvisible { 
+    display: none;
+}
 
 

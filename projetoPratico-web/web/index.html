@@ -30,7 +30,7 @@
             </ul>
         </nav>
         <article>            
-            <div class="fundoInicio">
+            <div class="fundoInicio setVisible">
                 <div class="overlay"></div>
                 <div class="planosInicio">
                     <h1>Escolha um plano mensal</h1>
@@ -107,7 +107,7 @@
                         <div class="divCamposLogin"><input class="camposLogin" type="email" placeholder="E-mail*"></div>
                         <div class="divCamposLogin"><textarea id="mensagemSobre">Mensagem*</textarea></div>
                     </form>
-                    <div id="entrarLogin">Enviar</div>                    
+                    <div id="enviarMensagem">Enviar</div>                    
                 </div>
             </div>                
         </article>
@@ -120,8 +120,8 @@
                     <span><i class="fas fa-sign-in-alt" style="font-size:30px;padding-right: .5em;"></i>Olá! Para continuar, digite o seu e-mail e a sua senha</span></div>
                 <div class="divLoginCentro">
                     <form>
-                        <div class="divCamposLogin"><input class="camposLogin" type="email" placeholder="E-mail"></div>
-                        <div class="divCamposLogin"><input class="camposLogin" type="password" placeholder="Senha"></div>
+                        <div class="divCamposLogin"><input class="camposLogin" id="EMAILL" type="email" placeholder="E-mail*"></div>
+                        <div class="divCamposLogin"><input class="camposLogin" id="SENHAL" type="password" placeholder="Senha*"></div>
                     </form>
                     <div id="entrarLogin">Entrar</div>
                     <div id="esqueciSenha">Esqueci minha senha</div>
@@ -134,40 +134,40 @@
                     <span><i class="fas fa-user-plus" style="font-size:30px;padding-right: .5em;"></i>Olá! Para continuar, crie sua conta</span></div>
                 <div class="divCriarContaCentro">
                     <form id="dadosConta">
-                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="NOME" type="text" placeholder="Nome Completo" required></div>
-                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="EMAIL" type="email" placeholder="E-mail" required></div>
-                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="SENHAPX" type="password" placeholder="Senha" required></div>
-                        <div class="divCamposCriarConta"><input class="camposCriarConta" id ="confirmSenha" type="password" placeholder="Confirme a Senha" required></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="NOME" type="text" placeholder="Nome Completo*" required></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="EMAIL" type="email" placeholder="E-mail*" required></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" id="SENHAPX" type="password" placeholder="Senha*" required></div>
+                        <div class="divCamposCriarConta"><input class="camposCriarConta" id ="confirmSenha" type="password" placeholder="Confirme a Senha*" required></div>
                     </form>
                     <div id="criarConta">Criar Conta</div>
                 </div>
             </div>    
             <div class="divContinuarConta" style="display: none;">
                 <div class="divIconContinuarConta">
-                    <span class="olaCliente"><i class="fas fa-user-plus" style="font-size:30px;padding-right: .5em;"></i></span></div>
+                    <span class="olaCliente"></span></div>
                 <div class="divContinuarContaCentro">
                     <form id="dadosConta">
                         <div class="divCamposContinuarConta divCamposContinuarConta1">
-                            <input class="camposContinuarConta camposContinuarConta1" id="CGC" type="number" placeholder="CPF" required></div>
+                            <input class="camposContinuarConta camposContinuarConta1" id="CGC" type="number" placeholder="CPF*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta1">
                             <input class="camposContinuarConta camposContinuarConta1" id="FONE" type="number" placeholder="Telefone" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta1">
-                            <input class="camposContinuarConta camposContinuarConta1" id="CELULAR" type="number" placeholder="Celular" required></div>
+                            <input class="camposContinuarConta camposContinuarConta1" id="CELULAR" type="number" placeholder="Celular*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta1">
-                            <input class="camposContinuarConta camposContinuarConta1" id ="CEP" type="number" placeholder="CEP" required></div>
+                            <input class="camposContinuarConta camposContinuarConta1" id ="CEP" type="number" placeholder="CEP*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta2">
                             <input class="camposContinuarConta camposContinuarConta2 camposContinuarConta21" id ="NCIDADE1" type="text" placeholder="Cidade" required readonly></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta3">
                             <input class="camposContinuarConta camposContinuarConta2 camposContinuarConta22" id ="NUF1" type="text" placeholder="UF" required readonly></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta4">                           
-                            <input class="camposContinuarConta camposContinuarConta3" id ="ENDERECO" type="text" placeholder="Endereço" required></div>
+                            <input class="camposContinuarConta camposContinuarConta3" id ="ENDERECO" type="text" placeholder="Endereço*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta5">
-                            <input class="camposContinuarConta camposContinuarConta4" id ="BAIRRO" type="text" placeholder="Bairro" required></div>
+                            <input class="camposContinuarConta camposContinuarConta4" id ="BAIRRO" type="text" placeholder="Bairro*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta6">
-                            <input class="camposContinuarConta camposContinuarConta5" id ="NUMERO" type="text" placeholder="Número" required></div>
+                            <input class="camposContinuarConta camposContinuarConta5" id ="NUMERO" type="text" placeholder="Número*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta7">
                             <input class="camposContinuarConta camposContinuarConta6" id ="COMPLEMENTO" type="text" placeholder="Complemento" required></div>
-                        </form>
+                    </form>
                     <div id="salvarDadosConta">Salvar Dados</div>
                 </div>
             </div>    

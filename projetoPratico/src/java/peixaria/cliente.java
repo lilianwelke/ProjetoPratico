@@ -6,6 +6,9 @@ import br.com.tecnicon.server.execoes.ExcecaoMsg;
 import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
 import br.com.tecnicon.server.sessao.VariavelSessao;
 import br.com.tecnicon.server.util.funcoes.Funcoes;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.json.JSONObject;
@@ -23,6 +26,8 @@ public class cliente {
 
         JSONObject cliente = new JSONObject();
 
+        String usuario[] = vs.getParameter("EMAIL").split("@");
+
         cliFor.insert();
         cliFor.fieldByName("NOME").asString(vs.getParameter("NOME"));
         cliFor.fieldByName("TIPO").asString("C");
@@ -31,8 +36,8 @@ public class cliente {
 
         loginPx.insert();
         loginPx.fieldByName("CCLIFOR").asInteger(cliFor.fieldByName("CCLIFOR").asInteger());
-        loginPx.fieldByName("USUARIOPX").asString(cliFor.fieldByName("NOME").asString());
-        loginPx.fieldByName("SENHAPX").asString(vs.getParameter("SENHAPX"));
+        loginPx.fieldByName("USUARIOPX").asString(usuario[0]);
+        loginPx.fieldByName("SENHA").asString(criptografarSenha(vs.getParameter("SENHAPX")));
         loginPx.post();
 
         cliente.put("CCLIFOR", cliFor.fieldByName("CCLIFOR").asInteger());
@@ -40,6 +45,30 @@ public class cliente {
         cliente.put("EMAIL", vs.getParameter("EMAIL"));
 
         return cliente;
+    }
+
+    public static String criptografarSenha(String senha) {
+        MessageDigest algorithm = null;
+        byte messageDigest[] = null;
+        StringBuilder hexString = new StringBuilder();
+
+        try {
+            algorithm = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ex) {
+            ex.getMessage();
+        }
+
+        try {
+            messageDigest = algorithm.digest(senha.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            ex.getMessage();
+        }
+
+        for (byte b : messageDigest) {
+            hexString.append(String.format("%02X", 0xFF & b));
+        }
+
+        return hexString.toString();
     }
 
     public String inserirClienteEnd(VariavelSessao vs) throws ExcecaoTecnicon {
@@ -58,10 +87,6 @@ public class cliente {
         cliForEnd.fieldByName("CEP").asString(vs.getParameter("CEP"));
         cliForEnd.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
         cliForEnd.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
-//        if (true)
-//        {
-//            throw new ExcecaoMsg(vs, cidade.commandText().toString() + "---" + vs.getParameter("NCIDADE1") + "---- "+ cidade.fieldByName("CCIDADE").asInteger() + "---" + cidade.fieldByName("CCIDADE").asInteger());
-//        }
         cliForEnd.fieldByName("CCIDADE1").asInteger(cidade.fieldByName("CCIDADE").asInteger());
         cliForEnd.fieldByName("CELULAR").asString(vs.getParameter("CELULAR"));
         cliForEnd.fieldByName("FONE").asString(vs.getParameter("FONE"));
@@ -73,5 +98,29 @@ public class cliente {
         cliForEnd.post();
 
         return "OK";
+    }
+
+    public int fazerLogin(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp cliente = TSQLDataSetEmp.create(vs);
+        cliente.commandText("SELECT CLIFOREND.EMAIL, LOGINPX.SENHA, LOGINPX.CCLIFOR FROM LOGINPX "
+                + " INNER JOIN CLIFOREND ON (CLIFOREND.CCLIFOR = LOGINPX.CCLIFOR)"
+                + " WHERE LOGINPX.SENHA = '" + criptografarSenha(vs.getParameter("SENHA")) + "'"
+                + " AND CLIFOREND.EMAIL = '" + vs.getParameter("EMAIL") + "'");
+        cliente.open();
+
+        if (cliente.isEmpty()) {
+            cliente.close();
+            cliente.commandText("SELECT CLIFOREND.EMAIL, LOGINPX.SENHA FROM LOGINPX "
+                    + " INNER JOIN CLIFOREND ON (CLIFOREND.CCLIFOR = LOGINPX.CCLIFOR)"
+                    + " AND CLIFOREND.EMAIL = '" + vs.getParameter("EMAIL") + "'");
+            cliente.open();
+            if (!cliente.isEmpty()) {
+                throw new ExcecaoMsg(vs, "Senha não corresponde ao usuário informado. \nTente novamente!");
+            } else { 
+                throw new ExcecaoMsg(vs, "O usuário informado não possui cadastro. \nTente novamente ou crie uma conta!");
+            }
+        }
+
+        return cliente.fieldByName("CCLIFOR").asInteger();
     }
 }
