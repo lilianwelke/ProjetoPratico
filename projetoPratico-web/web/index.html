@@ -7,8 +7,8 @@
         <link rel="icon" type="imagem/png" href="img/peixeLogo.png" />
         <link rel="stylesheet" href="css/estilo.css">
         <link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" 
+              integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     </head>
     <body>
         <header>
@@ -22,6 +22,9 @@
             <div class="divUser"><span class="cadastrar">Criar Conta <i class="fas fa-user-plus" style="font-size:20px"></i></span>
                 <span class="separador"> |</span>
                 <span class="logar">Entrar <i class="fas fa-sign-in-alt" style="font-size:25px" ></i></span></div>
+            <div class="divLogado"><span class="minhaConta">Minha Conta <i class="fas fa-user" style="font-size:20px"></i></span>
+                <span class="separador"> |</span>
+                <span class="desLogar">Sair <i class="fas fa-sign-in-alt" style="font-size:25px" ></i></span></div>
             <span class="carrinho"><i class="fa fa-shopping-cart" style="font-size:20px"></i></span>
         </header>
         <nav>
@@ -30,7 +33,7 @@
             </ul>
         </nav>
         <article>            
-            <div class="fundoInicio setVisible">
+            <div class="fundoInicio setVisible" style="display: block;">
                 <div class="overlay"></div>
                 <div class="planosInicio">
                     <h1>Escolha um plano mensal</h1>
@@ -42,53 +45,12 @@
             <div class="divMenu" style="display: none;"><div><label class="labelMenu">Categorias</label></div>
                 <ul>
                     <li>Todas</li>
-                    <!--                    <li>Pescados</li>
-                                        <li>Frutos do Mar</li>
-                                        <li>Camarão</li>                    -->
                 </ul></div>                
             <div class="listaProdutos" style="display: none;">
-                <!--                <div class="produtoMini">
-                                    <img class="fotoMini" src="img/peixeLogo.png"/> 
-                                    <h1>Salmão</h1>
-                                    <p>R$ 50,00</p>
-                                    <div class="verMaisMini">Conferir</div>
-                                </div>         -->
             </div>
             <div class="produtoMais" style="display: none;">
-                <!--                <div class="divFotoMais"><img class="fotoMais" src="img/peixeLogo.png" title=""></div>
-                                <div class="detalhesProduto">
-                                    <p>Pescados</p>
-                                    <h1>Salmão</h1>
-                                    <p>Salmão muito maravilhoso e macio</p>							
-                                    <p class="precoMais">R$ 50,00</p>                    
-                                    <input type="number" class="qtdeCompraMais" value="1"/><p class="unidadeMais">UN</p><br>
-                                    <div class="comprarMais">Adicionar ao Carrinho</div>
-                                </div>-->
             </div>
             <div class="divCarrinho" style="display: none;">
-                <!--                <div class="h1DivCarrinho"><h1>Carrinho</h1><span><i class="fas fa-sync-alt"></i></span></div>
-                                <div class="carrinhoTable">	
-                                    <table>
-                                        <tr>
-                                            <th colspan="2" class="thProduto">Produto</th>
-                                            <th>Preço</th>
-                                            <th class="thQtde">Quantidade</th>
-                                            <th>Total</th>
-                                        </tr>
-                                        <tr class="itemCarrinho">
-                                            <td class="tdImg"><div class="divProdutoCar"><img class="fotoCarrinho" src="img/peixeLogo.png" title=""></div></td>
-                                            <td class="tdPprod">Pescados<br>Salmão<br>Salmão muito maravilhoso e macio</td>
-                                            <td>R$ 50,00</td>
-                                            <td><input type="number" class="qtdeCompra" value="1"/></td>
-                                            <td>R$ 50,00<span class="removerPedido"><i class="fas fa-times"></i></span></td>
-                                        </tr>
-                                        <tr class="totalizadorCarrinho">
-                                            <td colspan="4"></td>
-                                            <td>R$ 100,00</td>
-                                        </tr>
-                                    </table>
-                                    <div id="finalizarCompra">Finalizar Compra</div>
-                                </div>-->
             </div>
             <div class="divSobre" style="display: none;">
                 <div class="overlaySobre"></div>
@@ -109,7 +71,79 @@
                     </form>
                     <div id="enviarMensagem">Enviar</div>                    
                 </div>
-            </div>                
+            </div>      
+            <div class="divMenuCliente" style="display: none;"><div><label class="labelMenuCli">Minha conta</label></div>
+                <ul>
+                    <li class="editMeusDados">Meus dados</li>
+                    <li>Minhas compras</li>
+                </ul></div>                
+            <div class="contemBemVindoCli" style="display: none;">
+                <div class="overlayCli"></div>
+                <div class="bemVindoCli">
+                    <h1>Seja Bem Vinda(o) a sua área!</h1>
+                    <h1>Aqui você pode checar seus dados e acompanhar as suas compras.</h1>
+                    <h1>← Escolha uma das opções ao lado!</h1>
+                </div>
+            </div>
+            <div class="contemMeusDados" style="display: none;">
+                <div class="divDadosConta">
+                    <h1>Meus Dados</h1></div>
+                <div class="meusDados">
+                    <form class="meusDadosConta">
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Nome Completo*</label><input class="camposMeusDados camposMeusDados1" id="NOMEE" type="text" readonly>
+                        </div>                        
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>E-mail*</label><input class="camposMeusDados camposMeusDados1" id="EMAILE" type="email" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Usuário*</label><input class="camposMeusDados camposMeusDados1" id="USUARIOPXE" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Confirme a sua senha antiga*</label><input class="camposMeusDados camposMeusDados1" id="SENHAPXE" type="password" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Digite a senha nova*</label><input class="camposMeusDados camposMeusDados1" id="SENHANOVAE" type="password" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Confirme a nova senha*</label><input class="camposMeusDados camposMeusDados1" id="SENHADENOVOE" type="password" readonly>
+                        </div>                        
+                        <div class="divCamposDadosConta divCamposDadosConta5">
+                            <label>CPF*</label><input class="camposMeusDados camposMeusDados5" id="CGCE" type="number" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta5">
+                            <label>Telefone</label><input class="camposMeusDados camposMeusDados5" id="FONEE" type="number" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta5">
+                            <label>Celular*</label><input class="camposMeusDados camposMeusDados5" id="CELULARE" type="number" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta5">
+                            <label>CEP*</label><input class="camposMeusDados camposMeusDados5" id="CEPE" type="number" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta6">
+                            <label>Cidade*</label><input class="camposMeusDados camposMeusDados6" id="NCIDADE1E" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta2">
+                            <label>UF*</label><input class="camposMeusDados camposMeusDados2" id ="NUF1E" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">                           
+                            <label>Endereço*</label><input class="camposMeusDados camposMeusDados1" id ="ENDERECOE" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta1">
+                            <label>Bairro*</label><input class="camposMeusDados camposMeusDados1" id ="BAIRROE" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta3">
+                            <label>Número*</label><input class="camposMeusDados camposMeusDados3" id ="NUMEROE" type="text" readonly>
+                        </div>
+                        <div class="divCamposDadosConta divCamposDadosConta4">
+                            <label>Complemento</label><input class="camposMeusDados camposMeusDados4" id ="COMPLEMENTOE" type="text" readonly>
+                        </div>
+                    </form>
+                    <div id="editarrMeusDados" class="btnMeusDados">Editar</div>  
+                    <div id="salvarMeusDados">Salvar</div>  
+                    <div id="cancelarMeusDados">Cancelar</div> 
+                </div>
+            </div>
         </article>
         <section style="display: none;">
             <div id="logoHeader"><img id="imgHeaderSec" src="img/peixeLogo.png"></div>
@@ -133,7 +167,7 @@
                 <div class="divIconCriarConta">
                     <span><i class="fas fa-user-plus" style="font-size:30px;padding-right: .5em;"></i>Olá! Para continuar, crie sua conta</span></div>
                 <div class="divCriarContaCentro">
-                    <form id="dadosConta">
+                    <form class="dadosConta">
                         <div class="divCamposCriarConta"><input class="camposCriarConta" id="NOME" type="text" placeholder="Nome Completo*" required></div>
                         <div class="divCamposCriarConta"><input class="camposCriarConta" id="EMAIL" type="email" placeholder="E-mail*" required></div>
                         <div class="divCamposCriarConta"><input class="camposCriarConta" id="SENHAPX" type="password" placeholder="Senha*" required></div>
@@ -146,7 +180,7 @@
                 <div class="divIconContinuarConta">
                     <span class="olaCliente"></span></div>
                 <div class="divContinuarContaCentro">
-                    <form id="dadosConta">
+                    <form class="dadosConta">
                         <div class="divCamposContinuarConta divCamposContinuarConta1">
                             <input class="camposContinuarConta camposContinuarConta1" id="CGC" type="number" placeholder="CPF*" required></div>
                         <div class="divCamposContinuarConta divCamposContinuarConta1">

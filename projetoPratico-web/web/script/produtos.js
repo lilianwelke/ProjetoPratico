@@ -5,18 +5,20 @@ function init() {
     document.querySelector("#conhecaPeixes").addEventListener("click", irPeixes);
     document.querySelector(".lupa").addEventListener("click", pesquisarProdutos);
     document.querySelector(".carrinho").addEventListener("click", irCarrinho);
+    document.querySelector(".pesquisa").addEventListener("blur", limparPesquisa);
 }
 
 function irInicio() {
     setInvisible();
     document.querySelector(".fundoInicio").style.display = "block";
     setVisible(".fundoInicio");
+}
 
-//    document.querySelector(".divMenu").style.display = "none";
-//    document.querySelector(".listaProdutos").style.display = "none";
-//    document.querySelector(".divSobre").style.display = "none";
-//    document.querySelector(".divCarrinho").style.display = "none";
-//    document.querySelector(".produtoMais").style.display = "none";
+function limparPesquisa(e) {
+    setTimeout(function () {
+        e.target.value = "";
+    }
+    , 10000);
 }
 
 function irPeixes(pesquisa) {
@@ -25,11 +27,6 @@ function irPeixes(pesquisa) {
     document.querySelector(".listaProdutos").style.display = "block";
     setVisible(".divMenu");
     setVisible(".listaProdutos");
-
-//    document.querySelector(".fundoInicio").style.display = "none";
-//    document.querySelector(".divSobre").style.display = "none";
-//    document.querySelector(".produtoMais").style.display = "none";
-//    document.querySelector(".divCarrinho").style.display = "none";
 
     requisicaoHTTP("projetoPratico", "produtos", "listarCategorias", listarCategorias, alert, "&CODIGOREF='PX'");
     if (pesquisa)
@@ -61,12 +58,6 @@ function irDetalhes(e) {
     document.querySelector(".produtoMais").style.display = "block";
     setVisible(".produtoMais");
 
-
-//    document.querySelector(".fundoInicio").style.display = "none";
-//    document.querySelector(".divSobre").style.display = "none";
-//    document.querySelector(".divMenu").style.display = "none";
-//    document.querySelector(".listaProdutos").style.display = "none";
-//    document.querySelector(".divCarrinho").style.display = "none";
     if (cproduto.trim() !== "") {
         requisicaoHTTP("projetoPratico", "produtos", "retornarProduto", listarProduto, alert, "&CPRODUTO=" + cproduto);
     }
@@ -76,12 +67,6 @@ function irCarrinho(e) {
     setInvisible();
     document.querySelector(".divCarrinho").style.display = "block";
     setVisible(".divCarrinho");
-
-//    document.querySelector(".fundoInicio").style.display = "none";
-//    document.querySelector(".divSobre").style.display = "none";
-//    document.querySelector(".divMenu").style.display = "none";
-//    document.querySelector(".listaProdutos").style.display = "none";
-//    document.querySelector(".produtoMais").style.display = "none";
 
     listarCarrinho();
 }

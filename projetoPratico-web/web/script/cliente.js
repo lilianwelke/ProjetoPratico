@@ -1,6 +1,25 @@
 function init() {
+    document.querySelector("body").addEventListener("load", verificarTempo);
     document.querySelector(".cadastrar").addEventListener("click", criarConta);
     document.querySelector(".logar").addEventListener("click", verificarLogin);
+    document.querySelector(".desLogar").addEventListener("click", deslogar);
+    document.querySelector(".minhaConta").addEventListener("click", irMinhaConta);
+
+    validarLogon();
+}
+
+function verificarTempo() {
+    if (localStorage.logon)
+    {
+        var cliente = JSON.parse(window.localStorage.getItem('logon'));
+        var dataLogin = new Date(cliente["cliente"][0]["data"]);
+        dataLogin.setDate(dataLogin.getDate() + 7);
+
+        if (dataLogin <= new Date())
+        {
+            deslogar();
+        }
+    }
 }
 
 function irInicio() {
@@ -8,6 +27,20 @@ function irInicio() {
     document.querySelector("#EMAIL").value = "";
     document.querySelector("#SENHAPX").value = "";
     document.querySelector("#confirmSenha").value = "";
+
+    document.querySelector("#CGC").value = "";
+    document.querySelector("#CEP").value = "";
+    document.querySelector("#ENDERECO").value = "";
+    document.querySelector("#NUMERO").value = "";
+    document.querySelector("#BAIRRO").value = "";
+    document.querySelector("#FONE").value = "";
+    document.querySelector("#CELULAR").value = "";
+    document.querySelector("#NCIDADE1").value = "";
+    document.querySelector("#NUF1").value = "";
+    document.querySelector("#COMPLEMENTO").value = "";
+
+    document.querySelector("#EMAILL").value = "";
+    document.querySelector("#SENHAL").value = "";
 
     document.querySelector(".olaCliente").innerText = "";
 
@@ -22,10 +55,7 @@ function irInicio() {
 
 
 function criarConta() {
-    setVisible("header");
-    setVisible("nav");
-    setVisible("article");
-    setVisible("footer");
+    setVisiblePrincipais();
     setInvisible();
     document.querySelector("section").style.display = "block";
     document.querySelector(".divCriarConta").style.display = "block";
@@ -107,6 +137,8 @@ function verificarCep() {
             if (http.status === 200) {
                 var dados = JSON.parse(http.response);
                 if (dados.erro) {
+                    document.querySelector("#NCIDADE1").value = "";
+                    document.querySelector("#NUF1").value = "";
                     alert("CEP inválido! O CEP informado não existe!");
                 } else {
                     document.querySelector("#NCIDADE1").value = dados.localidade;
@@ -115,20 +147,31 @@ function verificarCep() {
             }
         });
         http.send(null);
-    } else {
+    } else if (document.querySelector("#CEP").value.length > 0) {
+        document.querySelector("#NCIDADE1").value = "";
+        document.querySelector("#NUF1").value = "";
         alert("CEP inválido! Informe uma CEP de 8 números!");
     }
 }
 
 function finalizarConta(cliente) {
+    document.querySelector("#CGC").value = "";
+    document.querySelector("#CEP").value = "";
+    document.querySelector("#ENDERECO").value = "";
+    document.querySelector("#NUMERO").value = "";
+    document.querySelector("#BAIRRO").value = "";
+    document.querySelector("#FONE").value = "";
+    document.querySelector("#CELULAR").value = "";
+    document.querySelector("#NCIDADE1").value = "";
+    document.querySelector("#NUF1").value = "";
+    document.querySelector("#COMPLEMENTO").value = "";
     alert("Cadastro Concluído com Sucesso!");
 }
 
 function verificarLogin() {
-    setVisible("header");
-    setVisible("nav");
-    setVisible("article");
-    setVisible("footer");
+    document.querySelector(".logar").pagina = document.querySelectorAll(".setVisible");
+
+    setVisiblePrincipais();
     setInvisible();
     document.querySelector("section").style.display = "block";
     document.querySelector(".divLogin").style.display = "block";
@@ -154,9 +197,86 @@ function fazerLogin() {
 }
 
 function logar(cliente) {
-    carrinho = {'logon': []};
+    var logon = {'cliente': []};
+    logon.cliente.push({'codigo': cliente, 'data': new Date()});
+    window.localStorage.setItem('logon', JSON.stringify(logon));
+    validarLogon();
+    document.querySelector("#EMAILL").value = "";
+    document.querySelector("#SENHAL").value = "";
 
-    alert("ok");
+    var voltar = document.querySelector(".logar").pagina;
+
+    setInvisible();
+
+    document.querySelector("header").style.display = "block";
+    document.querySelector("nav").style.display = "block";
+    document.querySelector("article").style.display = "block";
+    document.querySelector("footer").style.display = "block";
+
+    for (var i = 0; i < voltar.length; i++)
+    {
+        setVisible("." + voltar[i].className);
+    }
+
+    document.querySelector(".logar").pagina = undefined;
+
+}
+
+function deslogar() {
+    localStorage.removeItem('logon');
+    validarLogon();
+}
+
+function setVisiblePrincipais() {
+    setVisible("header");
+    setVisible("nav");
+    setVisible("article");
+    setVisible("footer");
+}
+
+function irMinhaConta() {
+    setInvisible();
+    document.querySelector(".divMenuCliente").style.display = "block";
+    document.querySelector(".contemBemVindoCli").style.display = "block";
+    setVisible(".divMenuCliente");
+    setVisible(".contemBemVindoCli");
+
+    document.querySelector(".editMeusDados").addEventListener("click", verMeusDados);
+}
+
+function verMeusDados() {
+    setInvisible();
+    document.querySelector(".divMenuCliente").style.display = "block";
+    setVisible(".divMenuCliente");
+    document.querySelector(".contemMeusDados").style.display = "block";
+    setVisible(".contemMeusDados");
+
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    if (logon["cliente"][0]["codigo"])
+    {
+        requisicaoHTTP("projetoPratico", "cliente", "buscarDadosCli", setarClienteCampos, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
+    }
+}
+
+function setarClienteCampos(cliente) {
+    document.querySelector("#NOMEE").value = cliente["linhas"][0]["NOMEFILIAL"];
+    document.querySelector("#EMAILE").value = cliente["linhas"][0]["EMAIL"];
+    document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
+    document.querySelector("#FONEE").value = cliente["linhas"][0]["FONE"];
+    document.querySelector("#CELULARE").value = cliente["linhas"][0]["CELULAR"];
+    document.querySelector("#COMPLEMENTOE").value = cliente["linhas"][0]["COMPLEMENTO"];
+    document.querySelector("#BAIRROE").value = cliente["linhas"][0]["BAIRRO"];
+    document.querySelector("#NUMEROE").value = cliente["linhas"][0]["NUMERO"];
+    document.querySelector("#ENDERECOE").value = cliente["linhas"][0]["ENDERECO"];
+    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
+    document.querySelector("#NCIDADE1E").value = cliente["linhas"][0]["CIDADE"];
+    document.querySelector("#NUF1E").value = cliente["linhas"][0]["UF"];
+    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
+    document.querySelector("#CGCE").value = cliente["linhas"][0]["CGC"];
+
 }
 
 init();

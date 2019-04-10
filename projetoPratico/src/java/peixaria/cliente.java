@@ -123,4 +123,21 @@ public class cliente {
 
         return cliente.fieldByName("CCLIFOR").asInteger();
     }
+    
+    public String buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
+        //JSONObject clienteRetorno = new JSONObject();
+        
+        TSQLDataSetEmp clienteSql = TSQLDataSetEmp.create(vs);
+        clienteSql.commandText("SELECT CLIFOREND.NOMEFILIAL, CLIFOREND.EMAIL, LOGINPX.USUARIOPX, CLIFOREND.FONE, CLIFOREND.CELULAR, CLIFOREND.CGC, "
+                + " CLIFOREND.COMPLEMENTO, CLIFOREND.BAIRRO, CLIFOREND.NUMERO, CLIFOREND.ENDERECO, CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF"
+                + " FROM LOGINPX"
+                + " INNER JOIN CLIFOREND ON (CLIFOREND.CCLIFOR = LOGINPX.CCLIFOR)"
+                + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE)"
+                + " WHERE LOGINPX.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+        clienteSql.open();
+        
+        return clienteSql.jsonData();
+        
+        //return clienteRetorno;
+    }
 }

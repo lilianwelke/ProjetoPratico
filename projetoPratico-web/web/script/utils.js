@@ -44,7 +44,9 @@ function serializeForm(idForm, classCampos) {
 }
 
 function setVisible(classe) {
-    document.querySelector(classe).classList.add('setVisible');
+    var element = document.querySelector(classe);
+    element.classList.add('setVisible');
+    element.style.display = "block";
 }
 
 function setInvisible() {
@@ -53,5 +55,29 @@ function setInvisible() {
     {
         ar[k].classList.remove('setVisible');
         ar[k].style.display = "none";
+    }
+}
+
+function setLogado(classe) {
+    document.querySelector(classe).classList.add('setLogado');
+}
+
+function setUnLogado(classe) {
+    document.querySelector(classe).classList.add('setUnLogado');
+}
+
+function validarLogon() {
+    if (localStorage.logon)
+    {
+        (document.querySelector(".setLogado") !== null ? document.querySelector(".divUser").classList.remove('setLogado') : "");
+        (document.querySelector(".setUnLogado") !== null ? document.querySelector(".divLogado").classList.remove('setUnLogado') : "");
+        setUnLogado(".divUser");
+        setLogado(".divLogado");
+    } else
+    {
+        (document.querySelector(".setLogado") !== null ? document.querySelector(".divLogado").classList.remove('setLogado') : "");
+        (document.querySelector(".setUnLogado") !== null ? document.querySelector(".divUser").classList.remove('setUnLogado') : "");
+        setUnLogado(".divLogado");
+        setLogado(".divUser");
     }
 }

@@ -74,10 +74,11 @@ header {
 .lupa:hover {
     color: #6e808b;
 }
-.divUser{
+.divUser, .divLogado {
     position: absolute;
     top: .25em;
     right: 12%;
+    display: none;
 }
 .carrinho {
     position: absolute;
@@ -89,23 +90,16 @@ header {
 .carrinho:hover { 
     color: #6e808b;
 }
-.cadastrar {
+.cadastrar, .minhaConta, .logar, .desLogar {
     color: #0b3767;
     cursor: pointer;
 }
-.cadastrar:hover { 
+.cadastrar:hover, .minhaConta:hover, .logar:hover, .desLogar:hover { 
     color: #6e808b;
 }
 .separador {
     color: #0b3767;
     font-size: 1.7em;
-}
-.logar {
-    color: #0b3767;
-    cursor: pointer;
-}
-.logar:hover { 
-    color: #6e808b;
 }
 nav {
     position: absolute;
@@ -171,19 +165,19 @@ article {
     top: 10em;
     left: 1em;
 }
-.divMenu div {
+.divMenu div, .divMenuCliente div {
     border-bottom: .05em solid rgba(11, 55, 103, .7);
     position: relative;
     left: 1em;
     margin-top: 0;
 }
-.labelMenu {
+.labelMenu, .labelMenuCli {
     font-size: 1.5em;
     line-height: 1.7em;
     position: relative;
     left: 1em;
 }
-.divMenu li {
+.divMenu li, .divMenuCliente li {
     list-style-type:none;
     margin: .63em .9em .45em 3.15em;
     font-size: 1em;
@@ -191,7 +185,7 @@ article {
     left: -1.99em;
     cursor: pointer;
 }
-.divMenu li:hover {	
+.divMenu li:hover, .divMenuCliente li:hover {	
     color: #6e808b;
 }
 .listaProdutos {
@@ -396,7 +390,7 @@ section {
 }
 .camposLogin {
     border-style: none none solid none;
-    border-width: 0.09em;
+    border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
     background-color: rgba(239, 239, 239, 0.05);
     outline: none;
@@ -464,7 +458,7 @@ section {
 }
 .camposCriarConta {
     border-style: none none solid none;
-    border-width: 0.09em;
+    border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
     background-color: rgba(239, 239, 239, 0.05);
     outline: none;
@@ -511,7 +505,7 @@ section {
     width: 68.5%;
 }
 .camposContinuarConta {
-    border-width: 0.09em;
+    border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
     outline: none;
     line-height: 1.5em;
@@ -554,8 +548,127 @@ section {
     background-color: rgba(239, 239, 239, .05);    
     min-width: 37em;
 }
-.camposCriarConta:focus, .camposContinuarConta:focus {
+.camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus {
     border-color: rgba(11, 55, 103, .95);
+}
+
+/* AREA DO CLIENTE*/
+.divMenuCliente {
+    position: absolute;
+    width: 17%;
+    top: 10em;
+    left: 1em;
+}
+.contemBemVindoCli { 
+    display: inline-block;
+    width: 73%;
+    position: relative;
+    padding: 3em 0;
+    left: 27%;
+}
+.overlayCli { 
+    height: 15em;
+    position: relative;
+    margin: 3em 11.5%;
+    border: solid .01em rgb(203, 209, 215);
+}
+.bemVindoCli { 
+    width: 60%;
+    position: absolute;
+    top: 7em;
+    margin: 0 20%;
+}
+.bemVindoCli h1 { 
+    text-align: center;
+    font-size: 1.5em;
+    color: #0b3767;
+    font-weight: 200;
+    text-shadow: 0.25px 0.25px #6e808b;
+    margin: .25em;
+    line-height: 2em;
+}
+.contemMeusDados { 
+    width: 68%;
+    position: relative;
+    margin: 3em 0 0 26%;
+}
+.meusDados { 
+    width: 100%;
+    height: 550px;
+    position: relative;
+    margin: 1em 0 0 0;
+    background-color: rgba(203, 209, 215, .1);
+}
+.meusDados form { 
+    padding-top: 3%;
+}
+.divDadosConta h1 { 
+    position: relative;
+    left: 1em;
+    font-weight: 500;
+    margin: 0;
+}
+.divCamposDadosConta {    
+    margin: 0 5% 2%;
+    display: inline-block;
+}
+.divCamposDadosConta1 { 
+    width: 37%;
+}
+.divCamposDadosConta2 {
+    width: 4%;
+}
+.divCamposDadosConta3 {
+    width: 17%;
+}
+.divCamposDadosConta4 { 
+    width: 59%;
+}
+.divCamposDadosConta5 {
+    width: 22%;
+}
+.divCamposDadosConta6 { 
+    width: 41%;
+}
+.camposMeusDados { 
+    border-style: solid;
+    border-width: 0.07em;
+    border-color: rgba(11, 55, 103, .5);
+    background-color: rgba(239, 239, 239, 0.3);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1.1em;
+    color: #444;
+    padding: .2em;
+}
+.camposMeusDados1 { 
+    min-width: 21em;
+}
+.camposMeusDados2 { 
+    width: 2em;
+}
+.camposMeusDados3 { 
+    width: 9em;
+}
+.camposMeusDados4 { 
+    width: 31.25em;
+}
+.camposMeusDados5 {
+    width: 12em;
+}
+.camposMeusDados6 {
+    width: 22em;
+}
+.btnMeusDados { 
+    margin: 2em auto 0.5em;
+    width: 11%;
+    text-align: center;
+    padding: .5em 2.25em;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    left: 23.5em;
 }
 
 /* SOBRE */
@@ -579,7 +692,6 @@ section {
 .infosSobre {
     width: 60%;
     position: absolute;
-    /* display: inline-block; */
     top: 12em;
     margin: 0 20%;
 }
@@ -672,11 +784,11 @@ footer p {
 }
 
 /* UTILS */
-.setVisible { 
+.setVisible, .setLogado { 
     display: block;
 }
 
-.setInvisible { 
+.setInvisible, .setUnLogado { 
     display: none;
 }
 
