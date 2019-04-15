@@ -236,7 +236,8 @@ article {
     width: 36%;
     cursor: pointer;
 }
-.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover {
+.verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover,
+.btnMeusDados:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -292,13 +293,13 @@ article {
     position: relative;
     top: 3em;
     left: 10em;
-    width: 75%;
+    width: 76%;
 }
-.h1DivCarrinho {
+.h1DivCarrinho, .h1DivCompras {
     border-bottom: .05em solid rgba(11, 55, 103, .7);
     padding-bottom: .75em;
 }
-.h1DivCarrinho h1 {
+.h1DivCarrinho h1, .h1DivCompras h1 {
     position: relative;
     left: 1em;
     font-weight: 500;
@@ -317,13 +318,14 @@ article {
     width: 100%;
     display: inline-block;
 }
-.carrinhoTable table {
+.carrinhoTable table, .comprasTable table, .comprasItensTable table {
     border-collapse: collapse;
+    width: 100%;
 }
-.carrinhoTable tr {
+.carrinhoTable tr, .comprasTable tr, .comprasItensTable tr {
     line-height: 2;
 }
-.itemCarrinho {
+.itemCarrinho, .itemCompraCapa {
     border-bottom: .05em solid rgba(11, 55, 103, .7);
 }
 .carrinhoTable th {
@@ -354,12 +356,12 @@ article {
 .fotoCarrinho { 
     width: 100%;
 }
-.carrinhoVazio {
+.carrinhoVazio, .comprasVazio {
     width: 100%;
     height: 100px;
     background-color: rgba(203, 209, 215, .1);
 }
-.carrinhoVazioText {
+.carrinhoVazioText, .comprasVazioText {
     line-height: 1.5em;
     color: #6e808b;
     font-weight: 400;
@@ -587,11 +589,12 @@ section {
     margin: .25em;
     line-height: 2em;
 }
-.contemMeusDados { 
+.contemMeusDados, .contemMinhasCompras { 
     width: 68%;
     position: relative;
     margin: 3em 0 0 26%;
 }
+/* MEUS DADOS */
 .meusDados { 
     width: 100%;
     height: 550px;
@@ -669,6 +672,29 @@ section {
     display: inline-block;
     position: relative;
     left: 23.5em;
+}
+
+/* MINHAS COMPRAS */
+.contemMinhasCompras {
+    width: 68%;
+    position: relative;
+    margin: 3em 0 0 26%;
+}
+.comprasTable th, .comprasItensTable th {    
+    font-weight: 300;
+    text-align: center;
+    background-color: rgba(203, 209, 215, .3);
+}
+.itemCompraCapa td { 
+    text-align: center;
+}
+.contemMinhasComprasItens {
+    width: 52%;
+    position: relative;
+    margin: 3em 0 0 26%;
+}
+.verItens { 
+    padding-right: 15%;
 }
 
 /* SOBRE */

@@ -74,8 +74,8 @@
             </div>      
             <div class="divMenuCliente" style="display: none;"><div><label class="labelMenuCli">Minha conta</label></div>
                 <ul>
-                    <li class="editMeusDados">Meus dados</li>
-                    <li>Minhas compras</li>
+                    <li class="verMeusDados">Meus dados</li>
+                    <li class="verMinhasCompras">Minhas compras</li>
                 </ul></div>                
             <div class="contemBemVindoCli" style="display: none;">
                 <div class="overlayCli"></div>
@@ -139,9 +139,55 @@
                             <label>Complemento</label><input class="camposMeusDados camposMeusDados4" id ="COMPLEMENTOE" type="text" readonly>
                         </div>
                     </form>
-                    <div id="editarrMeusDados" class="btnMeusDados">Editar</div>  
-                    <div id="salvarMeusDados">Salvar</div>  
-                    <div id="cancelarMeusDados">Cancelar</div> 
+                    <div id="editarMeusDados" class="btnMeusDados">Editar</div>  
+                    <div id="salvarMeusDados" class="btnMeusDados">Salvar</div>  
+                    <div id="cancelarMeusDados" class="btnMeusDados">Cancelar</div> 
+                </div>
+            </div>
+            <div class="contemMinhasCompras" style="display: none;">
+                <div class="h1DivCompras"><h1>Minhas Compras</h1></div>
+                <div class="comprasTable">	
+<!--                    <table>
+                        <tr>
+                            <th>Nº Pedido</th>                            
+                            <th>Data Pedido</th>
+                            <th>Quantidade</th>
+                            <th>Valor Total</th>
+                            <th>Data Entrega</th>
+                            <th>Status</th>
+                            <th>Itens</th>
+                        </tr>
+                        <tr class="itemCompraCapa">
+                            <td>4573</td>
+                            <td>01/04/2019</td>
+                            <td>1</td>
+                            <td>R$ 50,00</td>
+                            <td>01/04/2019</td>
+                            <td>Entregue</td>
+                            <td><span class="verItens"><i class="fas fa-plus"></i></span></td>
+                        </tr>
+                    </table>-->
+                </div>
+            </div>
+            <div class="contemMinhasComprasItens" style="display: none;">
+                <div class="h1DivCompras"><h1>Pedido Nº 4352</h1></div>
+                <div class="comprasItensTable">	
+                    <table>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Unidade</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                        </tr>
+                        <tr class="itemCompraCapa">
+                            <td>7669</td>
+                            <td>KG</td>
+                            <td>2</td>
+                            <td>R$ 50,00</td>
+                            <td>R$ 100,00</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </article>

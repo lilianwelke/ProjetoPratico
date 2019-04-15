@@ -6,6 +6,7 @@ function init() {
     document.querySelector(".minhaConta").addEventListener("click", irMinhaConta);
 
     validarLogon();
+    verificarTempo();
 }
 
 function verificarTempo() {
@@ -130,8 +131,10 @@ function continuarCadastro() {
 
 function verificarCep() {
     var http = new XMLHttpRequest();
-    if (document.querySelector("#CEP").value.length === 8) {
-        http.open('GET', 'https://viacep.com.br/ws/' + document.querySelector("#CEP").value + '/json/', true);
+    var cep = document.querySelector("#CEP").value.trim();
+
+    if (cep.length === 8) {
+        http.open('GET', 'https://viacep.com.br/ws/' + cep + '/json/', true);
         http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         http.addEventListener('load', function () {
             if (http.status === 200) {
@@ -147,10 +150,13 @@ function verificarCep() {
             }
         });
         http.send(null);
-    } else if (document.querySelector("#CEP").value.length > 0) {
+    } else if (cep.length > 0) {
         document.querySelector("#NCIDADE1").value = "";
         document.querySelector("#NUF1").value = "";
         alert("CEP inválido! Informe uma CEP de 8 números!");
+    } else {
+        document.querySelector("#NCIDADE1").value = "";
+        document.querySelector("#NUF1").value = "";
     }
 }
 
@@ -166,6 +172,13 @@ function finalizarConta(cliente) {
     document.querySelector("#NUF1").value = "";
     document.querySelector("#COMPLEMENTO").value = "";
     alert("Cadastro Concluído com Sucesso!");
+
+    var logon = {'cliente': []};
+    logon.cliente.push({'codigo': document.querySelector("#salvarDadosConta").dados["CCLIFOR"], 'data': new Date()});
+    window.localStorage.setItem('logon', JSON.stringify(logon));
+
+    validarLogon();
+
 }
 
 function verificarLogin() {
@@ -241,7 +254,8 @@ function irMinhaConta() {
     setVisible(".divMenuCliente");
     setVisible(".contemBemVindoCli");
 
-    document.querySelector(".editMeusDados").addEventListener("click", verMeusDados);
+    document.querySelector(".verMeusDados").addEventListener("click", verMeusDados);
+    document.querySelector(".verMinhasCompras").addEventListener("click", chamarMinhasCompras);
 }
 
 function verMeusDados() {
@@ -255,6 +269,14 @@ function verMeusDados() {
     logon = window.localStorage.getItem("logon");
     logon = JSON.parse(logon);
 
+    document.querySelector("#editarMeusDados").addEventListener("click", editarMeusDados);
+    document.querySelector("#cancelarMeusDados").addEventListener("click", cancelarMeusDados);
+    document.querySelector("#salvarMeusDados").addEventListener("click", salvarMeusDados);
+
+    document.querySelector("#SENHAPXE").addEventListener("blur", validarSenhaAntiga);
+
+    document.querySelector("#CEPE").addEventListener("blur", verificarCepe);
+
     if (logon["cliente"][0]["codigo"])
     {
         requisicaoHTTP("projetoPratico", "cliente", "buscarDadosCli", setarClienteCampos, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
@@ -262,6 +284,7 @@ function verMeusDados() {
 }
 
 function setarClienteCampos(cliente) {
+    document.querySelector("#cancelarMeusDados").cliente = cliente;
     document.querySelector("#NOMEE").value = cliente["linhas"][0]["NOMEFILIAL"];
     document.querySelector("#EMAILE").value = cliente["linhas"][0]["EMAIL"];
     document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
@@ -276,7 +299,240 @@ function setarClienteCampos(cliente) {
     document.querySelector("#NUF1E").value = cliente["linhas"][0]["UF"];
     document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
     document.querySelector("#CGCE").value = cliente["linhas"][0]["CGC"];
+    document.querySelector("#SENHAPXE").value = '';
+    document.querySelector("#SENHANOVAE").value = '';
+    document.querySelector("#SENHADENOVOE").value = '';
+}
 
+function editarMeusDados() {
+    document.querySelector("#editarMeusDados").editando = true;
+    var campos = document.querySelectorAll(".camposMeusDados");
+    for (var i = 0; i < campos.length; i++)
+    {
+        campos[i].removeAttribute("readonly");
+        campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.05)";
+    }
+}
+
+function cancelarMeusDados() {
+    setarCamposCinza();
+    setarClienteCampos(document.querySelector("#cancelarMeusDados").cliente);
+    document.querySelector("#editarMeusDados").editando = false;
+}
+
+function validarSenhaAntiga() {
+    var senhaAntiga = document.querySelector("#SENHAPXE").value.trim();
+
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    if (senhaAntiga.length > 0) {
+        requisicaoHTTP("projetoPratico", "cliente", "validarSenhaAntiga", alert, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+                + "&SENHAPX=" + senhaAntiga);
+    }
+}
+
+function salvarMeusDados() {
+    if (document.querySelector("#editarMeusDados").editando)
+    {
+        var senhaAntiga = document.querySelector("#SENHAPXE").value.trim();
+        var senhaNova = document.querySelector("#SENHANOVAE").value.trim();
+        var senhaConfirm = document.querySelector("#SENHADENOVOE").value.trim();
+
+        if (senhaAntiga.length > 0 || senhaNova.length > 0 || senhaConfirm.length > 0)
+        {
+            if (!(senhaAntiga.length > 0 && senhaNova.length > 0 && senhaConfirm.length > 0))
+            {
+                alert("Informe todos os campos referentes a senha!");
+                return;
+            } else {
+                if (senhaNova !== senhaConfirm) {
+                    alert("As senhas novas não coicidem!");
+                    return;
+                }
+            }
+        }
+
+        var logon = {};
+        logon = window.localStorage.getItem("logon");
+        logon = JSON.parse(logon);
+
+        requisicaoHTTP("projetoPratico", "cliente", "salvarEditCli", setarCamposCinza, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+                + "&NOME=" + document.querySelector("#NOMEE").value + "&EMAIL=" + document.querySelector("#EMAILE").value
+                + "&USUARIOPX=" + document.querySelector("#USUARIOPXE").value + "&SENHANOVA=" + senhaNova + "&CPF=" + document.querySelector("#CGCE").value
+                + "&CEP=" + document.querySelector("#CEPE").value + "&ENDERECO=" + document.querySelector("#ENDERECOE").value
+                + "&NUMERO=" + document.querySelector("#NUMEROE").value + "&BAIRRO=" + document.querySelector("#BAIRROE").value
+                + "&FONE=" + document.querySelector("#FONEE").value + "&CELULAR=" + document.querySelector("#CELULARE").value
+                + "&NCIDADE1=" + document.querySelector("#NCIDADE1E").value + "&NUF1=" + document.querySelector("#NUF1E").value
+                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOE").value + "&SENHAPX=" + senhaAntiga);
+
+    }
+}
+
+function setarCamposCinza(msg) {
+    var campos = document.querySelectorAll(".camposMeusDados");
+    for (var i = 0; i < campos.length; i++)
+    {
+        campos[i].setAttribute("readonly", true);
+        campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.3)";
+    }
+
+    if (msg) {
+        alert(msg);
+    }
+}
+
+function verificarCepe() {
+    var http = new XMLHttpRequest();
+    var cep = document.querySelector("#CEPE").value.trim();
+
+    if (cep.length === 8) {
+        http.open('GET', 'https://viacep.com.br/ws/' + cep + '/json/', true);
+        http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        http.addEventListener('load', function () {
+            if (http.status === 200) {
+                var dados = JSON.parse(http.response);
+                if (dados.erro) {
+                    document.querySelector("#NCIDADE1E").value = "";
+                    document.querySelector("#NUF1E").value = "";
+                    alert("CEP inválido! O CEP informado não existe!");
+                } else {
+                    document.querySelector("#NCIDADE1E").value = dados.localidade;
+                    document.querySelector("#NUF1E").value = dados.uf;
+                }
+            }
+        });
+        http.send(null);
+    } else if (cep.length > 0) {
+        document.querySelector("#NCIDADE1E").value = "";
+        document.querySelector("#NUF1E").value = "";
+        alert("CEP inválido! Informe uma CEP de 8 números!");
+    } else {
+        document.querySelector("#NCIDADE1E").value = "";
+        document.querySelector("#NUF1E").value = "";
+    }
+}
+
+function chamarMinhasCompras() {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    requisicaoHTTP("projetoPratico", "cliente", "listarMinhasCompras", verMinhasCompras, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
+}
+
+function verMinhasCompras(compras) {
+    setInvisible();
+    document.querySelector(".divMenuCliente").style.display = "block";
+    setVisible(".divMenuCliente");
+    document.querySelector(".contemMinhasCompras").style.display = "block";
+    setVisible(".contemMinhasCompras");
+
+    var divComprasTable = document.querySelector(".comprasTable");
+    divComprasTable.innerHTML = "";
+    var tr, td, th, status, spn, iaws, dv, hUm, tbody, thead, table;
+
+    if (compras !== null && compras["linhas"].length !== 0) {
+        table = document.createElement('table');
+        divComprasTable.appendChild(table);
+
+        thead = document.createElement('thead');
+        table.appendChild(thead);
+
+        tr = document.createElement('tr');
+        thead.appendChild(tr);
+
+        th = document.createElement('th');
+        th.innerText = "Nº Pedido";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Data Pedido";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Quantidade";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Valor Total";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Data Entrega";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Status";
+        tr.appendChild(th);
+
+        th = document.createElement('th');
+        th.innerText = "Itens";
+        tr.appendChild(th);
+
+        tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+
+        for (var i = 0; i < compras["linhas"].length; i++)
+        {
+            tr = document.createElement('tr');
+            tr.setAttribute('class', 'itemCompraCapa');
+            tbody.appendChild(tr);
+
+            td = document.createElement('td');
+            td.innerText = compras["linhas"][i]['PEDIDO'];
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerText = compras["linhas"][i]['DATA'];
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerText = parseFloat(compras["linhas"][i]['QTDE']).toFixed(3).replace(".", ",");
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerText = "R$ " + parseFloat(compras["linhas"][i]['TOTAL']).toFixed(2).replace(".", ",");
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.innerText = compras["linhas"][i]['PREVDT'];
+            tr.appendChild(td);
+
+            if (compras["linhas"][i]['PREVDT'] > new Date().toLocaleDateString())
+            {
+                status = "Entregue";
+            } else if (compras["linhas"][i]['PREVDT'] === new Date().toLocaleDateString()) {
+                status = "Enviado";
+            } else {
+                status = "Pendente";
+            }
+
+            td = document.createElement('td');
+            td.innerText = status;
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            tr.appendChild(td);
+            spn = document.createElement('span');
+            td.appendChild(spn);
+            spn.setAttribute('class', 'verItensCompra');
+
+            iaws = document.createElement('i');
+            spn.appendChild(iaws);
+            iaws.setAttribute('class', 'fas fa-plus');
+        }
+    } else {
+        dv = document.createElement('div');
+        dv.setAttribute('class', 'comprasVazio');
+        divComprasTable.appendChild(dv);
+
+        hUm = document.createElement('h1');
+        hUm.innerText = 'Você ainda não pescou nada!';
+        hUm.setAttribute('class', 'comprasVazioText');
+        dv.appendChild(hUm);
+    }
 }
 
 init();

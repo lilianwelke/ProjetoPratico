@@ -40,6 +40,7 @@ public class venda {
         pedido.fieldByName("CTRANSP").asInteger(17);
         pedido.fieldByName("FILIALTRANSP").asInteger(1);
         pedido.fieldByName("PREVDT").asDate(new Date());
+        pedido.fieldByName("DATA").asDate(new Date());
         pedido.fieldByName("CVENDEDOR").asInteger(17);
         pedido.fieldByName("CFILIAL").asInteger(1);
         pedido.post();
@@ -56,6 +57,7 @@ public class venda {
             pedidoItem.fieldByName("UNITARIOCLI").asDouble(itens.getJSONObject(i).getDouble("PRECO"));
             pedidoItem.fieldByName("QTDE").asDouble(itens.getJSONObject(i).getDouble("QTDE"));
             pedidoItem.fieldByName("QTDECLIENTE").asDouble(itens.getJSONObject(i).getDouble("QTDE"));
+            pedidoItem.fieldByName("TOTAL").asDouble(itens.getJSONObject(i).getDouble("PRECO") * itens.getJSONObject(i).getDouble("QTDE"));
             pedidoItem.post();
             valor += Funcoes.multiplDouble(pedidoItem.fieldByName("UNITARIOCLI").asDouble(), pedidoItem.fieldByName("QTDE").asDouble(), 3, "");
         }

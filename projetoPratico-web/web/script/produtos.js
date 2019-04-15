@@ -467,6 +467,10 @@ function atualizarQtde(e) {
 }
 
 function finalizarCompra() {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
     var itens = [];
     itens = window.localStorage.getItem('carrinho');
     itens = JSON.parse(itens);
@@ -478,13 +482,15 @@ function finalizarCompra() {
             PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
             QTDE: itens['produtos'][i]['qtde']});
     }
-    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=1557&ITENS="
+    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"] + "&ITENS="
             + encodeURIComponent(JSON.stringify(todosItens)));
 
 }
 
 function compraConcluida() {
     alert("Compra realizada com sucesso!");
+    localStorage.removeItem("carrinho");
+    listarCarrinho();
 }
 
 init();
