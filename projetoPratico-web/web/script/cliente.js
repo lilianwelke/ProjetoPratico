@@ -179,6 +179,13 @@ function finalizarConta(cliente) {
 
     validarLogon();
 
+    setInvisible();
+    document.querySelector("header").style.display = "block";
+    document.querySelector("nav").style.display = "block";
+    document.querySelector("article").style.display = "block";
+    document.querySelector("footer").style.display = "block";
+    irMinhaConta();
+
 }
 
 function verificarLogin() {
@@ -500,7 +507,7 @@ function verMinhasCompras(compras) {
             td.innerText = compras["linhas"][i]['PREVDT'];
             tr.appendChild(td);
 
-            if (compras["linhas"][i]['PREVDT'] > new Date().toLocaleDateString())
+            if (compras["linhas"][i]['PREVDT'] < new Date().toLocaleDateString())
             {
                 status = "Entregue";
             } else if (compras["linhas"][i]['PREVDT'] === new Date().toLocaleDateString()) {

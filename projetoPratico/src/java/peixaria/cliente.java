@@ -80,7 +80,7 @@ public class cliente {
         cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
         cidade.open();
 
-        cliForEnd.insert();
+        cliForEnd.insert();        
         cliForEnd.fieldByName("CCLIFOR").asInteger(Funcoes.strToInt(vs.getParameter("CCLIFOR")));
         cliForEnd.fieldByName("CGC").asString(vs.getParameter("CPF"));
         cliForEnd.fieldByName("NOMEFILIAL").asString(vs.getParameter("NOME"));
@@ -88,14 +88,14 @@ public class cliente {
         cliForEnd.fieldByName("CEP").asString(vs.getParameter("CEP"));
         cliForEnd.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
         cliForEnd.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
-        cliForEnd.fieldByName("CCIDADE1").asInteger(cidade.fieldByName("CCIDADE").asInteger());
+        cliForEnd.fieldByName("CCIDADE1").asInteger(cidade.fieldByName("CCIDADE").asInteger());        
         cliForEnd.fieldByName("CELULAR").asString(vs.getParameter("CELULAR"));
         cliForEnd.fieldByName("FONE").asString(vs.getParameter("FONE"));
         cliForEnd.fieldByName("ATIVO").asString("S");
         cliForEnd.fieldByName("NUMERO").asString(vs.getParameter("NUMERO"));
         cliForEnd.fieldByName("BAIRRO").asString(vs.getParameter("BAIRRO"));
         cliForEnd.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
-        cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
+        cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));        
         cliForEnd.post();
 
         return "OK";

@@ -31,7 +31,8 @@ public class produtos {
         produto.close();
         produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
                 + " FROM PRODUTO "
-                + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO"));
+                + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
+                + " AND PRODUTO.ATIVO = 'S'");
         produto.open();
 
         produto.first();

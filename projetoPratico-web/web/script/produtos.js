@@ -239,8 +239,8 @@ function listarCarrinho() {
     document.querySelector('.divCarrinho').innerHTML = '';
 
     var divCarrinho = document.querySelector('.divCarrinho');
-    var total = 0.0;
-    var dv, table, thead, tbody, tr, th, td, dvImg, img, inpt, spn, iaws, cspn, hUmDiv, hUm, i, dvFinalizar, arr;
+    var subtotal = 0.0;
+    var dv, table, thead, tbody, tr, th, td, dvImg, img, inpt, spn, iaws, cspn, hUmDiv, hUm, i, dvFinalizar, arr, input, dvCalcular;
 
     hUmDiv = document.createElement('div');
     hUmDiv.setAttribute('class', 'h1DivCarrinho');
@@ -356,7 +356,7 @@ function listarCarrinho() {
             cspn.id = 'cproduto';
             cspn.innerText = itensCarrinho['produtos'][i]['cproduto'];
 
-            total = parseFloat(total)
+            subtotal = parseFloat(subtotal)
                     + (parseFloat(itensCarrinho['produtos'][i]['preco'].substring(3)) * parseFloat(itensCarrinho['produtos'][i]['qtde']));
         }
 
@@ -366,13 +366,74 @@ function listarCarrinho() {
 
         td = document.createElement('td');
         tr.appendChild(td);
-        td.setAttribute('colspan', '4');
+        td.innerText = 'Calcular Frete:';
+        td.setAttribute('colspan', '3');
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.innerText = 'Subtotal';
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.setAttribute('colspan', '2');
+        td.setAttribute('class', 'subtotalCarrinho');
+        td.innerText = 'R$ ' + subtotal.toFixed(2).replace(".", ",");
+
+        tr = document.createElement('tr');
+        tr.setAttribute('class', 'totalizadorCarrinho');
+        tbody.appendChild(tr);
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.innerText = 'Informe o CEP';
+
+        td = document.createElement('td');
+        input = document.createElement('input');
+        input.setAttribute('type', 'number');
+        input.setAttribute('id', 'CEPC');
+        input.setAttribute('class', 'campoCep');
+        td.appendChild(input);
+
+        dvCalcular = document.createElement('div');
+        dvCalcular.setAttribute('id', 'calcularFreteCarrinho');
+        dvCalcular.innerText = 'Calcular';
+        td.setAttribute('colspan', '2');
+        td.appendChild(dvCalcular);
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.setAttribute('class', 'subtotalLinha');
+        td.innerText = 'Frete';
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.setAttribute('colspan', '2');
+        td.setAttribute('class', 'subtotalLinha');
+        td.setAttribute('id', 'freteCarrinho');
+        td.innerText = '-';
+
+        tr = document.createElement('tr');
+        tr.setAttribute('class', 'totalizadorCarrinho');
+        tbody.appendChild(tr);
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        td.setAttribute('class', 'cidadeUf');
+        td.setAttribute('colspan', '2');
+        tr.appendChild(td);
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.innerText = 'Total';
 
         td = document.createElement('td');
         tr.appendChild(td);
         td.setAttribute('colspan', '2');
         td.setAttribute('class', 'totalCarrinho');
-        td.innerText = 'R$ ' + total.toFixed(2).replace(".", ",");
+        td.innerText = 'R$ ' + subtotal.toFixed(2).replace(".", ",");
 
         dvFinalizar = document.createElement('div');
         dvFinalizar.setAttribute('id', 'finalizarCompra');
@@ -397,6 +458,7 @@ function listarCarrinho() {
     }
 
     document.querySelector('.atualizaCarrinho').addEventListener('click', listarCarrinho);
+    document.querySelector('#calcularFreteCarrinho').addEventListener('click', calcularFreteCarrinho);
 
     var arrr = document.querySelectorAll(".qtdeCompra");
     for (var k = 0; k < arrr.length; k++)
@@ -464,6 +526,63 @@ function atualizarQtde(e) {
     }
     window.localStorage.setItem('carrinho', JSON.stringify(itensCarrinho));
     irCarrinho();
+}
+
+function calcularFreteCarrinho() {
+    var http = new XMLHttpRequest();
+    var cep = document.querySelector("#CEPC").value.trim();
+
+    if (cep.length === 8) {
+        http.open('GET', 'https://viacep.com.br/ws/' + cep + '/json/', true);
+        http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        http.addEventListener('load', function () {
+            if (http.status === 200) {
+                var dados = JSON.parse(http.response);
+                if (dados.erro) {
+                    document.querySelector(".cidadeUf").innerText = "";
+                    document.querySelector("#freteCarrinho").innerText = "-";
+                    alert("CEP inválido! O CEP informado não existe!");
+                } else {
+                    verificarCidadeFrete(dados.localidade, dados.uf);
+                }
+            }
+        });
+        http.send(null);
+    } else if (cep.length > 0) {
+        document.querySelector(".cidadeUf").innerText = "";
+        document.querySelector("#freteCarrinho").innerText = "-";
+        alert("CEP inválido! Informe uma CEP de 8 números!");
+    } else {
+        document.querySelector(".cidadeUf").innerText = "";
+        document.querySelector("#freteCarrinho").innerText = "-";
+    }
+}
+
+function verificarCidadeFrete(cidade, uf) {
+    document.querySelector('#calcularFreteCarrinho').cidadeUf = cidade + " - " + uf;
+    requisicaoHTTP("projetoPratico", "venda", "verificaCidadeFrete", setarCidadeFrete, alert, "&CIDADE=" + cidade);
+}
+
+function setarCidadeFrete(cidadeFrete) {
+    if (cidadeFrete !== null) {
+        if (cidadeFrete["S"])
+        {
+            document.querySelector(".cidadeUf").innerText = document.querySelector('#calcularFreteCarrinho').cidadeUf;
+            document.querySelector('#calcularFreteCarrinho').cidadeUf = undefined;
+            if (cidadeFrete["S"] == 17)
+            {
+                document.querySelector("#freteCarrinho").innerText = "Grátis";
+            } else {
+                document.querySelector("#freteCarrinho").innerText = "R$ 30,00";
+                document.querySelector(".totalCarrinho").innerText = "R$ " + (parseFloat(30.00) +
+                        parseFloat(document.querySelector(".totalCarrinho").innerText.replace(',', '.').substring(3))).toFixed(2).replace('.', ',');
+            }
+
+        } else {
+            document.querySelector(".cidadeUf").innerText = cidadeFrete["N"];
+        }
+
+    }
 }
 
 function finalizarCompra() {

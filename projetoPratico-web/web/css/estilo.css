@@ -237,7 +237,7 @@ article {
     cursor: pointer;
 }
 .verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover,
-.btnMeusDados:hover {
+.btnMeusDados:hover, #calcularFreteCarrinho:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -368,6 +368,29 @@ article {
     margin: 0;
     text-align: center;
     padding: 3%;
+}
+.campoCep { 
+    border-style: solid;
+    border-width: 0.07em;
+    border-color: rgba(11, 55, 103, .5);
+    background-color: rgba(239, 239, 239, 0.3);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1em;
+    color: #444;
+    padding: .2em;
+    width: 7em;
+}
+.subtotalLinha { 
+    border-bottom: .05em solid rgba(11, 55, 103, .7);
+}
+#calcularFreteCarrinho {
+    text-align: center;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+    width: 20%;
+    display: inline-block;
+    margin-left: 10%;
 }
 
 /* LOGIN */
@@ -550,7 +573,7 @@ section {
     background-color: rgba(239, 239, 239, .05);    
     min-width: 37em;
 }
-.camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus {
+.camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus, .campoCep:focus {
     border-color: rgba(11, 55, 103, .95);
 }
 
