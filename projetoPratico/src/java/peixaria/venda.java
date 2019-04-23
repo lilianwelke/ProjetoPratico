@@ -49,6 +49,7 @@ public class venda {
         pedido.fieldByName("DATA").asDate(new Date());
         pedido.fieldByName("CVENDEDOR").asInteger(17);
         pedido.fieldByName("CFILIAL").asInteger(1);
+
         pedido.post();
 
         for (int i = 0; i < itens.length(); i++) {
@@ -122,26 +123,40 @@ public class venda {
         return "OK";
     }
 
-    public String inserirNfs(VariavelSessao vs) throws ExcecaoTecnicon {
-        TClientDataSet pedido = TClientDataSet.create(vs, "PEDIDO");
-        pedido.createDataSet();
+    public String inserirNfs(VariavelSessao vs, TClientDataSet ds1) throws ExcecaoTecnicon {
+        String[] a = ds1.fieldByName("DUPLICATA").asString().split("P"); 
+        if (true) {
+                throw new ExcecaoMsg(vs, ds1.fieldByName("DUPLICATA").asString()
+                        + " -- " + a[1]);
+            }
+        
+        if (ds1.fieldByName("DUPLICATA").asString().contains("P")) {
+
+            TClientDataSet nfs = TClientDataSet.create(vs, "NFSAIDA");
+            nfs.createDataSet();
+
+            String pedido = ds1.fieldByName("DUPLICATA").asString();
+
+            
+        }
+
         return "OK";
     }
 
     public JSONObject verificaCidadeFrete(VariavelSessao vs) throws ExcecaoTecnicon {
         JSONObject retorno = new JSONObject();
-        
+
         TSQLDataSetEmp cidadeFrete = TSQLDataSetEmp.create(vs);
-        cidadeFrete.commandText("SELECT CIDADESFRETEPX.CCIDADE "
+        cidadeFrete.commandText("SELECT CIDADESFRETEPX.CCIDADE, CIDADESFRETEPX.VALOR "
                 + " FROM CIDADESFRETEPX "
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CIDADESFRETEPX.CCIDADE) "
                 + " WHERE CIDADE.CIDADE = '" + vs.getParameter("CIDADE").toUpperCase() + "'");
         cidadeFrete.open();
-        
+
         if (cidadeFrete.isEmpty()) {
             return retorno.put("N", "Nenhuma forma de envio disponível para esta cidade.");
         } else {
-            return retorno.put("S", cidadeFrete.fieldByName("CCIDADE").asString());
+            return retorno.put("S", cidadeFrete.fieldByName("VALOR").asString());
         }
     }
 }

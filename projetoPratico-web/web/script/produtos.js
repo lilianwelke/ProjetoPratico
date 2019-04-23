@@ -541,6 +541,7 @@ function calcularFreteCarrinho() {
                 if (dados.erro) {
                     document.querySelector(".cidadeUf").innerText = "";
                     document.querySelector("#freteCarrinho").innerText = "-";
+                    document.querySelector(".totalCarrinho").innerText = document.querySelector(".subtotalCarrinho").innerText;
                     alert("CEP inválido! O CEP informado não existe!");
                 } else {
                     verificarCidadeFrete(dados.localidade, dados.uf);
@@ -551,16 +552,18 @@ function calcularFreteCarrinho() {
     } else if (cep.length > 0) {
         document.querySelector(".cidadeUf").innerText = "";
         document.querySelector("#freteCarrinho").innerText = "-";
+        document.querySelector(".totalCarrinho").innerText = document.querySelector(".subtotalCarrinho").innerText;
         alert("CEP inválido! Informe uma CEP de 8 números!");
     } else {
         document.querySelector(".cidadeUf").innerText = "";
         document.querySelector("#freteCarrinho").innerText = "-";
+        document.querySelector(".totalCarrinho").innerText = document.querySelector(".subtotalCarrinho").innerText;
     }
 }
 
 function verificarCidadeFrete(cidade, uf) {
     document.querySelector('#calcularFreteCarrinho').cidadeUf = cidade + " - " + uf;
-    requisicaoHTTP("projetoPratico", "venda", "verificaCidadeFrete", setarCidadeFrete, alert, "&CIDADE=" + cidade);
+    requisicaoHTTP("projetoPratico", "venda", "verificaCidadeFrete", setarCidadeFrete, alert, "&CIDADE=" + removeAcento(cidade));
 }
 
 function setarCidadeFrete(cidadeFrete) {
@@ -569,19 +572,20 @@ function setarCidadeFrete(cidadeFrete) {
         {
             document.querySelector(".cidadeUf").innerText = document.querySelector('#calcularFreteCarrinho').cidadeUf;
             document.querySelector('#calcularFreteCarrinho').cidadeUf = undefined;
-            if (cidadeFrete["S"] == 17)
+            if (cidadeFrete["S"] === "0.00")
             {
                 document.querySelector("#freteCarrinho").innerText = "Grátis";
+                document.querySelector(".totalCarrinho").innerText = document.querySelector(".subtotalCarrinho").innerText;
             } else {
-                document.querySelector("#freteCarrinho").innerText = "R$ 30,00";
-                document.querySelector(".totalCarrinho").innerText = "R$ " + (parseFloat(30.00) +
-                        parseFloat(document.querySelector(".totalCarrinho").innerText.replace(',', '.').substring(3))).toFixed(2).replace('.', ',');
+                document.querySelector("#freteCarrinho").innerText = "R$ " + parseFloat(cidadeFrete["S"]).toFixed(2).replace('.', ',');
+                document.querySelector(".totalCarrinho").innerText = "R$ " + (parseFloat(cidadeFrete["S"]) +
+                        parseFloat(document.querySelector(".subtotalCarrinho").innerText.replace(',', '.').substring(3))).toFixed(2).replace('.', ',');
             }
-
         } else {
             document.querySelector(".cidadeUf").innerText = cidadeFrete["N"];
+            document.querySelector("#freteCarrinho").innerText = "-";
+            document.querySelector(".totalCarrinho").innerText = document.querySelector(".subtotalCarrinho").innerText;
         }
-
     }
 }
 
@@ -595,14 +599,16 @@ function finalizarCompra() {
     itens = JSON.parse(itens);
 
     var todosItens = [];
+    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
 
     for (var i = 0; i < itens['produtos'].length; i++) {
         todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
             PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
             QTDE: itens['produtos'][i]['qtde']});
     }
-    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"] + "&ITENS="
-            + encodeURIComponent(JSON.stringify(todosItens)));
+    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+            + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
+            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : null));
 
 }
 
