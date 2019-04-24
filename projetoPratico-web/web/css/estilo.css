@@ -137,18 +137,18 @@ article {
 }
 .overlay {
     width: 70%;
-    height: 300px;
+    height: 275px;
     position: absolute;
     opacity: .5;
     background-color: #fff;
     margin: 0 15%;
-    top: 8em;
+    top: 9em;
 }
 .planosInicio {
     width: 60%;
     margin: 1.25em 20%;
     position: absolute;
-    top: 8em;
+    top: 9em;
 }
 .planosInicio h1 {
     text-align: center;
@@ -733,7 +733,7 @@ section {
 }
 .overlaySobre {
     width: 77%;
-    height: 23em;
+    height: 21em;
     position: relative;
     margin: 3em 11.5%;
     border: solid .01em rgb(203, 209, 215);
