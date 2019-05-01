@@ -1,5 +1,6 @@
 package peixaria;
 
+import br.com.tecnicon.server.context.TecniconLookup;
 import br.com.tecnicon.server.dataset.TClientDataSet;
 import br.com.tecnicon.server.dataset.TSQLDataSetEmp;
 import br.com.tecnicon.server.execoes.ExcecaoMsg;
@@ -12,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 @Stateless
@@ -80,7 +82,7 @@ public class cliente {
         cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
         cidade.open();
 
-        cliForEnd.insert();        
+        cliForEnd.insert();
         cliForEnd.fieldByName("CCLIFOR").asInteger(Funcoes.strToInt(vs.getParameter("CCLIFOR")));
         cliForEnd.fieldByName("CGC").asString(vs.getParameter("CPF"));
         cliForEnd.fieldByName("NOMEFILIAL").asString(vs.getParameter("NOME"));
@@ -88,14 +90,14 @@ public class cliente {
         cliForEnd.fieldByName("CEP").asString(vs.getParameter("CEP"));
         cliForEnd.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
         cliForEnd.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
-        cliForEnd.fieldByName("CCIDADE1").asInteger(cidade.fieldByName("CCIDADE").asInteger());        
+        cliForEnd.fieldByName("CCIDADE1").asInteger(cidade.fieldByName("CCIDADE").asInteger());
         cliForEnd.fieldByName("CELULAR").asString(vs.getParameter("CELULAR"));
         cliForEnd.fieldByName("FONE").asString(vs.getParameter("FONE"));
         cliForEnd.fieldByName("ATIVO").asString("S");
         cliForEnd.fieldByName("NUMERO").asString(vs.getParameter("NUMERO"));
         cliForEnd.fieldByName("BAIRRO").asString(vs.getParameter("BAIRRO"));
         cliForEnd.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
-        cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));        
+        cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
         cliForEnd.post();
 
         return "OK";
@@ -214,12 +216,74 @@ public class cliente {
                 + "         CASE WHEN TDAY(PEDIDO.PREVDT) < 10 THEN '0' #TCONC# TDAY(PEDIDO.PREVDT) ELSE TDAY(PEDIDO.PREVDT) END #TCONC# '/' #TCONC# "
                 + "         CASE WHEN TMONTH(PEDIDO.PREVDT) < 10 THEN '0' #TCONC# TMONTH(PEDIDO.PREVDT) ELSE TMONTH(PEDIDO.PREVDT) END #TCONC# '/' #TCONC# "
                 + "         TYEAR(PEDIDO.PREVDT) AS PREVDT, "
-                + "         SUM(PEDIDOITEM.QTDE) AS QTDE, SUM(PEDIDOITEM.TOTAL) AS TOTAL "
+                + "         CASE WHEN (SELECT FIRST 1 RECEBER.SRECEBER FROM RECEBER "
+                + "                     INNER JOIN BXRECEBER ON (BXRECEBER.SRECEBER = RECEBER.SRECEBER) "
+                + "                     WHERE DUPLICATA = 'P' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' " //LEMBRAR DE COLOCAR PX DEPOIS
+                + "         ELSE 'Pendente' END AS STATUS," 
+                + "         SUM(PEDIDOITEM.QTDE) AS QTDE, SUM(PEDIDOITEM.TOTAL) + COALESCE(PEDIDO.FRETE, 0) AS TOTAL "
                 + " FROM PEDIDO"
                 + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO)"
                 + " WHERE PEDIDO.CCLIFOR = " + vs.getParameter("CCLIFOR")
-                + " GROUP BY PEDIDO.PEDIDO, PEDIDO.DATA, PEDIDO.PREVDT");
+                + " GROUP BY PEDIDO.PEDIDO, PEDIDO.DATA, PEDIDO.PREVDT, PEDIDO.FRETE");
         comprasSql.open();
         return comprasSql.jsonData();
     }
+
+    public JSONArray listarItensCompra(VariavelSessao vs) throws ExcecaoTecnicon, Exception {
+        TSQLDataSetEmp item = TSQLDataSetEmp.create(vs);
+        JSONObject itens = new JSONObject();
+        JSONArray itensArray = new JSONArray();
+        int i = 0;
+        Object produtoImg = TecniconLookup.lookup("Produto2/Produto2");
+        String baseImg = "";
+        JSONObject retornoImg = new JSONObject();
+
+        item.close();
+        item.commandText(" SELECT PEDIDOITEM.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PEDIDOITEM.UNITARIOCLI, PEDIDO.FRETE, "
+                + " PEDIDOITEM.QTDE, PRODUTO.UNIDADE, PEDIDOITEM.UNITARIOCLI * PEDIDOITEM.QTDE AS TOTALITEM, PEDIDO.FRETE, PEDIDO.PEDIDO"
+                + " FROM PEDIDO"
+                + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO) "
+                + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PEDIDOITEM.CPRODUTO) "
+                + " INNER JOIN GRUPO ON (GRUPO.CGRUPO = PRODUTO.CGRUPO) "
+                + " WHERE PEDIDO.PEDIDO = " + vs.getParameter("PEDIDO"));
+        item.open();
+        try {
+            item.first();
+            while (!item.eof()) {
+                vs.addParametros("CPRODUTO", item.fieldByName("CPRODUTO").asString());
+                vs.addParametros("filial", "1");
+                produtoImg = TecniconLookup.lookup("Produto2/Produto2");
+                baseImg = (String) produtoImg.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produtoImg, vs);
+                retornoImg = new JSONObject(baseImg);
+
+                itens = new JSONObject();
+                itens.put("PEDIDO", item.fieldByName("PEDIDO").asInteger());
+                itens.put("CPRODUTO", item.fieldByName("CPRODUTO").asInteger());
+                itens.put("CATEGORIA", item.fieldByName("GRUPO").asString());
+                itens.put("DESCRICAO", item.fieldByName("DESCRICAO").asString());
+                itens.put("PRODUTO", item.fieldByName("DESCRICAO").asString());
+                itens.put("PRECO", item.fieldByName("UNITARIOCLI").asDouble());
+                itens.put("QTDE", item.fieldByName("QTDE").asDouble());
+                itens.put("UNIDADE", item.fieldByName("UNIDADE").asString());
+                itens.put("TOTALITEM", item.fieldByName("TOTALITEM").asDouble());
+                itens.put("FRETE", item.fieldByName("FRETE").asDouble());
+
+                if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
+                    itens.put("IMAGEM", retornoImg.getString("src"));
+                } else {
+                    itens.put("IMAGEM", "");
+                }
+
+                itensArray.put(i, itens);
+                vs.removeParametro("CPRODUTO");
+                i++;
+                item.next();
+            }
+        } catch (Exception e) {
+            throw new ExcecaoMsg(e.getMessage());
+        }
+        return itensArray;
+
+    }
+
 }

@@ -318,7 +318,7 @@ article {
     width: 100%;
     display: inline-block;
 }
-.carrinhoTable table, .comprasTable table, .comprasItensTable table {
+.carrinhoTable table, .tableCompras, .tableItem {
     border-collapse: collapse;
     width: 100%;
 }
@@ -703,7 +703,7 @@ section {
     position: relative;
     margin: 3em 0 0 26%;
 }
-.comprasTable th, .comprasItensTable th {    
+.comprasTableTh {    
     font-weight: 300;
     text-align: center;
     background-color: rgba(203, 209, 215, .3);
@@ -718,6 +718,40 @@ section {
 }
 .verItens { 
     padding-right: 15%;
+}
+.verItensCompra {
+    cursor: pointer;
+}
+.verItensCompra:hover {
+    color: #6e808b;
+}
+.tableItem { 
+    border: solid 0.25em;
+}
+.comprasItensTh { 
+    font-weight: 300;
+    text-align: left;
+    padding-left: 1em;
+    background-color: rgba(203, 209, 215, .3);
+}
+.comprasItensThTotal { 
+    font-weight: 300;
+    text-align: left;
+    padding-left: 3%;
+    background-color: rgba(203, 209, 215, .3);
+}
+.tdQtdeCompra {
+    padding-left: 3%;
+}
+.tdTotal { 
+    border-right: solid 0.25em;
+    width: 12%;
+}
+.comprasItensTr {
+    border-bottom: .05em solid rgba(11, 55, 103, .7);    
+}
+.tdFrete { 
+    padding-left: 3%;
 }
 
 /* SOBRE */

@@ -438,10 +438,11 @@ function verMinhasCompras(compras) {
 
     var divComprasTable = document.querySelector(".comprasTable");
     divComprasTable.innerHTML = "";
-    var tr, td, th, status, spn, iaws, dv, hUm, tbody, thead, table;
+    var tr, td, th, status, spn, iaws, dv, hUm, tbody, thead, table, tableItem;
 
     if (compras !== null && compras["linhas"].length !== 0) {
         table = document.createElement('table');
+        table.setAttribute('class', 'tableCompras');
         divComprasTable.appendChild(table);
 
         thead = document.createElement('thead');
@@ -452,30 +453,37 @@ function verMinhasCompras(compras) {
 
         th = document.createElement('th');
         th.innerText = "Nº Pedido";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Data Pedido";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Quantidade";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Valor Total";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Data Entrega";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Status";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         th = document.createElement('th');
         th.innerText = "Itens";
+        th.setAttribute('class', 'comprasTableTh');
         tr.appendChild(th);
 
         tbody = document.createElement('tbody');
@@ -489,6 +497,7 @@ function verMinhasCompras(compras) {
 
             td = document.createElement('td');
             td.innerText = compras["linhas"][i]['PEDIDO'];
+            td.setAttribute('class', 'pedido');
             tr.appendChild(td);
 
             td = document.createElement('td');
@@ -507,17 +516,8 @@ function verMinhasCompras(compras) {
             td.innerText = compras["linhas"][i]['PREVDT'];
             tr.appendChild(td);
 
-            if (compras["linhas"][i]['PREVDT'] < new Date().toLocaleDateString())
-            {
-                status = "Entregue";
-            } else if (compras["linhas"][i]['PREVDT'] === new Date().toLocaleDateString()) {
-                status = "Enviado";
-            } else {
-                status = "Pendente";
-            }
-
             td = document.createElement('td');
-            td.innerText = status;
+            td.innerText = compras["linhas"][i]['STATUS'];
             tr.appendChild(td);
 
             td = document.createElement('td');
@@ -529,7 +529,27 @@ function verMinhasCompras(compras) {
             iaws = document.createElement('i');
             spn.appendChild(iaws);
             iaws.setAttribute('class', 'fas fa-plus');
+
+            tr = document.createElement('tr');
+            tr.setAttribute('class', 'itemCompraDetalhe');
+            tbody.appendChild(tr);
+
+            td = document.createElement('td');
+            td.setAttribute('colspan', '7');
+            tr.appendChild(td);
+
+            tableItem = document.createElement('table');
+            tableItem.setAttribute('class', 'tableItem ' + compras["linhas"][i]['PEDIDO']);
+            td.appendChild(tableItem);
         }
+
+
+        var arr = document.querySelectorAll(".verItensCompra");
+        for (var j = 0; j < arr.length; j++)
+        {
+            arr[j].addEventListener("click", chamarItensCompra);
+        }
+
     } else {
         dv = document.createElement('div');
         dv.setAttribute('class', 'comprasVazio');
@@ -540,6 +560,115 @@ function verMinhasCompras(compras) {
         hUm.setAttribute('class', 'comprasVazioText');
         dv.appendChild(hUm);
     }
+}
+
+function chamarItensCompra(e) {
+    requisicaoHTTP("projetoPratico", "cliente", "listarItensCompra", verItensCompra, alert,
+            "&PEDIDO=" + e.target.parentNode.parentNode.parentNode.querySelector(".pedido").innerText);
+
+    e.target.setAttribute('class', 'fas fa-minus');
+    e.target.parentNode.removeEventListener("click", chamarItensCompra);
+    e.target.parentNode.addEventListener("click", esconderItensCompra);
+}
+
+function verItensCompra(itens) {
+    var table = document.getElementsByClassName("tableItem " + itens[0]['PEDIDO'])[0];
+    var thead, tbody, tr, th, td, dvImg, img;
+
+    thead = document.createElement('thead');
+    table.appendChild(thead);
+
+    tr = document.createElement('tr');
+    thead.appendChild(tr);
+
+    th = document.createElement('th');
+    tr.appendChild(th);
+    th.innerText = 'Produto';
+    th.setAttribute('class', 'comprasItensTh');
+    th.setAttribute('colspan', '2');
+
+    th = document.createElement('th');
+    th.setAttribute('class', 'comprasItensTh');
+    tr.appendChild(th);
+    th.innerText = 'Preço';
+
+    th = document.createElement('th');
+    th.setAttribute('class', 'comprasItensTh');
+    tr.appendChild(th);
+    th.innerText = 'Quantidade';
+
+    th = document.createElement('th');
+    th.setAttribute('class', 'comprasItensThTotal');
+    tr.appendChild(th);
+    th.innerText = 'Total';
+    th.setAttribute('colspan', '2');
+
+    tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+
+    for (var i = 0; i < itens.length; i++)
+    {
+        tr = document.createElement('tr');
+        tr.setAttribute('class', 'comprasItensTr');
+        tbody.appendChild(tr);
+
+        td = document.createElement('td');
+        td.setAttribute('class', 'tdImg');
+        tr.appendChild(td);
+
+        dvImg = document.createElement('div');
+        dvImg.setAttribute('class', 'divProdutoCar');
+        td.appendChild(dvImg);
+
+        img = document.createElement('img');
+        img.setAttribute('class', 'fotoCarrinho');
+        img.src = 'data:image/jpg;base64,' + itens[i]['IMAGEM'];
+        dvImg.appendChild(img);
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.innerText += itens[i]['CATEGORIA'];
+        td.appendChild(document.createElement('br'));
+        td.innerText += itens[i]['DESCRICAO'];
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.innerText = 'R$ ' + itens[i]['PRECO'].toFixed(2).replace('.', ',');
+
+        td = document.createElement('td');
+        tr.appendChild(td);
+        td.setAttribute('class', 'tdQtdeCompra');
+        td.innerText = itens[i]['QTDE'].toFixed(3) + " " + itens[i]['UNIDADE'];
+
+        td = document.createElement('td');
+        td.setAttribute('class', 'tdTotal');
+        tr.appendChild(td);
+        td.innerText = "R$ " + itens[i]['TOTALITEM'].toFixed(2).replace('.', ',');
+    }
+    tr = document.createElement('tr');
+    tbody.appendChild(tr);
+
+    td = document.createElement('td');
+    td.setAttribute('colspan', '3');
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.innerText = 'Frete';
+    td.setAttribute('class', 'tdFrete');
+    tr.appendChild(td);
+
+    td = document.createElement('td');
+    td.setAttribute('class', 'tdTotal');
+    td.innerText = "R$ " + itens[0]['FRETE'].toFixed(2).replace('.', ',');
+
+    tr.appendChild(td);
+}
+
+function esconderItensCompra(e) {
+    document.getElementsByClassName("tableItem " + e.target.parentNode.parentNode.parentNode.querySelector(".pedido").innerText)[0].textContent = "";
+    e.target.setAttribute('class', 'fas fa-plus');
+    e.target.parentNode.removeEventListener("click", esconderItensCompra);
+    e.target.parentNode.addEventListener("click", chamarItensCompra);
 }
 
 init();

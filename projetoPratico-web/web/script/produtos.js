@@ -318,7 +318,9 @@ function listarCarrinho() {
             td = document.createElement('td');
             td.setAttribute('class', 'tdPprod');
             tr.appendChild(td);
-            td.innerText = itensCarrinho['produtos'][i]['descricao'];
+            td.innerText += itensCarrinho['produtos'][i]['categoria'];
+            td.appendChild(document.createElement('br'));
+            td.innerText += itensCarrinho['produtos'][i]['descricao'];
 
             td = document.createElement('td');
             td.setAttribute('class', 'tdPreco');
@@ -594,21 +596,27 @@ function finalizarCompra() {
     logon = window.localStorage.getItem("logon");
     logon = JSON.parse(logon);
 
-    var itens = [];
-    itens = window.localStorage.getItem('carrinho');
-    itens = JSON.parse(itens);
+    if (logon)
+    {
+        var itens = [];
+        itens = window.localStorage.getItem('carrinho');
+        itens = JSON.parse(itens);
 
-    var todosItens = [];
-    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+        var todosItens = [];
+        var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
 
-    for (var i = 0; i < itens['produtos'].length; i++) {
-        todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
-            PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
-            QTDE: itens['produtos'][i]['qtde']});
+        for (var i = 0; i < itens['produtos'].length; i++) {
+            todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+                PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+                QTDE: itens['produtos'][i]['qtde']});
+        }
+        requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+                + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
+                + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : null));
+    } else {
+        alert("Para finalizar a compra você precisa estar logado!");
+        verificarLogin();
     }
-    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
-            + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
-            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : null));
 
 }
 
