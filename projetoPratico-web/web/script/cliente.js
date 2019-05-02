@@ -1,12 +1,16 @@
 function init() {
     document.querySelector("body").addEventListener("load", verificarTempo);
-    document.querySelector(".cadastrar").addEventListener("click", criarConta);
+    document.querySelector(".cadastrar").addEventListener("click", criarConta); //teste);
     document.querySelector(".logar").addEventListener("click", verificarLogin);
     document.querySelector(".desLogar").addEventListener("click", deslogar);
     document.querySelector(".minhaConta").addEventListener("click", irMinhaConta);
 
     validarLogon();
     verificarTempo();
+}
+
+function teste() {
+    requisicaoHTTP("projetoPratico", "cliente", "testarEnvioEmail", alert, alert, "&USUARIO=25");
 }
 
 function verificarTempo() {
@@ -117,7 +121,7 @@ function continuarCadastro() {
             && document.querySelector("#BAIRRO").value.trim() !== "" && document.querySelector("#CELULAR").value.trim() !== "")
     {
         var botao = document.querySelector("#salvarDadosConta").dados;
-        requisicaoHTTP("projetoPratico", "cliente", "inserirClienteEnd", finalizarConta, alert, "&CCLIFOR=" + botao["CCLIFOR"]
+        requisicaoHTTP("projetoPratico", "cliente", "inserirClienteEnd", enviarEmailConfirmacao, alert, "&CCLIFOR=" + botao["CCLIFOR"]
                 + "&NOME=" + botao["NOME"] + "&EMAIL=" + botao["EMAIL"] + "&CPF=" + document.querySelector("#CGC").value
                 + "&CEP=" + document.querySelector("#CEP").value + "&ENDERECO=" + document.querySelector("#ENDERECO").value
                 + "&NUMERO=" + document.querySelector("#NUMERO").value + "&BAIRRO=" + document.querySelector("#BAIRRO").value
@@ -160,7 +164,15 @@ function verificarCep() {
     }
 }
 
-function finalizarConta(cliente) {
+function enviarEmailConfirmacao() {
+    var botao = document.querySelector("#salvarDadosConta").dados;
+    requisicaoHTTP("projetoPratico", "cliente", "enviarEmailConfirmacao", finalizarConta, alert, "&DESTINATARIO=" + botao["EMAIL"]
+            + "&NOME=" + botao["NOME"]);
+}
+
+function finalizarConta(mensagem) {
+    alert(mensagem);
+
     document.querySelector("#CGC").value = "";
     document.querySelector("#CEP").value = "";
     document.querySelector("#ENDERECO").value = "";
@@ -171,7 +183,6 @@ function finalizarConta(cliente) {
     document.querySelector("#NCIDADE1").value = "";
     document.querySelector("#NUF1").value = "";
     document.querySelector("#COMPLEMENTO").value = "";
-    alert("Cadastro Concluído com Sucesso!");
 
     var logon = {'cliente': []};
     logon.cliente.push({'codigo': document.querySelector("#salvarDadosConta").dados["CCLIFOR"], 'data': new Date()});
@@ -204,6 +215,7 @@ function verificarLogin() {
 
     document.querySelector("#criarContaLogin").addEventListener("click", criarConta);
     document.querySelector("#entrarLogin").addEventListener("click", fazerLogin);
+    document.querySelector("#esqueciSenha").addEventListener("click", recuperarSenha);
 }
 
 function fazerLogin() {
@@ -252,6 +264,19 @@ function setVisiblePrincipais() {
     setVisible("nav");
     setVisible("article");
     setVisible("footer");
+}
+
+function recuperarSenha() {
+    if (document.querySelector("#EMAILL").value.trim() !== "")
+    {
+        var confirmou = confirm("Sua senha será redefinida e enviada para o e-mail informado. \nDeseja continuar?");
+        if (confirmou)
+        {
+            requisicaoHTTP("projetoPratico", "cliente", "redefinirSenha", alert, alert, "&EMAIL=" + document.querySelector("#EMAILL").value);
+        }
+    } else {
+        alert("Para redefinir a sua senha você precisa informar o seu e-mail.");
+    }
 }
 
 function irMinhaConta() {
