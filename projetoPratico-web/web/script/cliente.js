@@ -4,6 +4,7 @@ function init() {
     document.querySelector(".logar").addEventListener("click", verificarLogin);
     document.querySelector(".desLogar").addEventListener("click", deslogar);
     document.querySelector(".minhaConta").addEventListener("click", irMinhaConta);
+    document.querySelector("#enviarMensagem").addEventListener("click", enviarMensagem);
 
     validarLogon();
     verificarTempo();
@@ -694,6 +695,19 @@ function esconderItensCompra(e) {
     e.target.setAttribute('class', 'fas fa-plus');
     e.target.parentNode.removeEventListener("click", esconderItensCompra);
     e.target.parentNode.addEventListener("click", chamarItensCompra);
+}
+
+function enviarMensagem(e) {
+    if (document.querySelector("#emailClienteMensagem").value.trim() !== "" || document.querySelector("#nomeClienteMensagem").value.trim() !== "" ||
+            document.querySelector("#mensagemSobre").value.trim() !== "")
+    {
+        requisicaoHTTP("projetoPratico", "cliente", "enviarMensagemCliente", alert, alert,
+                "&EMAIL=" + document.querySelector("#emailClienteMensagem").value
+                + "&NOME= " + document.querySelector("#nomeClienteMensagem").value
+                + "&MENSAGEM=" + document.querySelector("#mensagemSobre").value);
+    } else {
+        alert("Preencha todos os campos obrigatórios!");
+    }
 }
 
 init();

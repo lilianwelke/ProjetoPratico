@@ -31,6 +31,7 @@
             <included-library dirs="200">file.reference.TecniconTSessao.jar-1</included-library>
             <included-library dirs="200">file.reference.TecniconUtils.jar-1</included-library>
             <included-library dirs="200">file.reference.TecniconInterfaces.jar-1</included-library>
+            <included-library dirs="200">file.reference.javax.mail-1.6.2.jar</included-library>
             <source-roots>
                 <root id="src.dir" name="Pacotes de Códigos-fonte"/>
             </source-roots>

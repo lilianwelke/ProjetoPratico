@@ -818,13 +818,18 @@ section {
 #mensagemSobre:focus {
     border-color: rgba(11, 55, 103, .95);
 }
+#contemEnviarMensagem { 
+    margin: 3em auto .5em;  
+}
 #enviarMensagem {
-    margin: 3em auto .5em;
-    max-width: 15%;
+    width: 15%;
     text-align: center;
+    display: inline-block;
     padding: .5em 2.25em;
     border: solid 0.09em rgba(11, 55, 103, .75);
     cursor: pointer;
+    position: relative;
+    left: 15.5em;
 }
 
 /* RODAPE */
