@@ -10,10 +10,6 @@ function init() {
     verificarTempo();
 }
 
-function teste() {
-    requisicaoHTTP("projetoPratico", "cliente", "testarEnvioEmail", alert, alert, "&USUARIO=25");
-}
-
 function verificarTempo() {
     if (localStorage.logon)
     {

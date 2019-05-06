@@ -362,7 +362,7 @@ public class cliente {
                     + " <br/>Estamos aqui para atendê-lo com os melhores peixes e o melhor, tudo online!"
                     + " <br/>Você pode acessar o nosso site pelo link: http://portal.tecnicon.com.br:7078/peixaria/"
                     + " <br/><br/><br/><br/>"
-                    + " <img src=\"http://portal.tecnicon.com.br:7078/peixaria/img/pierEmail.png\"/>"; //adicionar logo da píer
+                    + " <img src=\"http://portal.tecnicon.com.br:7078/peixaria/img/pierEmail.png\"/>";
 
             Map<String, byte[]> anexos = new HashMap<>();
             Map<String, String> inlineImages = new HashMap<>();
@@ -401,7 +401,7 @@ public class cliente {
                     + " <br/>"
                     + " <br/>Você pode acessar o nosso site pelo link: http://portal.tecnicon.com.br:7078/peixaria/"
                     + " <br/><br/><br/><br/>"
-                    + " <img src=\"http://portal.tecnicon.com.br:7078/peixaria/img/pierEmail.png\"/>"; //adicionar logo da píer
+                    + " <img src=\"http://portal.tecnicon.com.br:7078/peixaria/img/pierEmail.png\"/>";
 
             Map<String, byte[]> anexos = new HashMap<>();
             Map<String, String> inlineImages = new HashMap<>();
@@ -443,7 +443,7 @@ public class cliente {
             message.setFrom(new InternetAddress("pier95.contato@gmail.com", "Píer 95 Contato"));
 
             message.setReplyTo(InternetAddress.parse(vs.getParameter("EMAIL")));
-            
+
             Address[] destinatario = InternetAddress.parse("lw005973@cfjl.com.br");
 
             message.setRecipients(Message.RecipientType.TO, destinatario);
@@ -456,55 +456,5 @@ public class cliente {
             throw new ExcecaoMsg(vs, e.getMessage());
         }
         return "Sua mensagem foi enviada com sucesso!";
-    }
-
-    public void testarEnvioEmail(VariavelSessao vs) throws ExcecaoTecnicon {
-        EmailConfig config = null;
-        String codUsuario = "";
-        try {
-            String defineEMAIL = "";
-            codUsuario = vs.getParameter("USUARIO");
-            if (!Funcoes.validaVSCampo(vs, "USUARIO")) {
-                codUsuario = vs.getValor("cusuario");
-            }
-
-            if (vs.getParameter("SUSUARIOEMAIL") != null && !vs.getParameter("SUSUARIOEMAIL").equals("")) {
-                defineEMAIL = " AND USUARIOEMAIL.SUSUARIOEMAIL=" + vs.getParameter("SUSUARIOEMAIL");
-            }
-            TClientDataSet usuarioEmail = TClientDataSet.create(vs, "USUARIOEMAIL");
-            usuarioEmail.createDataSet();
-            usuarioEmail.condicao("WHERE USUARIOEMAIL.CUSUARIO=" + codUsuario + defineEMAIL);
-            //Retirado usuário da vs, porque estava ocorrendo um erro quando outro usuário testava esta conexão (client vinha vazio)
-            usuarioEmail.open();
-            String content = "Prezado(a) " + usuarioEmail.fieldByName("NOME").asString()
-                    + "<br/> Parabéns, sua conta de e-mail no TECNICON Business Suite está configurada corretamente!"
-                    + "<p>&nbsp;</p><table style=\"border-collapse: collapse; width: 100%; background: #ebebeb;\" border=\"0\" cellspacing=\"0\" "
-                    + "cellpadding=\"0\"><tbody><tr style=\"height: 8.8pt;\"><td style=\"height: 90px; background: white; width: 100px; padding: 0cm; "
-                    + "vertical-align: middle;\" valign=\"top\" width=\"145\"><p style=\"text-align: center; line-height: 115%;\" align=\"center\">"
-                    + "<img src=\"http://tecnicon.com.br/images/logo_tecnicon_email.png\" alt=\"Logo TECNICON\" /></p></td><td style=\"height: 8.8pt;"
-                    + " background: white; padding-bottom: 0cm; padding-top: 0cm; padding-left: 3.35pt; padding-right: 3.35pt; width: 60%; font-family: "
-                    + "verdana;\" width=\"352\"><p style=\"text-align: left; line-height: 115%; margin-right: 12.2pt;\" align=\"right\"><span style=\"font-size: x-small;\"> <span style=\"color: #1f497d; line-height: 115%;\"> <span style=\"font-size: 10pt;font-style: italic;\">Atenciosamente,<br></span><br><span style=\"font-size: 10pt; font-weight: bold;\">Equipe TECNICON</span><br /><br /> Tel/Fax: (55) 3537-9800<br /></span></span></p></td><td style=\"height: 8.8pt; background: white; padding-bottom: 0cm; padding-top: 0cm; padding-left: 3.35pt; padding-right: 3.35pt; width: 264.3pt; font-family: verdana;\" width=\"352\"><p style=\"text-align: right; line-height: 115%; margin-right: 12.2pt;\" align=\"right\"><span style=\"font-size: x-small;\"> <span style=\"color: #1f497d; line-height: 115%;\"> Avenida Imigrantes, 909<br /> CEP 98920-000 &ndash; Horizontina/RS<br /> Sigam-nos no </span> <span style=\"color: #376092; line-height: 115%;\"><a href=\"http://twitter.com/Tecnicon\" style=\"text-decoration: none;\"> <span style=\"color: #376092; font-weight: bold;\">Twitter<br /></span></a></span></span><a style=\"font-size: x-small; line-height: 115%; text-decoration: none;\" href=\"http://www.tecnicon.com.br/\"><span style=\"color: #376092; font-weight: bold;\">www.tecnicon.com.br</span></a></p></td></tr><tr style=\"height: 3pt;\"><td style=\"height: 3.05pt; background: #365f91; width: 602.65pt; padding: 0cm;\" colspan=\"3\" valign=\"top\" width=\"804\"><p style=\"text-align: center; line-height: 115%; margin-right: 12.2pt;\" align=\"center\"><span style=\"font-size: 8pt; color: #b9cde5; line-height: 100%; mso-fareast-language: PT-BR; font-family: verdana;\"> Transformando informa&ccedil;&atilde;o em conhecimento e resultado.</span></p></td></tr><tr style=\"height: 3.05pt;\"><td style=\"height: 3.05pt; background: white; width: 602.65pt; padding: 0cm;\" colspan=\"3\" valign=\"top\" width=\"804\"><p style=\"text-align: center; line-height: 115%; margin-right: 12.2pt;\" align=\"center\"><span style=\"font-size: 7pt; color: #7f7f7f; line-height: 115%; mso-fareast-language: PT-BR; font-family: verdana;\">Antes de imprimir lembre do seu compromisso com o meio ambiente e o comprometimento com os custos</span></p></td></tr></tbody></table>";
-            Map<String, byte[]> anexos = new HashMap<>();
-            Map<String, String> inlineImages = new HashMap<>();
-            config = new EmailConfig(usuarioEmail.fieldByName("USUARIO").asString(), usuarioEmail.fieldByName("SENHA").asString(),
-                    usuarioEmail.fieldByName("HOSTSMTP").asString(), usuarioEmail.fieldByName("EMAIL").asString(),
-                    usuarioEmail.fieldByName("NOME").asString(), "", "", usuarioEmail.fieldByName("PORTSMTP").asInteger(),
-                    usuarioEmail.fieldByName("SSL").asString(), 17, 0);
-
-            TEnviarEmail email = new TEnviarEmail();
-            email.enviarEmail("lw005973@cfjl.com.br",
-                    "",
-                    "",
-                    "Teste de Envio de E-mail",
-                    content,
-                    config,
-                    anexos,
-                    false,
-                    inlineImages);
-            vs.setRetornoOK("E-mail de testes enviado com sucesso!\nVerifique a caixa de entrada do e-mail configurado.");
-        } catch (Exception e) {
-            throw new ExcecaoMsg(vs, e.getMessage() + " \n " + codUsuario + " \n " + vs.getValor("cusuario"));
-        }
-    }
-
+    }    
 }

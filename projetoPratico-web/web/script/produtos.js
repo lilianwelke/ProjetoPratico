@@ -612,7 +612,7 @@ function finalizarCompra() {
         }
         requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
                 + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
-                + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : null));
+                + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0));
     } else {
         alert("Para finalizar a compra você precisa estar logado!");
         verificarLogin();
@@ -620,8 +620,8 @@ function finalizarCompra() {
 
 }
 
-function compraConcluida() {
-    alert("Compra realizada com sucesso!");
+function compraConcluida(data) {
+    alert(data);
     localStorage.removeItem("carrinho");
     listarCarrinho();
 }
