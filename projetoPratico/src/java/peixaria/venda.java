@@ -307,7 +307,7 @@ public class venda {
                 nfsItem.fieldByName("PEDIDOITEM").asInteger(pedido.fieldByName("PEDIDOITEM").asInteger());
                 nfsItem.post();
 
-                valorTotalNfs += nfsItem.fieldByName("UNITARIO").asDouble();
+                valorTotalNfs += nfsItem.fieldByName("UNITARIO").asDouble() * nfsItem.fieldByName("QTDE").asDouble();
 
                 pedidoItem = pedido.fieldByName("PEDIDOITEM").asInteger();
 

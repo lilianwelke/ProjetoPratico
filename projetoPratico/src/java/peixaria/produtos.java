@@ -5,10 +5,12 @@ import br.com.tecnicon.server.dataset.TSQLDataSetEmp;
 import br.com.tecnicon.server.execoes.ExcecaoMsg;
 import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
 import br.com.tecnicon.server.sessao.VariavelSessao;
+import br.com.tecnicon.server.util.funcoes.Funcoes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
+import java.util.Date;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.json.JSONArray;
@@ -101,7 +103,8 @@ public class produtos {
         produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
-                + " AND PRODUTO.CGRUPO = " + vs.getParameter("CGRUPO"));
+                + " AND PRODUTO.CGRUPO = " + vs.getParameter("CGRUPO")
+                + " AND PRODUTO.ATIVO = 'S'");
         produto.open();
 
         produto.first();
@@ -145,7 +148,8 @@ public class produtos {
         produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
-                + " AND PRODUTO.DESCRICAO CONTAINING '" + vs.getParameter("DESCRICAO") + "'");
+                + " AND PRODUTO.DESCRICAO CONTAINING '" + vs.getParameter("DESCRICAO") + "'"
+                + " AND PRODUTO.ATIVO = 'S'");
         produto.open();
 
         produto.first();
@@ -186,10 +190,16 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UNIDADE "
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UNIDADE,"
+                + " (SELECT SUM(SALDOPRODUTOLOTE.SALDO) FROM SALDOPRODUTOLOTE "
+                + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE) "
+                + " WHERE SALDOPRODUTOLOTE.CPRODUTO = PRODUTO.CPRODUTO AND PRODUTOLOTE.ATIVO = 'S' "
+                + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy") + "'"
+                + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO) SALDO "
                 + " FROM PRODUTO "
                 + " INNER JOIN GRUPO ON (GRUPO.CGRUPO = PRODUTO.CGRUPO)"
-                + " WHERE PRODUTO.CPRODUTO = " + vs.getParameter("CPRODUTO"));
+                + " WHERE PRODUTO.CPRODUTO = " + vs.getParameter("CPRODUTO")
+                + " GROUP BY PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UNIDADE");
         produto.open();
 
         vs.addParametros("filial", "1");
@@ -210,6 +220,8 @@ public class produtos {
         } else {
             produtos.put("IMAGEM", "");
         }
+
+        produtos.put("SALDO", produto.fieldByName("SALDO").asDouble());
 
         produtosArray.put(i, produtos);
 

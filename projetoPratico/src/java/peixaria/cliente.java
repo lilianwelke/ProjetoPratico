@@ -278,7 +278,7 @@ public class cliente {
                 + "         TYEAR(PEDIDO.PREVDT) AS PREVDT, "
                 + "         CASE WHEN (SELECT FIRST 1 RECEBER.SRECEBER FROM RECEBER "
                 + "                     INNER JOIN BXRECEBER ON (BXRECEBER.SRECEBER = RECEBER.SRECEBER) "
-                + "                     WHERE DUPLICATA = 'P' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' " //LEMBRAR DE COLOCAR PX DEPOIS
+                + "                     WHERE DUPLICATA = 'PX' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' " 
                 + "         ELSE 'Pendente' END AS STATUS,"
                 + "         SUM(PEDIDOITEM.QTDE) AS QTDE, SUM(PEDIDOITEM.TOTAL) + COALESCE(PEDIDO.FRETE, 0) AS TOTAL "
                 + " FROM PEDIDO"

@@ -130,7 +130,7 @@ function listarCategorias(categorias) {
 }
 
 function listarProduto(produto) {
-    var dv, hUm, p, pp, ppp, pppp, dvImg, dvComprarMais, img, input;
+    var dv, hUm, p, pp, ppp, pppp, dvImg, dvComprarMais, img, input, saldo;
     var div = document.querySelector('.produtoMais');
     div.innerHTML = "";
 
@@ -178,7 +178,12 @@ function listarProduto(produto) {
     pppp.innerText = produto[0]['UN'];
     dv.appendChild(pppp);
 
-    dv.appendChild(document.createElement('br'));
+    saldo = document.createElement('p');
+    saldo.setAttribute('class', 'saldoMais');
+    saldo.innerText = (parseFloat(produto[0]['SALDO']) <= parseFloat(0) ? 'Produto Indisponível' : produto[0]['SALDO'] + ' ' + produto[0]['UN'] + ' disponíveis');
+    dv.appendChild(saldo);
+
+//    dv.appendChild(document.createElement('br'));
 
     dvComprarMais = document.createElement('div');
     dvComprarMais.setAttribute('class', 'comprarMais');
