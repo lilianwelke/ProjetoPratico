@@ -92,6 +92,9 @@ public class cliente {
         TClientDataSet cliForEnd = TClientDataSet.create(vs, "CLIFOREND");
         cliForEnd.createDataSet();
 
+        TClientDataSet contatoCli = TClientDataSet.create(vs, "CONTATOCLI");
+        contatoCli.createDataSet();
+
         TSQLDataSetEmp cidade = TSQLDataSetEmp.create(vs);
         cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
         cidade.open();
@@ -113,6 +116,14 @@ public class cliente {
         cliForEnd.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
         cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
         cliForEnd.post();
+
+        contatoCli.insert();
+        contatoCli.fieldByName("CCLIFOR").asInteger(cliForEnd.fieldByName("CCLIFOR").asInteger());
+        contatoCli.fieldByName("FILIALCF").asInteger(1);
+        contatoCli.fieldByName("CONTATO").asString(cliForEnd.fieldByName("NOMEFILIAL").asString());
+        contatoCli.fieldByName("EMAIL").asString(cliForEnd.fieldByName("EMAIL").asString());
+        contatoCli.fieldByName("VINCOMPRA").asString("F");
+        contatoCli.post();
 
         return "OK";
     }
@@ -264,6 +275,16 @@ public class cliente {
         cliForEnd.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
         cliForEnd.post();
 
+        TClientDataSet contatoCli = TClientDataSet.create(vs, "CONTATOCLI");
+        contatoCli.createDataSet();
+        contatoCli.condicao("WHERE CONTATOCLI.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+        contatoCli.open();
+
+        contatoCli.edit();
+        contatoCli.fieldByName("CONTATO").asString(vs.getParameter("NOME"));
+        contatoCli.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
+        contatoCli.post();
+
         return "Dados atualizados com sucesso!";
     }
 
@@ -278,7 +299,7 @@ public class cliente {
                 + "         TYEAR(PEDIDO.PREVDT) AS PREVDT, "
                 + "         CASE WHEN (SELECT FIRST 1 RECEBER.SRECEBER FROM RECEBER "
                 + "                     INNER JOIN BXRECEBER ON (BXRECEBER.SRECEBER = RECEBER.SRECEBER) "
-                + "                     WHERE DUPLICATA = 'PX' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' " 
+                + "                     WHERE DUPLICATA = 'PX' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' "
                 + "         ELSE 'Pendente' END AS STATUS,"
                 + "         SUM(PEDIDOITEM.QTDE) AS QTDE, SUM(PEDIDOITEM.TOTAL) + COALESCE(PEDIDO.FRETE, 0) AS TOTAL "
                 + " FROM PEDIDO"
@@ -456,5 +477,5 @@ public class cliente {
             throw new ExcecaoMsg(vs, e.getMessage());
         }
         return "Sua mensagem foi enviada com sucesso!";
-    }    
+    }
 }

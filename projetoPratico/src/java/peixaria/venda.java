@@ -42,13 +42,9 @@ public class venda {
 
         int cCliFor = Funcoes.strToInt(vs.getParameter("CCLIFOR"));
 
-        String destinatario = "", nomeDest = "", cBloqueto = "", mensagemEmail = "";
-
         TSQLDataSetEmp lote = TSQLDataSetEmp.create(vs);
 
-        TSQLDataSetEmp sqlAuxiliar = TSQLDataSetEmp.create(vs);
-
-        Map<String, byte[]> anexos = new HashMap<>();
+        validaSaldo(vs, itens);
 
         pedido.insert();
         pedido.fieldByName("CCLIFOR").asInteger(cCliFor);
@@ -133,110 +129,61 @@ public class venda {
         duplicatasReceber.fieldByName("CCARTEIRA").asInteger(1);
         duplicatasReceber.fieldByName("PARCELA").asString("1/1");
         duplicatasReceber.fieldByName("DUPLICATA").asString("PX" + pedido.fieldByName("PEDIDO").asInteger());
+        duplicatasReceber.fieldByName("NOSSONUMERO").asString(duplicatasReceber.fieldByName("DUPLICATA").asString());
         duplicatasReceber.fieldByName("VCTO").asDate(Funcoes.addHoras(new Date(), 360));
         duplicatasReceber.fieldByName("VCTOP").asDate(Funcoes.addHoras(new Date(), 360));
         duplicatasReceber.fieldByName("VALOR").asDouble(valor);
         duplicatasReceber.post();
 
         try {
-            sqlAuxiliar.commandText(" SELECT CLIFOREND.EMAIL, CLIFOREND.NOMEFILIAL FROM CLIFOREND"
-                    + " WHERE CLIFOREND.CCLIFOR = " + cCliFor + " AND CLIFOREND.FILIALCF = 1");
-            sqlAuxiliar.open();
 
-            destinatario = sqlAuxiliar.fieldByName("EMAIL").asString();
-            nomeDest = sqlAuxiliar.fieldByName("NOMEFILIAL").asString();
+            vs.addParametros("filial", "1");
+            vs.addParametros("cusuario", "25");
+            vs.addParametros("empresa", "17");
+            vs.addParametros("usuario", "CFJL.LILIAN");
+            vs.addParametros("CCARTEIRA", "26");
+            vs.addParametros("cbMsgDescVcto", "false");
+            vs.addParametros("CUSTOBLOQUETO", duplicatasReceber.fieldByName("VALOR").asString());
+            vs.addParametros("SRECEBER", duplicatasReceber.fieldByName("SRECEBER").asString());
 
-            sqlAuxiliar.close();
-            sqlAuxiliar.commandText(" SELECT CARTEIRA.CBLOQUETO FROM CARTEIRA "
-                    + " WHERE CARTEIRA.CCARTEIRA=26 AND CARTEIRA.ATIVO = 'S'");
-            sqlAuxiliar.open();
+            TClassLoader.execMethod("BloquetoImprime/BloquetoImprime", "enviarSelecionados", vs);
 
-            cBloqueto = sqlAuxiliar.fieldByName("CBLOQUETO").asString();
+            vs.setRetornoOK("Compra realizada com sucesso! \nUm e-mail com o boleto da compra foi enviado para o seu e-mail.");
 
-            sqlAuxiliar.close();
-            sqlAuxiliar.commandText(" SELECT BLOQNOSSONUMERO.MODELOBOLETO, BLOQNOSSONUMERO.TPCONVENIO, TSUBSTR(BLOQNOSSONUMERO.CODBANCO,1,3) CODBANCO "
-                    + " FROM BLOQNOSSONUMERO"
-                    + " WHERE BLOQNOSSONUMERO.CBLOQUETO=" + cBloqueto
-                    + " AND BLOQNOSSONUMERO.CFILIAL=1");
-            sqlAuxiliar.open();
-
-            RelatorioEsp relEsp = (RelatorioEsp) TecniconLookup.lookup("TecniconRelatorioEsp", "RelatorioEsp");
-            VariavelSessao vs2 = vs.clone();
-            vs2.addParametros("SRECEBER", duplicatasReceber.fieldByName("SRECEBER").asString());
-            vs2.addParametros("IMPTODAS", "FALSE");
-            vs2.addParametros("FILTROS", "");
-            vs2.addParametros("IMPNAO", "FALSE");
-            vs2.addParametros("CFILIAL", "1");
-
-            switch (sqlAuxiliar.fieldByName("MODELOBOLETO").asString()) {
-                case "1":
-                    vs2.addParametros("relatorioesp", "132");
-                    break;
-                case "2":
-                    vs2.addParametros("relatorioesp", "1911");
-                    break;
-                case "3":
-                    vs2.addParametros("relatorioesp", "1931");
-                    break;
-                case "5":
-                    vs2.addParametros("relatorioesp", "1921");
-                    break;
-                default:
-                    if ("4".equals(sqlAuxiliar.fieldByName("MODELOBOLETO").asString())) {
-                        vs2.addParametros("relatorioesp", "1901");
-//                    } else if (vs.getValor("nomeFilial").contains("RHRISS")) {
-//                        vs2.addParametros("relatorioesp", "1941");
-                    } else if (("07".equals(sqlAuxiliar.fieldByName("TPCONVENIO").asString()))
-                            || ("748".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))) {
-                        vs2.addParametros("relatorioesp", "1931");
-                    } else if (("001".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))
-                            || ("027".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))
-                            || ("041".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))
-                            || ("104".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))
-                            || ("237".equals(sqlAuxiliar.fieldByName("CODBANCO").asString()))) {
-                        vs2.addParametros("relatorioesp", "132");
-                    } else if ("5".equals(sqlAuxiliar.fieldByName("MODELOBOLETO").asString())) {
-                        vs2.addParametros("relatorioesp", "1921");
-                    } else {
-                        vs2.addParametros("relatorioesp", "1911");
-                    }
-                    break;
-            }
-            relEsp.gerarRelatorio(vs2);
-
-            TClientDataSet cdsUserMail = TClientDataSet.create(vs, "USUARIOEMAIL");
-            cdsUserMail.createDataSet();
-            cdsUserMail.condicao("WHERE USUARIOEMAIL.CUSUARIO=25");
-            cdsUserMail.open();
-
-            mensagemEmail = "Olá " + nomeDest + "! "
-                    + "<br/>Segue em anexo o boleto com data de vencimento " + duplicatasReceber.fieldByName("VCTO").asString()
-                    + "<br/>Dupl: " + duplicatasReceber.fieldByName("DUPLICATA").asString()
-                    + "<br/> Parc: " + duplicatasReceber.fieldByName("PARCELA").asString()
-                    + "<br/>Este e-mail foi gerado pela Píer 95 - Peixaria Online"
-                    + " <br/><br/><br/><br/>"
-                    + " <img src=\"http://portal.tecnicon.com.br:7078/peixaria/img/pierEmail.png\"/>";
-
-            if (!"".equals(destinatario)) {
-                anexos.put("Boleto " + duplicatasReceber.fieldByName("DUPLICATA").asString() + ".pdf", Funcoes.convertStringToByte(vs2.getRetornoOK()));
-
-                EmailConfig config = new EmailConfig(cdsUserMail.fieldByName("USUARIO").asString(), cdsUserMail.fieldByName("SENHA").asString(),
-                        cdsUserMail.fieldByName("HOSTSMTP").asString(), cdsUserMail.fieldByName("EMAIL").asString(),
-                        cdsUserMail.fieldByName("NOME").asString(), "", "", cdsUserMail.fieldByName("PORTSMTP").asInteger(),
-                        cdsUserMail.fieldByName("SSL").asString(), 17, 1);
-
-                String assunto = "Píer 95 - Boleto com vencimento em " + duplicatasReceber.fieldByName("VCTO").asString()
-                        + " " + duplicatasReceber.fieldByName("DUPLICATA").asString() + "-" + duplicatasReceber.fieldByName("PARCELA").asString();
-
-                new TEnviarEmail().enviarEmail(destinatario, "", "", assunto, mensagemEmail, config, anexos);
-
-                vs.setRetornoOK("Compra realizada com sucesso! \nUm e-mail com o boleto da compra foi enviado para o endereço \"" + destinatario + "\".");
-            }
         } catch (ExcecaoTecnicon ex) {
             throw new ExcecaoTecnicon(vs, ex.getMessage());
         }
 
         return "OK";
+    }
+
+    public void validaSaldo(VariavelSessao vs, JSONArray itens) throws ExcecaoTecnicon {
+        TSQLDataSetEmp produtoSaldo = TSQLDataSetEmp.create(vs);
+        StringBuilder prodSemSaldo = new StringBuilder();
+
+        for (int i = 0; i < itens.length(); i++) {
+            produtoSaldo.close();
+            produtoSaldo.commandText("SELECT SUM(SALDOPRODUTOLOTE.SALDO) SALDO, PRODUTO.MERCADORIA "
+                    + " FROM SALDOPRODUTOLOTE "
+                    + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE)"
+                    + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = SALDOPRODUTOLOTE.CPRODUTO) "
+                    + " WHERE SALDOPRODUTOLOTE.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
+                    + " AND PRODUTOLOTE.ATIVO = 'S' "
+                    + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy") + "'"
+                    + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO, PRODUTO.MERCADORIA"
+                    + " HAVING SUM(SALDOPRODUTOLOTE.SALDO) < " + itens.getJSONObject(i).getDouble("QTDE"));
+            produtoSaldo.open();
+
+            if (!produtoSaldo.isEmpty()) {
+                prodSemSaldo.append(produtoSaldo.fieldByName("MERCADORIA").asString()).append(" - Saldo: ")
+                        .append(produtoSaldo.fieldByName("SALDO").asDouble()).append("\n");
+            }
+        }
+
+        if (!prodSemSaldo.toString().isEmpty()) {
+            throw new ExcecaoMsg(vs, "Produtos com saldo em estoque menor do que a quantidade requisitada:\n" 
+                    + prodSemSaldo.toString() + "Para finalizar a compra, informe uma quantidade disponível.");
+        }
     }
 
     public String inserirNfs(VariavelSessao vs, TClientDataSet ds1) throws ExcecaoTecnicon {
@@ -349,4 +296,5 @@ public class venda {
             return retorno.put("S", cidadeFrete.fieldByName("VALOR").asString());
         }
     }
+
 }

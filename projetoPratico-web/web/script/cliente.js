@@ -660,7 +660,7 @@ function verItensCompra(itens) {
         td = document.createElement('td');
         tr.appendChild(td);
         td.setAttribute('class', 'tdQtdeCompra');
-        td.innerText = itens[i]['QTDE'].toFixed(3) + " " + itens[i]['UNIDADE'];
+        td.innerText = itens[i]['QTDE'].toFixed(3).replace('.', ',') + " " + itens[i]['UNIDADE'];
 
         td = document.createElement('td');
         td.setAttribute('class', 'tdTotal');
@@ -694,7 +694,7 @@ function esconderItensCompra(e) {
 }
 
 function enviarMensagem(e) {
-    if (document.querySelector("#emailClienteMensagem").value.trim() !== "" || document.querySelector("#nomeClienteMensagem").value.trim() !== "" ||
+    if (document.querySelector("#emailClienteMensagem").value.trim() !== "" && document.querySelector("#nomeClienteMensagem").value.trim() !== "" &&
             document.querySelector("#mensagemSobre").value.trim() !== "")
     {
         requisicaoHTTP("projetoPratico", "cliente", "enviarMensagemCliente", alert, alert,

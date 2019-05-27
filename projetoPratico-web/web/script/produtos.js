@@ -183,8 +183,6 @@ function listarProduto(produto) {
     saldo.innerText = (parseFloat(produto[0]['SALDO']) <= parseFloat(0) ? 'Produto Indisponível' : produto[0]['SALDO'] + ' ' + produto[0]['UN'] + ' disponíveis');
     dv.appendChild(saldo);
 
-//    dv.appendChild(document.createElement('br'));
-
     dvComprarMais = document.createElement('div');
     dvComprarMais.setAttribute('class', 'comprarMais');
     dvComprarMais.setAttribute('id', produto[0]['CPRODUTO']);
@@ -206,34 +204,40 @@ function adicionarCarrinho(e) {
     var un = produto.querySelector('.unidadeMais').innerText;
     var cproduto = this.id;
     var verificaSeJaTem = false;
+    var saldo = produto.querySelector('.saldoMais').innerText.split(" ", 1);
 
-    if (localStorage.carrinho) {
-        carrinho = JSON.parse(localStorage.carrinho);
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    if (parseFloat(qtde) <= parseFloat(saldo[0]))
+    {
+        if (localStorage.carrinho) {
+            carrinho = JSON.parse(localStorage.carrinho);
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
 
-        for (var i = 0; i < carrinho.produtos.length; i++) {
-            if (cproduto === carrinho['produtos'][i]['cproduto']) {
-                carrinho.produtos.find(function (obj, idx, arr) {
-                    if (obj.cproduto === cproduto) {
-                        arr[idx].qtde = parseFloat(arr[idx].qtde) + parseFloat(qtde);
-                        verificaSeJaTem = true;
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+            for (var i = 0; i < carrinho.produtos.length; i++) {
+                if (cproduto === carrinho['produtos'][i]['cproduto']) {
+                    carrinho.produtos.find(function (obj, idx, arr) {
+                        if (obj.cproduto === cproduto) {
+                            arr[idx].qtde = parseFloat(arr[idx].qtde) + parseFloat(qtde);
+                            verificaSeJaTem = true;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
             }
+        } else {
+            carrinho = {'produtos': []};
         }
-    } else {
-        carrinho = {'produtos': []};
-    }
 
-    if (!verificaSeJaTem) {
-        carrinho.produtos.push({'cproduto': cproduto, 'foto': foto, 'categoria': categoria, 'mercadoria': mercadoria, 'descricao': descricao,
-            'preco': preco, 'qtde': qtde, 'un': un});
+        if (!verificaSeJaTem) {
+            carrinho.produtos.push({'cproduto': cproduto, 'foto': foto, 'categoria': categoria, 'mercadoria': mercadoria, 'descricao': descricao,
+                'preco': preco, 'qtde': qtde, 'un': un});
+        }
+        window.localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        irCarrinho();
+    } else {
+        alert('Quantidade requisitada é maior do que o saldo em estoque!');
     }
-    window.localStorage.setItem('carrinho', JSON.stringify(carrinho));
-    irCarrinho();
 }
 
 function listarCarrinho() {
