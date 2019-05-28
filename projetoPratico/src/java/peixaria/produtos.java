@@ -34,7 +34,8 @@ public class produtos {
         produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
-                + " AND PRODUTO.ATIVO = 'S'");
+                + " AND PRODUTO.ATIVO = 'S'"
+                + " ORDER BY PRODUTO.MERCADORIA");
         produto.open();
 
         produto.first();
@@ -104,7 +105,8 @@ public class produtos {
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
                 + " AND PRODUTO.CGRUPO = " + vs.getParameter("CGRUPO")
-                + " AND PRODUTO.ATIVO = 'S'");
+                + " AND PRODUTO.ATIVO = 'S'"
+                + " ORDER BY PRODUTO.MERCADORIA");
         produto.open();
 
         produto.first();
@@ -149,7 +151,8 @@ public class produtos {
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
                 + " AND PRODUTO.DESCRICAO CONTAINING '" + vs.getParameter("DESCRICAO") + "'"
-                + " AND PRODUTO.ATIVO = 'S'");
+                + " AND PRODUTO.ATIVO = 'S'"
+                + " ORDER BY PRODUTO.MERCADORIA");
         produto.open();
 
         produto.first();

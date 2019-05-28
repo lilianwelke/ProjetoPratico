@@ -56,7 +56,7 @@ public class venda {
         pedido.fieldByName("CPRAZO").asInteger(1);
         pedido.fieldByName("CTRANSP").asInteger(17);
         pedido.fieldByName("FILIALTRANSP").asInteger(1);
-        pedido.fieldByName("PREVDT").asDate(new Date());
+        pedido.fieldByName("PREVDT").asDate(Funcoes.incDay(new Date(), 14));
         pedido.fieldByName("DATA").asDate(new Date());
         pedido.fieldByName("CVENDEDOR").asInteger(17);
         pedido.fieldByName("CFILIAL").asInteger(1);
@@ -130,8 +130,8 @@ public class venda {
         duplicatasReceber.fieldByName("PARCELA").asString("1/1");
         duplicatasReceber.fieldByName("DUPLICATA").asString("PX" + pedido.fieldByName("PEDIDO").asInteger());
         duplicatasReceber.fieldByName("NOSSONUMERO").asString(duplicatasReceber.fieldByName("DUPLICATA").asString());
-        duplicatasReceber.fieldByName("VCTO").asDate(Funcoes.addHoras(new Date(), 360));
-        duplicatasReceber.fieldByName("VCTOP").asDate(Funcoes.addHoras(new Date(), 360));
+        duplicatasReceber.fieldByName("VCTO").asDate(Funcoes.incDay(new Date(), 7));
+        duplicatasReceber.fieldByName("VCTOP").asDate(Funcoes.incDay(new Date(), 7));
         duplicatasReceber.fieldByName("VALOR").asDouble(valor);
         duplicatasReceber.post();
 
