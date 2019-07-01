@@ -32,6 +32,9 @@
             <included-library dirs="200">file.reference.TecniconUtils.jar-1</included-library>
             <included-library dirs="200">file.reference.TecniconInterfaces.jar-1</included-library>
             <included-library dirs="200">file.reference.javax.mail-1.6.2.jar</included-library>
+            <included-library dirs="200">file.reference.commons-fileupload-1.2.2.jar</included-library>
+            <included-library dirs="200">file.reference.jcifs-1.3.18b.jar</included-library>
+            <included-library dirs="200">file.reference.commons-net-3.1.jar</included-library>
             <source-roots>
                 <root id="src.dir" name="Pacotes de Códigos-fonte"/>
             </source-roots>

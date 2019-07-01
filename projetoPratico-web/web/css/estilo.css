@@ -4,16 +4,19 @@ html {
     color:#0b3767;
 }
 body {
-    background-color: rgba(239, 239, 239, 0.05);
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
 }
 header {
-    border-bottom: solid 0.1em rgba(11, 55, 103, 0.7);
-    height: 6.5em;
+    border-bottom: solid 0.05em rgba(11, 55, 103, 0.7);
+    height: 100px;
+    background-color: rgba(203, 209, 215, .09);
 }
 #logoHeader {
     display: inline-block;
     width: 5em;
-    margin: .25em .5em .25em 3em;
+    margin: 0.4% 0 0 5%;
     cursor: pointer;
 }
 #imgHeader, #imgHeaderSec {
@@ -26,12 +29,12 @@ header {
     cursor: pointer;
 }
 #nomeHeader h1 {
-    font-size: 2em;
+    font-size: 1.9em;
     position: relative;
     top: -.7em;
 }
 #nomeHeader h2 {
-    font-size: .88em;
+    font-size: .84em;
     position: relative;
     top: -1.9em;
 }
@@ -43,15 +46,15 @@ header {
 }
 .divPesquisa{
     position: absolute;
-    top: 1.25em;
-    left: 28%;
+    top: 1em;
+    left: 27%;
 }
 .formPesquisa {
     width: 32em;
     display: inline-block;
 }
 .pesquisa {
-    padding: .6em 2.1em .6em .6em;
+    padding: .5em 2.1em .5em .5em;
     width: 32em;
     border-radius: .2em;
     background-color: rgba(203, 209, 215, .3);
@@ -82,8 +85,8 @@ header {
 }
 .carrinho {
     position: absolute;
-    top: 0.75em;
-    right: 6%;
+    top: 0.8em;
+    right: 5%;
     color: #0b3767;
     cursor: pointer;
 }
@@ -103,9 +106,9 @@ header {
 }
 nav {
     position: absolute;
-    top: 4.5em;
-    left: 25%;
-    width: 43em;
+    top: 3.75em;
+    left: 25.5%;
+    width: 40em;
     height: 1.5em;
     text-align: center;
 }
@@ -114,7 +117,7 @@ nav ul {
     margin: 0;
 }
 nav li {
-    font-size: 1.2em;
+    font-size: 1.09em;
     display: inline-block;
     margin: 0.75em 3.7em .25em 0;
     cursor: pointer;

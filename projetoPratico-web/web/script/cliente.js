@@ -697,13 +697,21 @@ function enviarMensagem(e) {
     if (document.querySelector("#emailClienteMensagem").value.trim() !== "" && document.querySelector("#nomeClienteMensagem").value.trim() !== "" &&
             document.querySelector("#mensagemSobre").value.trim() !== "")
     {
-        requisicaoHTTP("projetoPratico", "cliente", "enviarMensagemCliente", alert, alert,
+        requisicaoHTTP("projetoPratico", "cliente", "enviarMensagemCliente", limparCampos, alert,
                 "&EMAIL=" + document.querySelector("#emailClienteMensagem").value
                 + "&NOME= " + document.querySelector("#nomeClienteMensagem").value
                 + "&MENSAGEM=" + document.querySelector("#mensagemSobre").value);
     } else {
         alert("Preencha todos os campos obrigatórios!");
     }
+}
+
+function limparCampos(e) {
+    alert(e);
+
+    document.querySelector("#emailClienteMensagem").value = "";
+    document.querySelector("#nomeClienteMensagem").value = "";
+    document.querySelector("#mensagemSobre").value = "*Mensagem";
 }
 
 init();

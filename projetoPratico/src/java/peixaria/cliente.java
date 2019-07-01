@@ -442,40 +442,66 @@ public class cliente {
         }
     }
 
-    public String enviarMensagemCliente(VariavelSessao vs) throws ExcecaoTecnicon, AddressException {
-        Properties props = new Properties();
+    public String enviarMensagemCliente(VariavelSessao vs) throws ExcecaoTecnicon {
+        TClientDataSet sac = TClientDataSet.create(vs, "SAC");
+        sac.createDataSet();
+
         try {
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.socketFactory.port", "465");
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.port", "465");
 
-            Session session = Session.getInstance(props,
-                    new javax.mail.Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("pier95.contato@gmail.com", "pier123!");
-                }
-            });
+            sac.insert();
 
-            session.setDebug(true);
+            sac.fieldByName("HRABERTURA").asTime(new Date());
+            sac.fieldByName("DTABERTURA").asDate(new Date());
+            sac.fieldByName("CSACFORMACONTATO").asInteger(1);
+            sac.fieldByName("CSACTIPO").asInteger(1);
+            sac.fieldByName("CSACCATCONTATO").asInteger(2);
+            sac.fieldByName("STATUS").asString("P");
+            sac.fieldByName("NOME").asString(vs.getParameter("NOME"));
+            sac.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
+            sac.fieldByName("PROBLEMA").asString(vs.getParameter("MENSAGEM"));
 
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("pier95.contato@gmail.com", "Píer 95 Contato"));
-
-            message.setReplyTo(InternetAddress.parse(vs.getParameter("EMAIL")));
-
-            Address[] destinatario = InternetAddress.parse("lw005973@cfjl.com.br");
-
-            message.setRecipients(Message.RecipientType.TO, destinatario);
-            message.setSubject("E-mail recebido pelo site Píer 95 - Peixaria Online");//Assunto
-            message.setText("Este e-mail foi enviado por " + vs.getParameter("NOME") + " na página \"conheça a gente\" do site Píer 95 - Peixaria Online."
-                    + " \nMensagem: \"" + vs.getParameter("MENSAGEM") + "\"");
-            Transport.send(message);
+            sac.post();
 
         } catch (Exception e) {
             throw new ExcecaoMsg(vs, e.getMessage());
         }
         return "Sua mensagem foi enviada com sucesso!";
     }
+
+//    public String enviarMensagemCliente(VariavelSessao vs) throws ExcecaoTecnicon, AddressException {
+//        Properties props = new Properties();
+//        try {
+//            props.put("mail.smtp.host", "smtp.gmail.com");
+//            props.put("mail.smtp.socketFactory.port", "465");
+//            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+//            props.put("mail.smtp.auth", "true");
+//            props.put("mail.smtp.port", "465");
+//
+//            Session session = Session.getInstance(props,
+//                    new javax.mail.Authenticator() {
+//                protected PasswordAuthentication getPasswordAuthentication() {
+//                    return new PasswordAuthentication("pier95.contato@gmail.com", "pier123!");
+//                }
+//            });
+//
+//            session.setDebug(true);
+//
+//            Message message = new MimeMessage(session);
+//            message.setFrom(new InternetAddress("pier95.contato@gmail.com", "Píer 95 Contato"));
+//
+//            message.setReplyTo(InternetAddress.parse(vs.getParameter("EMAIL")));
+//
+//            Address[] destinatario = InternetAddress.parse("lw005973@cfjl.com.br");
+//
+//            message.setRecipients(Message.RecipientType.TO, destinatario);
+//            message.setSubject("E-mail recebido pelo site Píer 95 - Peixaria Online");//Assunto
+//            message.setText("Este e-mail foi enviado por " + vs.getParameter("NOME") + " na página \"conheça a gente\" do site Píer 95 - Peixaria Online."
+//                    + " \nMensagem: \"" + vs.getParameter("MENSAGEM") + "\"");
+//            Transport.send(message);
+//
+//        } catch (Exception e) {
+//            throw new ExcecaoMsg(vs, e.getMessage());
+//        }
+//        return "Sua mensagem foi enviada com sucesso!";
+//    }
 }

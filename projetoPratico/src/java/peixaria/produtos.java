@@ -38,30 +38,33 @@ public class produtos {
                 + " ORDER BY PRODUTO.MERCADORIA");
         produto.open();
 
-        produto.first();
-        while (!produto.eof()) {
+        try {
+            produto.first();
+            while (!produto.eof()) {
 
-            vs.addParametros("CPRODUTO", produto.fieldByName("CPRODUTO").asString());
-            vs.addParametros("filial", "1");
-            produto2 = TecniconLookup.lookup("Produto2/Produto2");
-            baseImg = (String) produto2.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produto2, vs);
-            retornoImg = new JSONObject(baseImg);
+                vs.addParametros("CPRODUTO", produto.fieldByName("CPRODUTO").asString());
+                vs.addParametros("filial", "1");
+                produto2 = TecniconLookup.lookup("Produto2/Produto2");
+                baseImg = (String) produto2.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produto2, vs);
+                retornoImg = new JSONObject(baseImg);
 
-            produtos = new JSONObject();
-            produtos.put("CPRODUTO", produto.fieldByName("CPRODUTO").asInteger());
-            produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
-            produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
+                produtos = new JSONObject();
+                produtos.put("CPRODUTO", produto.fieldByName("CPRODUTO").asInteger());
+                produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
+                produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
+                if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
+                    produtos.put("IMAGEM", retornoImg.getString("src"));
+                } else {
+                    produtos.put("IMAGEM", "");
+                }
 
-            if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
-                produtos.put("IMAGEM", retornoImg.getString("src"));
-            } else {
-                produtos.put("IMAGEM", "");
+                produtosArray.put(i, produtos);
+                vs.removeParametro("CPRODUTO");
+                i++;
+                produto.next();
             }
-
-            produtosArray.put(i, produtos);
-            vs.removeParametro("CPRODUTO");
-            i++;
-            produto.next();
+        } catch (Exception ex) {
+            throw new ExcecaoTecnicon(vs, ex.getMessage());
         }
         return produtosArray;
     }

@@ -15,7 +15,7 @@ is divided into following sections:
   - cleanup
 
         -->
-<project xmlns:ejbjarproject1="http://www.netbeans.org/ns/j2ee-ejbjarproject/1" xmlns:ejbjarproject2="http://www.netbeans.org/ns/j2ee-ejbjarproject/2" xmlns:ejbjarproject3="http://www.netbeans.org/ns/j2ee-ejbjarproject/3" basedir=".." default="default" name="projetoPratico-impl">
+<project xmlns:ejbjarproject1="http://www.netbeans.org/ns/j2ee-ejbjarproject/1" xmlns:ejbjarproject2="http://www.netbeans.org/ns/j2ee-ejbjarproject/2" xmlns:ejbjarproject3="http://www.netbeans.org/ns/j2ee-ejbjarproject/3" basedir=".." default="default" name="ex-impl">
     <import file="ant-deploy.xml"/>
     <fail message="Please build using Ant 1.7.1 or higher.">
         <condition>
@@ -408,7 +408,7 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
                     </fileset>
                 </union>
                 <taskdef classname="org.testng.TestNGAntTask" classpath="${run.test.classpath}" name="testng"/>
-                <testng classfilesetref="test.set" failureProperty="tests.failed" listeners="org.testng.reporters.VerboseReporter" methods="${testng.methods.arg}" mode="${testng.mode}" outputdir="${build.test.results.dir}" suitename="projetoPratico" testname="TestNG tests" workingDir="${basedir}">
+                <testng classfilesetref="test.set" failureProperty="tests.failed" listeners="org.testng.reporters.VerboseReporter" methods="${testng.methods.arg}" mode="${testng.mode}" outputdir="${build.test.results.dir}" suitename="ex" testname="TestNG tests" workingDir="${basedir}">
                     <xmlfileset dir="${build.test.classes.dir}" includes="@{testincludes}"/>
                     <propertyset>
                         <propertyref prefix="test-sys-prop."/>
@@ -560,7 +560,7 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
                 <condition else="-testclass @{testClass}" property="test.class.or.method" value="-methods @{testClass}.@{testMethod}">
                     <isset property="test.method"/>
                 </condition>
-                <condition else="-suitename projetoPratico -testname @{testClass} ${test.class.or.method}" property="testng.cmd.args" value="@{testClass}">
+                <condition else="-suitename ex -testname @{testClass} ${test.class.or.method}" property="testng.cmd.args" value="@{testClass}">
                     <matches pattern=".*\.xml" string="@{testClass}"/>
                 </condition>
                 <delete dir="${build.test.results.dir}" quiet="true"/>
@@ -792,134 +792,11 @@ exists or setup the property manually. For example like this:
         <!-- You can override this target in the ../build.xml file. -->
     </target>
     <target depends="compile,-library-inclusion-in-archive-weblogic,-library-inclusion-in-archive-by-user" name="library-inclusion-in-archive"/>
-    <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
-        <copyfiles files="${file.reference.ArquivosConfiguracao.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.ComponenteHtml.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconExcecoes.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconFileUtils.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconInformacoes.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconInterfaces.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconJson.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconLookup.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconMail.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconPolice.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconTDataSet.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconTSessao.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconUtils.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.ArquivosConfiguracao.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.ComponenteHtml.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconExcecoes.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconFileUtils.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconInformacoes.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconJson.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconLookup.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconMail.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconPolice.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconTDataSet.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconTSessao.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconUtils.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.TecniconInterfaces.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.javax.mail-1.6.2.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.commons-fileupload-1.2.2.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.jcifs-1.3.18b.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.commons-net-3.1.jar}" todir="${build.classes.dir}"/>
-    </target>
+    <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user"/>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
-        <basename file="${file.reference.ArquivosConfiguracao.jar}" property="manifest.file.reference.ArquivosConfiguracao.jar"/>
-        <basename file="${file.reference.ComponenteHtml.jar}" property="manifest.file.reference.ComponenteHtml.jar"/>
-        <basename file="${file.reference.TecniconExcecoes.jar}" property="manifest.file.reference.TecniconExcecoes.jar"/>
-        <basename file="${file.reference.TecniconFileUtils.jar}" property="manifest.file.reference.TecniconFileUtils.jar"/>
-        <basename file="${file.reference.TecniconInformacoes.jar}" property="manifest.file.reference.TecniconInformacoes.jar"/>
-        <basename file="${file.reference.TecniconInterfaces.jar}" property="manifest.file.reference.TecniconInterfaces.jar"/>
-        <basename file="${file.reference.TecniconJson.jar}" property="manifest.file.reference.TecniconJson.jar"/>
-        <basename file="${file.reference.TecniconLookup.jar}" property="manifest.file.reference.TecniconLookup.jar"/>
-        <basename file="${file.reference.TecniconMail.jar}" property="manifest.file.reference.TecniconMail.jar"/>
-        <basename file="${file.reference.TecniconPolice.jar}" property="manifest.file.reference.TecniconPolice.jar"/>
-        <basename file="${file.reference.TecniconTDataSet.jar}" property="manifest.file.reference.TecniconTDataSet.jar"/>
-        <basename file="${file.reference.TecniconTSessao.jar}" property="manifest.file.reference.TecniconTSessao.jar"/>
-        <basename file="${file.reference.TecniconUtils.jar}" property="manifest.file.reference.TecniconUtils.jar"/>
-        <basename file="${file.reference.ArquivosConfiguracao.jar-1}" property="manifest.file.reference.ArquivosConfiguracao.jar-1"/>
-        <basename file="${file.reference.ComponenteHtml.jar-1}" property="manifest.file.reference.ComponenteHtml.jar-1"/>
-        <basename file="${file.reference.TecniconExcecoes.jar-1}" property="manifest.file.reference.TecniconExcecoes.jar-1"/>
-        <basename file="${file.reference.TecniconFileUtils.jar-1}" property="manifest.file.reference.TecniconFileUtils.jar-1"/>
-        <basename file="${file.reference.TecniconInformacoes.jar-1}" property="manifest.file.reference.TecniconInformacoes.jar-1"/>
-        <basename file="${file.reference.TecniconJson.jar-1}" property="manifest.file.reference.TecniconJson.jar-1"/>
-        <basename file="${file.reference.TecniconLookup.jar-1}" property="manifest.file.reference.TecniconLookup.jar-1"/>
-        <basename file="${file.reference.TecniconMail.jar-1}" property="manifest.file.reference.TecniconMail.jar-1"/>
-        <basename file="${file.reference.TecniconPolice.jar-1}" property="manifest.file.reference.TecniconPolice.jar-1"/>
-        <basename file="${file.reference.TecniconTDataSet.jar-1}" property="manifest.file.reference.TecniconTDataSet.jar-1"/>
-        <basename file="${file.reference.TecniconTSessao.jar-1}" property="manifest.file.reference.TecniconTSessao.jar-1"/>
-        <basename file="${file.reference.TecniconUtils.jar-1}" property="manifest.file.reference.TecniconUtils.jar-1"/>
-        <basename file="${file.reference.TecniconInterfaces.jar-1}" property="manifest.file.reference.TecniconInterfaces.jar-1"/>
-        <basename file="${file.reference.javax.mail-1.6.2.jar}" property="manifest.file.reference.javax.mail-1.6.2.jar"/>
-        <basename file="${file.reference.commons-fileupload-1.2.2.jar}" property="manifest.file.reference.commons-fileupload-1.2.2.jar"/>
-        <basename file="${file.reference.jcifs-1.3.18b.jar}" property="manifest.file.reference.jcifs-1.3.18b.jar"/>
-        <basename file="${file.reference.commons-net-3.1.jar}" property="manifest.file.reference.commons-net-3.1.jar"/>
-        <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 jar-5 jar-6 jar-7 jar-8 jar-9 jar-10 jar-11 jar-12 jar-13 jar-14 jar-15 jar-16 jar-17 jar-18 jar-19 jar-20 jar-21 jar-22 jar-23 jar-24 jar-25 jar-26 jar-27 jar-28 jar-29 jar-30 "/>
-            <attribute name="jar-1-Extension-Name" value="${manifest.file.reference.ArquivosConfiguracao.jar}"/>
-            <attribute name="jar-2-Extension-Name" value="${manifest.file.reference.ComponenteHtml.jar}"/>
-            <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.TecniconExcecoes.jar}"/>
-            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.TecniconFileUtils.jar}"/>
-            <attribute name="jar-5-Extension-Name" value="${manifest.file.reference.TecniconInformacoes.jar}"/>
-            <attribute name="jar-6-Extension-Name" value="${manifest.file.reference.TecniconInterfaces.jar}"/>
-            <attribute name="jar-7-Extension-Name" value="${manifest.file.reference.TecniconJson.jar}"/>
-            <attribute name="jar-8-Extension-Name" value="${manifest.file.reference.TecniconLookup.jar}"/>
-            <attribute name="jar-9-Extension-Name" value="${manifest.file.reference.TecniconMail.jar}"/>
-            <attribute name="jar-10-Extension-Name" value="${manifest.file.reference.TecniconPolice.jar}"/>
-            <attribute name="jar-11-Extension-Name" value="${manifest.file.reference.TecniconTDataSet.jar}"/>
-            <attribute name="jar-12-Extension-Name" value="${manifest.file.reference.TecniconTSessao.jar}"/>
-            <attribute name="jar-13-Extension-Name" value="${manifest.file.reference.TecniconUtils.jar}"/>
-            <attribute name="jar-14-Extension-Name" value="${manifest.file.reference.ArquivosConfiguracao.jar-1}"/>
-            <attribute name="jar-15-Extension-Name" value="${manifest.file.reference.ComponenteHtml.jar-1}"/>
-            <attribute name="jar-16-Extension-Name" value="${manifest.file.reference.TecniconExcecoes.jar-1}"/>
-            <attribute name="jar-17-Extension-Name" value="${manifest.file.reference.TecniconFileUtils.jar-1}"/>
-            <attribute name="jar-18-Extension-Name" value="${manifest.file.reference.TecniconInformacoes.jar-1}"/>
-            <attribute name="jar-19-Extension-Name" value="${manifest.file.reference.TecniconJson.jar-1}"/>
-            <attribute name="jar-20-Extension-Name" value="${manifest.file.reference.TecniconLookup.jar-1}"/>
-            <attribute name="jar-21-Extension-Name" value="${manifest.file.reference.TecniconMail.jar-1}"/>
-            <attribute name="jar-22-Extension-Name" value="${manifest.file.reference.TecniconPolice.jar-1}"/>
-            <attribute name="jar-23-Extension-Name" value="${manifest.file.reference.TecniconTDataSet.jar-1}"/>
-            <attribute name="jar-24-Extension-Name" value="${manifest.file.reference.TecniconTSessao.jar-1}"/>
-            <attribute name="jar-25-Extension-Name" value="${manifest.file.reference.TecniconUtils.jar-1}"/>
-            <attribute name="jar-26-Extension-Name" value="${manifest.file.reference.TecniconInterfaces.jar-1}"/>
-            <attribute name="jar-27-Extension-Name" value="${manifest.file.reference.javax.mail-1.6.2.jar}"/>
-            <attribute name="jar-28-Extension-Name" value="${manifest.file.reference.commons-fileupload-1.2.2.jar}"/>
-            <attribute name="jar-29-Extension-Name" value="${manifest.file.reference.jcifs-1.3.18b.jar}"/>
-            <attribute name="jar-30-Extension-Name" value="${manifest.file.reference.commons-net-3.1.jar}"/>
-        </manifest>
+        <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
-        <copyfiles files="${file.reference.ArquivosConfiguracao.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.ComponenteHtml.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconExcecoes.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconFileUtils.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconInformacoes.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconInterfaces.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconJson.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconLookup.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconMail.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconPolice.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconTDataSet.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconTSessao.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconUtils.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.ArquivosConfiguracao.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.ComponenteHtml.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconExcecoes.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconFileUtils.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconInformacoes.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconJson.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconLookup.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconMail.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconPolice.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconTDataSet.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconTSessao.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconUtils.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.TecniconInterfaces.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javax.mail-1.6.2.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.commons-fileupload-1.2.2.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.jcifs-1.3.18b.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.commons-net-3.1.jar}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">

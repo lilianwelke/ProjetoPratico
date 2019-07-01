@@ -181,7 +181,7 @@ public class venda {
         }
 
         if (!prodSemSaldo.toString().isEmpty()) {
-            throw new ExcecaoMsg(vs, "Produtos com saldo em estoque menor do que a quantidade requisitada:\n" 
+            throw new ExcecaoMsg(vs, "Produtos com saldo em estoque menor do que a quantidade requisitada:\n"
                     + prodSemSaldo.toString() + "Para finalizar a compra, informe uma quantidade disponível.");
         }
     }
@@ -223,7 +223,7 @@ public class venda {
 
             pedido.close();
             pedido.commandText("SELECT PEDIDOITEM.CPRODUTO, PEDIDOITEM.QTDE, NFSITEMLOTE.SPRODUTOLOTE, NFSITEMLOTE.CLOCALLOTE, "
-                    + " NFSITEMLOTE.QTDE AS QTDELOTE, PEDIDOITEM.PEDIDOITEM, PEDIDOITEM.UNITARIOCLI "
+                    + " NFSITEMLOTE.QTDE AS QTDELOTE, PEDIDOITEM.PEDIDOITEM, PEDIDOITEM.UNITARIOCLI, NFSITEMLOTE.SNFSITEMLOTE "
                     + " FROM PEDIDOITEM"
                     + " LEFT JOIN NFSITEMLOTE ON (NFSITEMLOTE.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM)"
                     + " WHERE PEDIDOITEM.PEDIDO = " + codPedido);
@@ -260,11 +260,12 @@ public class venda {
 
                 while (!pedido.eof() && pedidoItem == pedido.fieldByName("PEDIDOITEM").asInteger()) {
                     if (!pedido.fieldByName("SPRODUTOLOTE").asString().isEmpty()) {
-                        nfsItemLote.insert();
+                        nfsItemLote.close();
+                        nfsItemLote.condicao(" WHERE NFSITEMLOTE.SNFSITEMLOTE = " + pedido.fieldByName("SNFSITEMLOTE").asInteger());
+                        nfsItemLote.open();
+                        
+                        nfsItemLote.edit();
                         nfsItemLote.fieldByName("NFSITEM").asInteger(nfsItem.fieldByName("NFSITEM").asInteger());
-                        nfsItemLote.fieldByName("SPRODUTOLOTE").asInteger(pedido.fieldByName("SPRODUTOLOTE").asInteger());
-                        nfsItemLote.fieldByName("CLOCALLOTE").asInteger(pedido.fieldByName("CLOCALLOTE").asInteger());
-                        nfsItemLote.fieldByName("QTDE").asDouble(pedido.fieldByName("QTDELOTE").asDouble());
                         nfsItemLote.post();
                     }
                     pedido.next();
