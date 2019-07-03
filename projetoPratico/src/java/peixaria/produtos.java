@@ -21,6 +21,57 @@ import org.json.JSONObject;
 @LocalBean
 public class produtos {
 
+    public JSONArray listarOfertas(VariavelSessao vs) throws ExcecaoTecnicon, Exception {
+        TSQLDataSetEmp oferta = TSQLDataSetEmp.create(vs);
+        JSONObject produtos = new JSONObject();
+        JSONArray produtosArray = new JSONArray();
+        int i = 0;
+        Object produto2 = TecniconLookup.lookup("Produto2/Produto2");
+        String baseImg = "";
+        JSONObject retornoImg = new JSONObject();
+
+        oferta.close();
+        oferta.commandText(" SELECT PROMOCAOPXITENS.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
+                + " (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+                + " FROM PROMOCAOPX "
+                + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
+                + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PROMOCAOPXITENS.CPRODUTO) "
+                + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
+                + " AND PROMOCAOPX.ATIVO = 'S' "
+                + " ORDER BY PRODUTO.MERCADORIA");
+        oferta.open();
+
+        try {
+            oferta.first();
+            while (!oferta.eof()) {
+
+                vs.addParametros("CPRODUTO", oferta.fieldByName("CPRODUTO").asString());
+                vs.addParametros("filial", "1");
+                produto2 = TecniconLookup.lookup("Produto2/Produto2");
+                baseImg = (String) produto2.getClass().getMethod("buscarDadosImagem", VariavelSessao.class).invoke(produto2, vs);
+                retornoImg = new JSONObject(baseImg);
+
+                produtos = new JSONObject();
+                produtos.put("CPRODUTO", oferta.fieldByName("CPRODUTO").asInteger());
+                produtos.put("PRODUTO", oferta.fieldByName("DESCRICAO").asString());
+                produtos.put("PRECO", oferta.fieldByName("PRECOMERCADO").asDouble());
+                if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
+                    produtos.put("IMAGEM", retornoImg.getString("src"));
+                } else {
+                    produtos.put("IMAGEM", "");
+                }
+
+                produtosArray.put(i, produtos);
+                vs.removeParametro("CPRODUTO");
+                i++;
+                oferta.next();
+            }
+        } catch (Exception ex) {
+            throw new ExcecaoTecnicon(vs, ex.getMessage());
+        }
+        return produtosArray;
+    }
+
     public JSONArray listarProdutos(VariavelSessao vs) throws ExcecaoTecnicon, Exception {
         TSQLDataSetEmp produto = TSQLDataSetEmp.create(vs);
         JSONObject produtos = new JSONObject();
@@ -31,7 +82,13 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
+                + " COALESCE((SELECT (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+                + " FROM PROMOCAOPX "
+                + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
+                + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
+                + " AND PROMOCAOPX.ATIVO = 'S'"
+                + " AND PROMOCAOPXITENS.CPRODUTO = PRODUTO.CPRODUTO), PRODUTO.PRECOMERCADO) PRECOMERCADO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
                 + " AND PRODUTO.ATIVO = 'S'"
@@ -150,10 +207,16 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PRODUTO.PRECOMERCADO "
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
+                + " COALESCE((SELECT (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+                + " FROM PROMOCAOPX "
+                + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
+                + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
+                + " AND PROMOCAOPX.ATIVO = 'S'"
+                + " AND PROMOCAOPXITENS.CPRODUTO = PRODUTO.CPRODUTO), PRODUTO.PRECOMERCADO) PRECOMERCADO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
-                + " AND PRODUTO.DESCRICAO CONTAINING '" + vs.getParameter("DESCRICAO") + "'"
+                + " AND PRODUTO.DESCRICAO CONTAINING '" + vs.getParameter("DESCRICAO").toLowerCase() + "'"
                 + " AND PRODUTO.ATIVO = 'S'"
                 + " ORDER BY PRODUTO.MERCADORIA");
         produto.open();
@@ -196,7 +259,14 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PRODUTO.PRECOMERCADO, PRODUTO.UNIDADE,"
+        produto.commandText(" SELECT PRODUTO.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, "
+                + " COALESCE((SELECT (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+                + " FROM PROMOCAOPX "
+                + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
+                + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
+                + " AND PROMOCAOPX.ATIVO = 'S'"
+                + " AND PROMOCAOPXITENS.CPRODUTO = PRODUTO.CPRODUTO), PRODUTO.PRECOMERCADO) PRECOMERCADO, "
+                + " PRODUTO.UNIDADE,"
                 + " (SELECT SUM(SALDOPRODUTOLOTE.SALDO) FROM SALDOPRODUTOLOTE "
                 + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE) "
                 + " WHERE SALDOPRODUTOLOTE.CPRODUTO = PRODUTO.CPRODUTO AND PRODUTOLOTE.ATIVO = 'S' "

@@ -6,6 +6,7 @@ function init() {
     document.querySelector(".lupa").addEventListener("click", pesquisarProdutos);
     document.querySelector(".carrinho").addEventListener("click", irCarrinho);
     document.querySelector(".pesquisa").addEventListener("blur", limparPesquisa);
+    document.querySelector("#ofertasSemana").addEventListener("click", irOfertas);
 }
 
 function irInicio() {
@@ -19,6 +20,18 @@ function limparPesquisa(e) {
         e.target.value = "";
     }
     , 10000);
+}
+
+function irOfertas() {
+    setInvisible();
+    document.querySelector(".listaOfertas").style.display = "block";
+    setVisible(".listaOfertas");
+
+    requisicaoHTTP("projetoPratico", "produtos", "listarOfertas", listarOfertas, alert, "&CODIGOREF='PX'");
+}
+
+function listarOfertas(produtos) {
+    listarTodosProdutos(produtos, true);
 }
 
 function irPeixes(pesquisa) {
@@ -71,9 +84,9 @@ function irCarrinho(e) {
     listarCarrinho();
 }
 
-function listarTodosProdutos(produtos) {
+function listarTodosProdutos(produtos, oferta) {
     var dv, hUm, p, dvVerMais, img;
-    var div = document.querySelector('.listaProdutos');
+    var div = (oferta ? document.querySelector('.listaOfertas') : document.querySelector('.listaProdutos'));
     div.innerHTML = "";
 
     for (var i = 0; i < produtos.length; i++)

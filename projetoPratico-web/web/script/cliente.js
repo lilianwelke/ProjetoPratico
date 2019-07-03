@@ -313,24 +313,50 @@ function verMeusDados() {
 }
 
 function setarClienteCampos(cliente) {
-    document.querySelector("#cancelarMeusDados").cliente = cliente;
-    document.querySelector("#NOMEE").value = cliente["linhas"][0]["NOMEFILIAL"];
-    document.querySelector("#EMAILE").value = cliente["linhas"][0]["EMAIL"];
-    document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
-    document.querySelector("#FONEE").value = cliente["linhas"][0]["FONE"];
-    document.querySelector("#CELULARE").value = cliente["linhas"][0]["CELULAR"];
-    document.querySelector("#COMPLEMENTOE").value = cliente["linhas"][0]["COMPLEMENTO"];
-    document.querySelector("#BAIRROE").value = cliente["linhas"][0]["BAIRRO"];
-    document.querySelector("#NUMEROE").value = cliente["linhas"][0]["NUMERO"];
-    document.querySelector("#ENDERECOE").value = cliente["linhas"][0]["ENDERECO"];
-    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
-    document.querySelector("#NCIDADE1E").value = cliente["linhas"][0]["CIDADE"];
-    document.querySelector("#NUF1E").value = cliente["linhas"][0]["UF"];
-    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
-    document.querySelector("#CGCE").value = cliente["linhas"][0]["CGC"];
+    var dados = JSON.parse(cliente[0]);
+    document.querySelector("#cancelarMeusDados").cliente = dados;
+    document.querySelector("#NOMEE").value = dados["linhas"][0]["NOMEFILIAL"];
+    document.querySelector("#EMAILE").value = dados["linhas"][0]["EMAIL"];
+    document.querySelector("#USUARIOPXE").value = dados["linhas"][0]["USUARIOPX"];
+    document.querySelector("#FONEE").value = dados["linhas"][0]["FONE"];
+    document.querySelector("#CELULARE").value = dados["linhas"][0]["CELULAR"];
+    document.querySelector("#COMPLEMENTOE").value = dados["linhas"][0]["COMPLEMENTO"];
+    document.querySelector("#BAIRROE").value = dados["linhas"][0]["BAIRRO"];
+    document.querySelector("#NUMEROE").value = dados["linhas"][0]["NUMERO"];
+    document.querySelector("#ENDERECOE").value = dados["linhas"][0]["ENDERECO"];
+    document.querySelector("#CEPE").value = dados["linhas"][0]["CEP"];
+    document.querySelector("#NCIDADE1E").value = dados["linhas"][0]["CIDADE"];
+    document.querySelector("#NUF1E").value = dados["linhas"][0]["UF"];
+    document.querySelector("#CEPE").value = dados["linhas"][0]["CEP"];
+    document.querySelector("#CGCE").value = dados["linhas"][0]["CGC"];
     document.querySelector("#SENHAPXE").value = '';
     document.querySelector("#SENHANOVAE").value = '';
     document.querySelector("#SENHADENOVOE").value = '';
+
+    var enderecos = JSON.parse(cliente[1]);
+    var ul = document.querySelector(".liAdicionarEnd ul");
+    ul.innerHTML = "";
+    var li, i;
+
+    if (enderecos["linhas"].length > 0) {
+        for (var i = 0; i < enderecos["linhas"].length; i++)
+        {
+            li = document.createElement('li');
+            li.setAttribute('class', 'estiloAdicionarEnd');
+            li.innerText = "Endereço " + (parseFloat(i) + parseFloat(1));
+            ul.appendChild(li);
+        }
+    }
+
+    li = document.createElement('li');
+    li.setAttribute('class', 'estiloAdicionarEnd');
+    li.innerText = "Endereço ";
+    ul.appendChild(li);
+
+    i = document.createElement('i');
+    li.appendChild(i);
+    i.setAttribute('class', 'fas fa-plus');
+
 }
 
 function editarMeusDados() {

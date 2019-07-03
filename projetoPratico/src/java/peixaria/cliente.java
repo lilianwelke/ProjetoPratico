@@ -198,7 +198,9 @@ public class cliente {
         return senha.toString();
     }
 
-    public String buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
+    public JSONArray buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
+        JSONArray dadosCli = new JSONArray();
+
         TSQLDataSetEmp clienteSql = TSQLDataSetEmp.create(vs);
         clienteSql.commandText("SELECT CLIFOREND.NOMEFILIAL, CLIFOREND.EMAIL, LOGINPX.USUARIOPX, CLIFOREND.FONE, CLIFOREND.CELULAR, CLIFOREND.CGC, "
                 + " CLIFOREND.COMPLEMENTO, CLIFOREND.BAIRRO, CLIFOREND.NUMERO, CLIFOREND.ENDERECO, CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF"
@@ -207,7 +209,19 @@ public class cliente {
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE)"
                 + " WHERE LOGINPX.CCLIFOR = " + vs.getParameter("CCLIFOR"));
         clienteSql.open();
-        return clienteSql.jsonData();
+
+        TSQLDataSetEmp endCliente = TSQLDataSetEmp.create(vs);
+        endCliente.commandText("SELECT CLIENDENT.COMPLEMENTO, CLIENDENT.BAIRRO, CLIENDENT.NUMERO, CLIENDENT.ENDERECO, CLIENDENT.CEP, CIDADE.CIDADE, "
+                + " CIDADE.UF "
+                + " FROM CLIENDENT "
+                + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE)"
+                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+        endCliente.open();
+
+        dadosCli.put(0, clienteSql.jsonData());
+        dadosCli.put(1, endCliente.jsonData());
+
+        return dadosCli;
     }
 
     public void validarSenhaAntiga(VariavelSessao vs) throws ExcecaoTecnicon {
