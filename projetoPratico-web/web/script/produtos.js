@@ -254,6 +254,10 @@ function adicionarCarrinho(e) {
 }
 
 function listarCarrinho() {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
     var itensCarrinho = {};
     itensCarrinho = window.localStorage.getItem('carrinho');
     itensCarrinho = JSON.parse(itensCarrinho);
@@ -390,7 +394,7 @@ function listarCarrinho() {
 
         td = document.createElement('td');
         tr.appendChild(td);
-        td.innerText = 'Calcular Frete:';
+        td.innerText = (logon ? 'Endereço de Entrega:' : 'Calcular Frete:');
         td.setAttribute('colspan', '3');
 
         td = document.createElement('td');
@@ -409,7 +413,8 @@ function listarCarrinho() {
 
         td = document.createElement('td');
         tr.appendChild(td);
-        td.innerText = 'Informe o CEP';
+        td.setAttribute('class', 'endPadraoCep');
+        td.innerText = (logon ? 'Endereço Padrão' : 'Informe o CEP');
 
         td = document.createElement('td');
         input = document.createElement('input');
@@ -418,12 +423,21 @@ function listarCarrinho() {
         input.setAttribute('class', 'campoCep');
         td.appendChild(input);
 
+
         dvCalcular = document.createElement('div');
         dvCalcular.setAttribute('id', 'calcularFreteCarrinho');
         dvCalcular.innerText = 'Calcular';
         td.setAttribute('colspan', '2');
         td.appendChild(dvCalcular);
         tr.appendChild(td);
+        if (logon)
+        {
+            dvCalcular.style.display = 'none';
+            dvCalcular = document.createElement('div');
+            dvCalcular.setAttribute('id', 'alterarEnd');
+            dvCalcular.innerText = 'Alterar Endereço';
+            td.appendChild(dvCalcular);
+        }
 
         td = document.createElement('td');
         tr.appendChild(td);
@@ -448,6 +462,14 @@ function listarCarrinho() {
         td.setAttribute('class', 'cidadeUf');
         td.setAttribute('colspan', '2');
         tr.appendChild(td);
+
+        if (logon)
+        {
+            requisicaoHTTP("projetoPratico", "venda", "consultarEndPadrao", function (end) {
+                document.querySelector("#CEPC").setAttribute("value", end);
+                calcularFreteCarrinho();
+            }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
+        }
 
         td = document.createElement('td');
         tr.appendChild(td);
@@ -482,7 +504,12 @@ function listarCarrinho() {
     }
 
     document.querySelector('.atualizaCarrinho').addEventListener('click', listarCarrinho);
-    document.querySelector('#calcularFreteCarrinho').addEventListener('click', calcularFreteCarrinho);
+    if (logon)
+    {
+        document.querySelector('#alterarEnd').addEventListener('click', alterarEnd);
+    } else {
+        document.querySelector('#calcularFreteCarrinho').addEventListener('click', calcularFreteCarrinho);
+    }
 
     var arrr = document.querySelectorAll(".qtdeCompra");
     for (var k = 0; k < arrr.length; k++)
@@ -492,6 +519,73 @@ function listarCarrinho() {
 
     document.querySelector('#finalizarCompra').addEventListener('click', finalizarCompra);
 
+}
+
+function alterarEnd() {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    var divPrincipal, divSuperior, input, br, label, button, form;
+
+    divPrincipal = document.createElement("div");
+    document.querySelector("article").appendChild(divPrincipal);
+    divPrincipal.setAttribute("id", "divAlteraEnds");
+
+    divSuperior = document.createElement("div");
+    divPrincipal.appendChild(divSuperior);
+    divSuperior.setAttribute("id", "divAlteraEndsSup");
+    divSuperior.innerText = "Selecione um endereço:";
+
+    requisicaoHTTP("projetoPratico", "venda", "consultarTodosEnds", function (end) {
+        if (end["linhas"].length > 0)
+        {
+            form = document.createElement("form");
+            divPrincipal.appendChild(form);
+
+            for (var i = 0; i < end["linhas"].length; i++)
+            {
+                input = document.createElement("input");
+                input.setAttribute('class', "radioEnd");
+                input.setAttribute('id', end["linhas"][i]["PADRAO"]);
+                input.setAttribute('type', "radio");
+                input.setAttribute('name', "end");
+                input.setAttribute('value', end["linhas"][i]["CEP"]);
+                form.appendChild(input);
+
+                label = document.createElement("label");
+                label.innerText = end["linhas"][i]["CEP"] + " - " + end["linhas"][i]["CIDADE"] + " / " + end["linhas"][i]["UF"];
+                form.appendChild(label);
+
+                br = document.createElement("br");
+                form.appendChild(br);
+            }
+
+            button = document.createElement("div");
+            divPrincipal.appendChild(button);
+            button.setAttribute('class', "btnOk");
+            button.innerText = "OK";
+            button.addEventListener("click", selecionarEnd);
+        }
+
+    }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
+}
+
+function selecionarEnd(e) {
+
+    var end = document.getElementsByName("end");
+    var selecionado;
+
+    for (var i = 0; i < end.length; i++) {
+        if (end[i].checked) {
+            selecionado = end[i].value;
+        }
+    }
+
+    document.querySelector("#CEPC").setAttribute("value", selecionado);
+    calcularFreteCarrinho();
+
+    e.target.parentNode.parentNode.removeChild(document.querySelector("#divAlteraEnds"));
 }
 
 function removerItem(e) {

@@ -263,7 +263,7 @@ public class venda {
                         nfsItemLote.close();
                         nfsItemLote.condicao(" WHERE NFSITEMLOTE.SNFSITEMLOTE = " + pedido.fieldByName("SNFSITEMLOTE").asInteger());
                         nfsItemLote.open();
-                        
+
                         nfsItemLote.edit();
                         nfsItemLote.fieldByName("NFSITEM").asInteger(nfsItem.fieldByName("NFSITEM").asInteger());
                         nfsItemLote.post();
@@ -296,6 +296,37 @@ public class venda {
         } else {
             return retorno.put("S", cidadeFrete.fieldByName("VALOR").asString());
         }
+    }
+
+    public String consultarEndPadrao(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp end = TSQLDataSetEmp.create(vs);
+        end.commandText("SELECT CLIFOREND.CEP "
+                + " FROM CLIFOREND "
+                + " WHERE CLIFOREND.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+        end.open();
+
+        return end.fieldByName("CEP").asString();
+    }
+
+    public String consultarTodosEnds(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp end = TSQLDataSetEmp.create(vs);
+        end.commandText("SELECT ENDEREC.CEP, ENDEREC.CIDADE, ENDEREC.UF, ENDEREC.PADRAO"
+                + " FROM ( "
+                + " SELECT CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF, 0 AS PADRAO "
+                + " FROM CLIFOREND "
+                + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE) "
+                + " WHERE CLIFOREND.CCLIFOR = " + vs.getParameter("CCLIFOR")
+                + " UNION ALL "
+                + " SELECT CLIENDENT.CEP, CIDADE.CIDADE, CIDADE.UF, CLIENDENT.SCLIENDENT AS PADRAO "
+                + " FROM CLIENDENT "
+                + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE) "
+                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR")
+                + " ) ENDEREC"
+                + " ORDER BY ENDEREC.PADRAO "
+        );
+        end.open();
+
+        return end.jsonData();
     }
 
 }

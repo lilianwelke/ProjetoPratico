@@ -253,7 +253,7 @@ article {
     cursor: pointer;
 }
 .verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover,
-.btnMeusDados:hover, #calcularFreteCarrinho:hover {
+.btnMeusDados:hover, #calcularFreteCarrinho:hover, .btnMeusDadosEnd:hover, #alterarEnd:hover, .btnOk:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 
@@ -405,6 +405,36 @@ article {
     border: solid 0.09em rgba(11, 55, 103, .75);
     cursor: pointer;
     width: 20%;
+    display: inline-block;
+    margin-left: 10%;
+}
+#alterarEnd { 
+    text-align: center;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+    width: 30%;
+    display: inline-block;
+    margin-left: 10%;
+}
+#divAlteraEnds { 
+    width: 40%;
+    min-height: 200px;
+    position: absolute;
+    background-color: #fbfbfc;
+    margin: 0 30%;
+    top: 15em;
+    border: solid 0.1em rgba(11, 55, 103, .7);
+}
+#divAlteraEndsSup { 
+    height: 20px;
+    border: solid 0.05em rgba(11, 55, 103, 0.7);
+    padding: 5px 0 0 5px;
+}
+.btnOk { 
+    text-align: center;
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    cursor: pointer;
+    width: 10%;
     display: inline-block;
     margin-left: 10%;
 }
@@ -628,7 +658,7 @@ section {
     margin: .25em;
     line-height: 2em;
 }
-.contemMeusDados, .contemMinhasCompras { 
+.contemMeusDados, .contemMinhasCompras, .contemEnd, .adicionarEnd { 
     width: 910px;
     position: relative;
     margin: 3em 0 0 26%;
@@ -643,8 +673,15 @@ section {
     margin: 1em 0 0 0;
     background-color: rgba(203, 209, 215, .1);
 }
-.meusDados form { 
+.meusDados form, .meusDadosEnd form { 
     padding-top: 3%;
+}
+.meusDadosEnd { 
+    width: 100%;
+    height: 260px;
+    position: relative;
+    margin: 1em 0 0 0;
+    background-color: rgba(203, 209, 215, .1);
 }
 .divDadosConta h1 { 
     position: relative;
@@ -703,7 +740,7 @@ section {
 .camposMeusDados6 {
     width: 22em;
 }
-.btnMeusDados { 
+.btnMeusDados, .btnMeusDadosEnd { 
     margin: 2em auto 0.5em;
     width: 11%;
     text-align: center;

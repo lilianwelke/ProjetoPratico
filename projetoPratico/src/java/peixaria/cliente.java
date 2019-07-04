@@ -212,10 +212,11 @@ public class cliente {
 
         TSQLDataSetEmp endCliente = TSQLDataSetEmp.create(vs);
         endCliente.commandText("SELECT CLIENDENT.COMPLEMENTO, CLIENDENT.BAIRRO, CLIENDENT.NUMERO, CLIENDENT.ENDERECO, CLIENDENT.CEP, CIDADE.CIDADE, "
-                + " CIDADE.UF "
+                + " CIDADE.UF, CLIENDENT.SCLIENDENT "
                 + " FROM CLIENDENT "
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE)"
-                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR")
+                + " ORDER BY CLIENDENT.SCLIENDENT ");
         endCliente.open();
 
         dadosCli.put(0, clienteSql.jsonData());
@@ -480,6 +481,29 @@ public class cliente {
             throw new ExcecaoMsg(vs, e.getMessage());
         }
         return "Sua mensagem foi enviada com sucesso!";
+    }
+
+    public String salvarEndereco(VariavelSessao vs) throws ExcecaoTecnicon {
+        TClientDataSet endereco = TClientDataSet.create(vs, "CLIENDENT");
+        endereco.createDataSet();
+
+        TSQLDataSetEmp cidade = TSQLDataSetEmp.create(vs);
+        cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
+        cidade.open();
+
+        endereco.insert();
+        endereco.fieldByName("CCLIFOR").asString(vs.getParameter("CCLIFOR"));
+        endereco.fieldByName("FILIALCF").asString("1");
+        endereco.fieldByName("ATIVO").asString("S");
+        endereco.fieldByName("CEP").asString(vs.getParameter("CEP"));
+        endereco.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
+        endereco.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
+        endereco.fieldByName("NUMERO").asString(vs.getParameter("NUMERO"));
+        endereco.fieldByName("BAIRRO").asString(vs.getParameter("BAIRRO"));
+        endereco.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
+        endereco.post();
+
+        return "Novo endereço cadastrado com sucesso!";
     }
 
 //    public String enviarMensagemCliente(VariavelSessao vs) throws ExcecaoTecnicon, AddressException {
