@@ -31,14 +31,24 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         oferta.close();
-        oferta.commandText(" SELECT PROMOCAOPXITENS.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
-                + " (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+        oferta.commandText("SELECT TAB.CPRODUTO, TAB.DESCRICAO, (TAB.PRECOMERCADO - TAB.PRECOMERCADO * TAB.DESCONTO / 100) AS PRECOMERCADO, "
+                + " TAB.DESCONTO, TAB.TEMSALDO "
+                + " FROM (SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, PROMOCAOPXITENS.PERCENTUALDESCONTO DESCONTO, PRODUTO.PRECOMERCADO,"
+                + " (SELECT CASE WHEN SUM(SALDOPRODUTOLOTE.SALDO) <= 0 THEN 0 ELSE 1 END AS TEMSALDO FROM SALDOPRODUTOLOTE "
+                + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE) "
+                + " WHERE SALDOPRODUTOLOTE.CPRODUTO = PRODUTO.CPRODUTO AND PRODUTOLOTE.ATIVO = 'S' "
+                + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy") + "'"
+                + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO) TEMSALDO "
                 + " FROM PROMOCAOPX "
                 + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
                 + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PROMOCAOPXITENS.CPRODUTO) "
-                + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
+                + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
+                + " AND PRODUTO.ATIVO = 'S'"
+                + " AND '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
                 + " AND PROMOCAOPX.ATIVO = 'S' "
-                + " ORDER BY PRODUTO.MERCADORIA");
+                + " ) TAB "
+                + " ORDER BY TAB.TEMSALDO DESC, TAB.DESCRICAO"
+        );
         oferta.open();
 
         try {
@@ -55,6 +65,8 @@ public class produtos {
                 produtos.put("CPRODUTO", oferta.fieldByName("CPRODUTO").asInteger());
                 produtos.put("PRODUTO", oferta.fieldByName("DESCRICAO").asString());
                 produtos.put("PRECO", oferta.fieldByName("PRECOMERCADO").asDouble());
+                produtos.put("TEMSALDO", oferta.fieldByName("TEMSALDO").asDouble());
+                produtos.put("DESCONTO", oferta.fieldByName("DESCONTO").asDouble());
                 if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
                     produtos.put("IMAGEM", retornoImg.getString("src"));
                 } else {
@@ -82,17 +94,25 @@ public class produtos {
         JSONObject retornoImg = new JSONObject();
 
         produto.close();
-        produto.commandText(" SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
-                + " COALESCE((SELECT (PRODUTO.PRECOMERCADO - PRODUTO.PRECOMERCADO * PROMOCAOPXITENS.PERCENTUALDESCONTO / 100) PRECOMERCADO"
+        produto.commandText("SELECT TAB.CPRODUTO, TAB.DESCRICAO, "
+                + " CASE WHEN TAB.DESCONTO IS NOT NULL THEN (TAB.PRECOMERCADO - TAB.PRECOMERCADO * TAB.DESCONTO / 100)"
+                + " ELSE TAB.PRECOMERCADO END AS PRECOMERCADO, TAB.DESCONTO, TAB.TEMSALDO "
+                + " FROM (SELECT PRODUTO.CPRODUTO, PRODUTO.MERCADORIA AS DESCRICAO, "
+                + " (SELECT PROMOCAOPXITENS.PERCENTUALDESCONTO "
                 + " FROM PROMOCAOPX "
                 + " INNER JOIN PROMOCAOPXITENS ON (PROMOCAOPXITENS.SPROMOCAOPX = PROMOCAOPX.SPROMOCAOPX) "
                 + " WHERE '" + Funcoes.formatarDB(Funcoes.dateToStr(new Date()), "D") + "' BETWEEN PROMOCAOPX.DATAI AND PROMOCAOPX.DATAF "
                 + " AND PROMOCAOPX.ATIVO = 'S'"
-                + " AND PROMOCAOPXITENS.CPRODUTO = PRODUTO.CPRODUTO), PRODUTO.PRECOMERCADO) PRECOMERCADO "
+                + " AND PROMOCAOPXITENS.CPRODUTO = PRODUTO.CPRODUTO) DESCONTO, PRODUTO.PRECOMERCADO,"
+                + " (SELECT CASE WHEN SUM(SALDOPRODUTOLOTE.SALDO) <= 0 THEN 0 ELSE 1 END AS TEMSALDO FROM SALDOPRODUTOLOTE "
+                + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE) "
+                + " WHERE SALDOPRODUTOLOTE.CPRODUTO = PRODUTO.CPRODUTO AND PRODUTOLOTE.ATIVO = 'S' "
+                + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy") + "'"
+                + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO) TEMSALDO "
                 + " FROM PRODUTO "
                 + " WHERE PRODUTO.CSUBGRUPO = " + vs.getParameter("CSUBGRUPO")
-                + " AND PRODUTO.ATIVO = 'S'"
-                + " ORDER BY PRODUTO.MERCADORIA");
+                + " AND PRODUTO.ATIVO = 'S') TAB"
+                + " ORDER BY TAB.TEMSALDO DESC, TAB.DESCRICAO");
         produto.open();
 
         try {
@@ -109,6 +129,8 @@ public class produtos {
                 produtos.put("CPRODUTO", produto.fieldByName("CPRODUTO").asInteger());
                 produtos.put("PRODUTO", produto.fieldByName("DESCRICAO").asString());
                 produtos.put("PRECO", produto.fieldByName("PRECOMERCADO").asDouble());
+                produtos.put("TEMSALDO", produto.fieldByName("TEMSALDO").asDouble());
+                produtos.put("DESCONTO", produto.fieldByName("DESCONTO").asDouble());
                 if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
                     produtos.put("IMAGEM", retornoImg.getString("src"));
                 } else {

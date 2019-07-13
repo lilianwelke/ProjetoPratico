@@ -12,6 +12,7 @@ header {
     border-bottom: solid 0.05em rgba(11, 55, 103, 0.7);
     height: 100px;
     background-color: rgba(203, 209, 215, .09);
+    box-shadow: 0px 0px 2px 0px #0b3767;
 }
 #logoHeader {
     display: inline-block;
@@ -185,22 +186,31 @@ article {
     margin: .63em .9em .45em 3.15em;
     font-size: 1em;
     position: relative;
-    left: -1.99em;
+    right: 1.99em;
     cursor: pointer;
+}
+.liEndEnt {
+    border-bottom: .05em solid rgba(11, 55, 103, .7);
+    list-style-type: none;
+    margin: .63em .9em .45em 3.15em;
+    font-size: 1em;
+    position: relative;
+    right: 1.99em;
+    width: 86%;
 }
 .estiloAdicionarEnd { 
     list-style-type:none;
-    width: 92px;
+    width: 175px;
     font-size: 1em;
     position: relative;
-    left: -1.99em;
+    right: 1.99em;
     cursor: pointer;
 }
 .divMenu li:hover, .verMeusDados:hover, .verMinhasCompras:hover, .estiloAdicionarEnd:hover {	
     color: #6e808b;
 }
 .listaOfertas {    
-    width: 997px;
+    width: 97%;
     position: relative;
     margin: 3em 0 0 3%;
     padding-bottom: 3%;
@@ -217,14 +227,17 @@ article {
     border-radius: .2em;
     display: inline-block;
     margin: 0.5em;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
-.fotoMini {
+.divFotoMini {
     width: 86%;
     height: 9.9em;
     display: inline-block;
-    padding: 7%;
+    margin: 7%;
     position: relative;
+}
+.fotoMini {
+    width: 100%;
 }
 .produtoMini h1 {
     margin: 0;
@@ -256,6 +269,24 @@ article {
 .btnMeusDados:hover, #calcularFreteCarrinho:hover, .btnMeusDadosEnd:hover, #alterarEnd:hover, .btnOk:hover {
     background-color: rgba(203, 209, 215, .3);
 }
+.promocaoMini {
+    background-color: rgb(253, 130, 51);
+    width: 70px;
+    padding: 5px 0;
+    text-align: center;
+    color: rgb(250, 251, 251);
+    position: absolute;
+    right: 0;
+    z-index: 1;
+}
+.semOfertaText { 
+    line-height: 1.5em;
+    color: #6e808b;
+    font-weight: 400;
+    margin: 0;
+    text-align: center;
+    padding: 3% 3% 3% 0;
+}
 
 /* DETALHES PRODUTO */
 .produtoMais {
@@ -263,7 +294,7 @@ article {
     position: relative;
     top: 3em;
     margin: 0 auto;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .divFotoMais {
     width: 45%;
@@ -302,6 +333,10 @@ article {
     display: inline-block;
     cursor: pointer;
     margin-top: 0.5em;
+}
+.semSaldoMais { 
+    font-size: 1.5em;
+    margin-top: 2.5em;
 }
 
 /* CARRINHO */
@@ -375,7 +410,7 @@ article {
 .carrinhoVazio, .comprasVazio {
     width: 100%;
     height: 100px;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .carrinhoVazioText, .comprasVazioText {
     line-height: 1.5em;
@@ -389,7 +424,7 @@ article {
     border-style: solid;
     border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(239, 239, 239, 0.3);
+    background-color: rgba(203, 209, 215, .09);
     outline: none;
     line-height: 1.5em;
     font-size: 1em;
@@ -417,11 +452,11 @@ article {
     margin-left: 10%;
 }
 #divAlteraEnds { 
-    width: 40%;
-    min-height: 200px;
+    width: 26%;
+    min-height: 150px;
     position: absolute;
     background-color: #fbfbfc;
-    margin: 0 30%;
+    margin: 0 37%;
     top: 15em;
     border: solid 0.1em rgba(11, 55, 103, .7);
 }
@@ -436,7 +471,7 @@ article {
     cursor: pointer;
     width: 10%;
     display: inline-block;
-    margin-left: 10%;
+    margin: 7% 0 0 40%;
 }
 
 /* LOGIN */
@@ -453,7 +488,7 @@ section {
     height: 400px;
     position: relative;
     margin: 2em auto;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .divCamposLogin {
     width: 60%;
@@ -463,7 +498,7 @@ section {
     border-style: none none solid none;
     border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(239, 239, 239, 0.05);
+    background-color: rgba(203, 209, 215, 0);
     outline: none;
     line-height: 1.5em;
     font-size: 1.25em;
@@ -512,7 +547,7 @@ section {
     height: 275px;
     position: relative;
     margin: 2em auto;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .divCamposCriarConta {
     width: 37%;
@@ -531,7 +566,7 @@ section {
     border-style: none none solid none;
     border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(239, 239, 239, 0.05);
+    background-color: rgba(203, 209, 215, 0);
     outline: none;
     line-height: 1.5em;
     font-size: 1.25em;
@@ -548,7 +583,7 @@ section {
     height: 430px;
     position: relative;
     margin: 2em auto;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .divCamposContinuarConta {
     margin: 0 5%;
@@ -585,12 +620,12 @@ section {
 }
 .camposContinuarConta1 { 
     border-style: none none solid none;    
-    background-color: rgba(239, 239, 239, 0.05);    
+    background-color: rgba(203, 209, 215, 0);
     min-width: 12em;
 }
 .camposContinuarConta2 {
     border-style: solid;    
-    background-color: rgba(239, 239, 239, .3);     
+    background-color: rgba(203, 209, 215, .09);
     padding-left: .25em;
 }
 .camposContinuarConta21 {  
@@ -601,22 +636,22 @@ section {
 }
 .camposContinuarConta3 {
     border-style: none none solid none;
-    background-color: rgba(239, 239, 239, .05);    
+    background-color: rgba(203, 209, 215, 0); 
     min-width: 25em;    
 }
 .camposContinuarConta4 {
     border-style: none none solid none;
-    background-color: rgba(239, 239, 239, .05);    
+    background-color: rgba(203, 209, 215, 0);   
     min-width: 17.5em;
 }
 .camposContinuarConta5 {
     border-style: none none solid none;
-    background-color: rgba(239, 239, 239, .05);    
+    background-color: rgba(203, 209, 215, 0);
     width: 6em;
 }
 .camposContinuarConta6 {
     border-style: none none solid none;
-    background-color: rgba(239, 239, 239, .05);    
+    background-color: rgba(203, 209, 215, 0); 
     min-width: 37em;
 }
 .camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus, .campoCep:focus {
@@ -671,7 +706,7 @@ section {
     height: 550px;
     position: relative;
     margin: 1em 0 0 0;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .meusDados form, .meusDadosEnd form { 
     padding-top: 3%;
@@ -681,7 +716,7 @@ section {
     height: 260px;
     position: relative;
     margin: 1em 0 0 0;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 .divDadosConta h1 { 
     position: relative;
@@ -715,7 +750,7 @@ section {
     border-style: solid;
     border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(239, 239, 239, 0.3);
+    background-color: rgba(203, 209, 215, .3);
     outline: none;
     line-height: 1.5em;
     font-size: 1.1em;
@@ -855,13 +890,13 @@ section {
     height: 435px;
     position: relative;
     margin: 2em auto;
-    background-color: rgba(203, 209, 215, .1);
+    background-color: rgba(203, 209, 215, .09);
 }
 #mensagemSobre { 
     border-style: solid;
     border-width: 0.01em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(239, 239, 239, .01);
+    background-color: rgba(239, 239, 239, 0);
     outline: none;
     font-size: 1em;
     min-width: 100%;
@@ -890,23 +925,32 @@ section {
 /* RODAPE */
 footer {
     width: 100%;
-    height: 20em;
+    height: 17em;
     border-top: solid 0.1em rgba(11, 55, 103, .7);
-    background-color: rgba(203, 209, 215, .1);   
+    background-color: rgba(203, 209, 215, .09);
+    overflow: hidden;
+}
+.contemFooter {
+    margin: 0 25%;
+}
+.contemImgFooter {
+    width: 12em;
+    position: relative;
+    top: 1.75em;
+    display: inline-block;
 }
 .logoGrande {
-    width: 15em;
+    width: 100%;
+}
+.contemFooterDados { 
     position: relative;
-    top: 1.5em;
-    display: inline-block;
-    left: 15em;
+    bottom: 4em;
+    right: 4em;
 }
 .iconesSociais {
     position: relative;
-    bottom: 10em;
-    text-align: center;
-    display: inline-block;
-    left: 27em;
+    bottom: 4.5em;
+    left: 450px;
 }
 .iconesSociais i {
     color:#363f46;
@@ -921,8 +965,8 @@ footer {
     text-align: center;
     color: #363f46;
     position: relative;
-    bottom: 3em;
-    left: 8.5em;
+    bottom: 4em;
+    left: 368px;
     font-size: .9em;
     display: inline-block;
 }

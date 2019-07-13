@@ -198,9 +198,7 @@ public class cliente {
         return senha.toString();
     }
 
-    public JSONArray buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
-        JSONArray dadosCli = new JSONArray();
-
+    public String buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
         TSQLDataSetEmp clienteSql = TSQLDataSetEmp.create(vs);
         clienteSql.commandText("SELECT CLIFOREND.NOMEFILIAL, CLIFOREND.EMAIL, LOGINPX.USUARIOPX, CLIFOREND.FONE, CLIFOREND.CELULAR, CLIFOREND.CGC, "
                 + " CLIFOREND.COMPLEMENTO, CLIFOREND.BAIRRO, CLIFOREND.NUMERO, CLIFOREND.ENDERECO, CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF"
@@ -210,19 +208,31 @@ public class cliente {
                 + " WHERE LOGINPX.CCLIFOR = " + vs.getParameter("CCLIFOR"));
         clienteSql.open();
 
+        return clienteSql.jsonData();
+    }
+
+    public String buscarEndereco(VariavelSessao vs) throws ExcecaoTecnicon {
         TSQLDataSetEmp endCliente = TSQLDataSetEmp.create(vs);
         endCliente.commandText("SELECT CLIENDENT.COMPLEMENTO, CLIENDENT.BAIRRO, CLIENDENT.NUMERO, CLIENDENT.ENDERECO, CLIENDENT.CEP, CIDADE.CIDADE, "
-                + " CIDADE.UF, CLIENDENT.SCLIENDENT "
+                + " CIDADE.UF, CLIENDENT.SCLIENDENT, CLIENDENT.CLIENDENT "
                 + " FROM CLIENDENT "
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE)"
-                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR")
+                + " WHERE CLIENDENT.SCLIENDENT = " + vs.getParameter("SCLIENDENT")
                 + " ORDER BY CLIENDENT.SCLIENDENT ");
         endCliente.open();
 
-        dadosCli.put(0, clienteSql.jsonData());
-        dadosCli.put(1, endCliente.jsonData());
+        return endCliente.jsonData();
+    }
 
-        return dadosCli;
+    public String buscarEnderecoCli(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp endCliente = TSQLDataSetEmp.create(vs);
+        endCliente.commandText("SELECT CLIENDENT.SCLIENDENT, CLIENDENT.CLIENDENT "
+                + " FROM CLIENDENT "
+                + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR")
+                + " ORDER BY CLIENDENT.CLIENDENT ");
+        endCliente.open();
+
+        return endCliente.jsonData();
     }
 
     public void validarSenhaAntiga(VariavelSessao vs) throws ExcecaoTecnicon {

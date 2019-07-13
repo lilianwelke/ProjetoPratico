@@ -27,7 +27,7 @@ function irOfertas() {
     document.querySelector(".listaOfertas").style.display = "block";
     setVisible(".listaOfertas");
 
-    requisicaoHTTP("projetoPratico", "produtos", "listarOfertas", listarOfertas, alert, "&CODIGOREF='PX'");
+    requisicaoHTTP("projetoPratico", "produtos", "listarOfertas", listarOfertas, alert, "&CODIGOREF='PX'&CSUBGRUPO=31");
 }
 
 function listarOfertas(produtos) {
@@ -85,20 +85,44 @@ function irCarrinho(e) {
 }
 
 function listarTodosProdutos(produtos, oferta) {
-    var dv, hUm, p, dvVerMais, img;
+    var dv, hUm, p, dvVerMais, img, dvOferta;
     var div = (oferta ? document.querySelector('.listaOfertas') : document.querySelector('.listaProdutos'));
     div.innerHTML = "";
+
+    if (oferta && produtos.length === 0)
+    {
+        hUm = document.createElement('h1');
+        hUm.innerText = 'Que pena! \nNão há ofertas para hoje!';
+        hUm.setAttribute('class', 'semOfertaText');
+        div.appendChild(hUm);
+    }
 
     for (var i = 0; i < produtos.length; i++)
     {
         dv = document.createElement('div');
         dv.setAttribute('class', 'produtoMini');
+        if (produtos[i]['TEMSALDO'] === 0)
+        {
+            dv.style.filter = 'grayscale(50%)';
+        }
         div.appendChild(dv);
+
+        dvVerMais = document.createElement('div');
+        dvVerMais.setAttribute('class', 'divFotoMini');
+        dv.appendChild(dvVerMais);
+
+        if (produtos[i]['DESCONTO'] > 0)
+        {
+            dvOferta = document.createElement('div');
+            dvOferta.setAttribute('class', 'promocaoMini');
+            dvOferta.innerText = '-' + produtos[i]['DESCONTO'] + '%';
+            dvVerMais.appendChild(dvOferta);
+        }
 
         img = document.createElement('img');
         img.src = 'data:image/jpg;base64,' + produtos[i]['IMAGEM'];
         img.setAttribute('class', 'fotoMini');
-        dv.appendChild(img);
+        dvVerMais.appendChild(img);
 
         hUm = document.createElement('h1');
         hUm.innerText = produtos[i]['PRODUTO'];
@@ -183,7 +207,15 @@ function listarProduto(produto) {
     input = document.createElement('input');
     input.setAttribute('class', 'qtdeCompraMais');
     input.setAttribute('type', 'number');
-    input.setAttribute('value', '1');
+
+    if (parseFloat(produto[0]['SALDO']) <= parseFloat(0)) {
+        input.setAttribute('value', '0');
+        input.setAttribute('readOnly', 'true');
+    } else {
+        input.setAttribute('value', '1');
+        dv.appendChild(input);
+    }
+
     dv.appendChild(input);
 
     pppp = document.createElement('p');
@@ -192,17 +224,26 @@ function listarProduto(produto) {
     dv.appendChild(pppp);
 
     saldo = document.createElement('p');
-    saldo.setAttribute('class', 'saldoMais');
-    saldo.innerText = (parseFloat(produto[0]['SALDO']) <= parseFloat(0) ? 'Produto Indisponível' : produto[0]['SALDO'] + ' ' + produto[0]['UN'] + ' disponíveis');
+
+    if (parseFloat(produto[0]['SALDO']) <= parseFloat(0)) {
+        saldo.setAttribute('class', 'semSaldoMais');
+        saldo.innerText = 'Produto Indisponível';
+    } else {
+        saldo.setAttribute('class', 'saldoMais');
+        saldo.innerText = produto[0]['SALDO'] + ' ' + produto[0]['UN'] + ' disponíveis';
+    }
+
     dv.appendChild(saldo);
 
-    dvComprarMais = document.createElement('div');
-    dvComprarMais.setAttribute('class', 'comprarMais');
-    dvComprarMais.setAttribute('id', produto[0]['CPRODUTO']);
-    dvComprarMais.innerText = 'Adicionar ao Carrinho';
-    dv.appendChild(dvComprarMais);
+    if (parseFloat(produto[0]['SALDO']) > parseFloat(0)) {
+        dvComprarMais = document.createElement('div');
+        dvComprarMais.setAttribute('class', 'comprarMais');
+        dvComprarMais.setAttribute('id', produto[0]['CPRODUTO']);
+        dvComprarMais.innerText = 'Adicionar ao Carrinho';
+        dv.appendChild(dvComprarMais);
 
-    document.querySelector(".comprarMais").addEventListener("click", adicionarCarrinho);
+        document.querySelector(".comprarMais").addEventListener("click", adicionarCarrinho);
+    }
 }
 
 function adicionarCarrinho(e) {

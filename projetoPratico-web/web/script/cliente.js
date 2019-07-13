@@ -277,14 +277,44 @@ function recuperarSenha() {
 }
 
 function irMinhaConta() {
-    setInvisible();
-    document.querySelector(".divMenuCliente").style.display = "block";
-    document.querySelector(".contemBemVindoCli").style.display = "block";
-    setVisible(".divMenuCliente");
-    setVisible(".contemBemVindoCli");
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
 
-    document.querySelector(".verMeusDados").addEventListener("click", verMeusDados);
-    document.querySelector(".verMinhasCompras").addEventListener("click", chamarMinhasCompras);
+    requisicaoHTTP("projetoPratico", "cliente", "buscarEnderecoCli", function (enderecos) {
+        setInvisible();
+        document.querySelector(".divMenuCliente").style.display = "block";
+        document.querySelector(".contemBemVindoCli").style.display = "block";
+        setVisible(".divMenuCliente");
+        setVisible(".contemBemVindoCli");
+
+        var ul = document.querySelector(".liAdicionarEnd ul"), li;
+        ul.innerHTML = "";
+
+        for (var i = 0; i < enderecos["linhas"].length; i++)
+        {
+            li = document.createElement('li');
+            li.setAttribute('class', 'estiloAdicionarEnd');
+            li.setAttribute('id', enderecos["linhas"][i]["SCLIENDENT"]);
+            li.innerText = enderecos["linhas"][i]["CLIENDENT"];
+            ul.appendChild(li);
+            li.addEventListener("click", listarEndereco);
+        }
+
+        li = document.createElement('li');
+        li.setAttribute('class', 'estiloAdicionarEnd');
+        li.innerText = "Endereço ";
+        ul.appendChild(li);
+
+        i = document.createElement('i');
+        li.appendChild(i);
+        i.setAttribute('class', 'fas fa-plus');
+
+        li.addEventListener("click", cadastrarEndereco);
+
+        document.querySelector(".verMeusDados").addEventListener("click", verMeusDados);
+        document.querySelector(".verMinhasCompras").addEventListener("click", chamarMinhasCompras);
+    }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
 }
 
 function verMeusDados() {
@@ -313,198 +343,188 @@ function verMeusDados() {
 }
 
 function setarClienteCampos(cliente) {
-    var dados = JSON.parse(cliente[0]);
-    document.querySelector("#cancelarMeusDados").cliente = dados;
-    document.querySelector("#NOMEE").value = dados["linhas"][0]["NOMEFILIAL"];
-    document.querySelector("#EMAILE").value = dados["linhas"][0]["EMAIL"];
-    document.querySelector("#USUARIOPXE").value = dados["linhas"][0]["USUARIOPX"];
-    document.querySelector("#FONEE").value = dados["linhas"][0]["FONE"];
-    document.querySelector("#CELULARE").value = dados["linhas"][0]["CELULAR"];
-    document.querySelector("#COMPLEMENTOE").value = dados["linhas"][0]["COMPLEMENTO"];
-    document.querySelector("#BAIRROE").value = dados["linhas"][0]["BAIRRO"];
-    document.querySelector("#NUMEROE").value = dados["linhas"][0]["NUMERO"];
-    document.querySelector("#ENDERECOE").value = dados["linhas"][0]["ENDERECO"];
-    document.querySelector("#CEPE").value = dados["linhas"][0]["CEP"];
-    document.querySelector("#NCIDADE1E").value = dados["linhas"][0]["CIDADE"];
-    document.querySelector("#NUF1E").value = dados["linhas"][0]["UF"];
-    document.querySelector("#CEPE").value = dados["linhas"][0]["CEP"];
-    document.querySelector("#CGCE").value = dados["linhas"][0]["CGC"];
+    if (cliente)
+    {
+        document.querySelector("#cancelarMeusDados").cliente = cliente;
+    }
+
+    document.querySelector("#NOMEE").value = cliente["linhas"][0]["NOMEFILIAL"];
+    document.querySelector("#EMAILE").value = cliente["linhas"][0]["EMAIL"];
+    document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
+    document.querySelector("#FONEE").value = cliente["linhas"][0]["FONE"];
+    document.querySelector("#CELULARE").value = cliente["linhas"][0]["CELULAR"];
+    document.querySelector("#COMPLEMENTOE").value = cliente["linhas"][0]["COMPLEMENTO"];
+    document.querySelector("#BAIRROE").value = cliente["linhas"][0]["BAIRRO"];
+    document.querySelector("#NUMEROE").value = cliente["linhas"][0]["NUMERO"];
+    document.querySelector("#ENDERECOE").value = cliente["linhas"][0]["ENDERECO"];
+    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
+    document.querySelector("#NCIDADE1E").value = cliente["linhas"][0]["CIDADE"];
+    document.querySelector("#NUF1E").value = cliente["linhas"][0]["UF"];
+    document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
+    document.querySelector("#CGCE").value = cliente["linhas"][0]["CGC"];
     document.querySelector("#SENHAPXE").value = '';
     document.querySelector("#SENHANOVAE").value = '';
     document.querySelector("#SENHADENOVOE").value = '';
-
-    var enderecos = JSON.parse(cliente[1]);
-    var ul = document.querySelector(".liAdicionarEnd ul");
-    ul.innerHTML = "";
-    var li, i, form, div, divTitulo, divDados, label, input, h1;
-
-    if (enderecos["linhas"].length > 0) {
-        for (var i = 0; i < enderecos["linhas"].length; i++)
-        {
-            li = document.createElement('li');
-            li.setAttribute('class', 'estiloAdicionarEnd');
-            li.setAttribute('id', enderecos["linhas"][i]["SCLIENDENT"]);
-            li.innerText = "Endereço " + (parseFloat(i) + parseFloat(1));
-            ul.appendChild(li);
-            li.addEventListener("click", listarEndereco);
-
-            div = document.createElement("div");
-            div.style.display = 'none';
-            div.setAttribute('id', "contemEnd" + enderecos["linhas"][i]["SCLIENDENT"]);
-            div.setAttribute('class', "contemEnd");
-            document.querySelector("article").appendChild(div);
-
-            divTitulo = document.createElement("div");
-            divTitulo.setAttribute('class', "divDadosConta");
-            div.appendChild(divTitulo);
-
-            h1 = document.createElement("h1");
-            h1.innerText = "Meus Dados / Endereço " + (parseFloat(i) + parseFloat(1));
-            divTitulo.appendChild(h1);
-
-            divDados = document.createElement("div");
-            divDados.setAttribute('class', "meusDadosEnd");
-            div.appendChild(divDados);
-
-            form = document.createElement("form");
-            divDados.appendChild(form);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta5");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "CEP*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados5");
-            input.setAttribute('id', "CEPE" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "number");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["CEP"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta6");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "Cidade*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados6");
-            input.setAttribute('id', "NCIDADE1E" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["CIDADE"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta2");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "UF*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados2");
-            input.setAttribute('id', "NUF1E" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["UF"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "Endereço*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados1");
-            input.setAttribute('id', "ENDERECOE" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["ENDERECO"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "Bairro*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados1");
-            input.setAttribute('id', "BAIRROE" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["BAIRRO"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta3");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "Número*";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados3");
-            input.setAttribute('id', "NUMEROE" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "number");
-            input.setAttribute('value', enderecos["linhas"][i]["NUMERO"]);
-            div.appendChild(input);
-
-            div = document.createElement("div");
-            div.setAttribute('class', "divCamposDadosConta divCamposDadosConta4");
-            form.appendChild(div)
-
-            label = document.createElement("label");
-            label.innerText = "Complemento";
-            div.appendChild(label);
-
-            input = document.createElement("input");
-            input.setAttribute('class', "camposMeusDados camposMeusDados4");
-            input.setAttribute('id', "COMPLEMENTOE" + (parseFloat(i) + parseFloat(1)));
-            input.setAttribute('type', "text");
-            input.setAttribute('readonly', "true");
-            input.setAttribute('value', enderecos["linhas"][i]["COMPLEMENTO"]);
-            div.appendChild(input);
-        }
-    }
-
-    li = document.createElement('li');
-    li.setAttribute('class', 'estiloAdicionarEnd');
-    li.innerText = "Endereço ";
-    ul.appendChild(li);
-
-    i = document.createElement('i');
-    li.appendChild(i);
-    i.setAttribute('class', 'fas fa-plus');
-
-    li.addEventListener("click", cadastrarEndereco);
 }
 
 function listarEndereco(e) {
-    setInvisible();
-    document.querySelector(".divMenuCliente").style.display = "block";
-    setVisible(".divMenuCliente");
+    if (document.querySelector("#contemEnd" + e.target.id))
+    {
+        e.target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(document.querySelector("#contemEnd" + e.target.id));
+    }
 
-    document.querySelector("#contemEnd" + e.target.id).style.display = "block";
-    setVisible("#contemEnd" + e.target.id);
+    requisicaoHTTP("projetoPratico", "cliente", "buscarEndereco", function (enderecos) {
+        setInvisible();
+        document.querySelector(".divMenuCliente").style.display = "block";
+        setVisible(".divMenuCliente");
+
+        var i, form, div, divTitulo, divDados, label, input, h1;
+
+        div = document.createElement("div");
+        div.style.display = 'none';
+        div.setAttribute('id', "contemEnd" + enderecos["linhas"][0]["SCLIENDENT"]);
+        div.setAttribute('class', "contemEnd");
+        document.querySelector("article").appendChild(div);
+
+        divTitulo = document.createElement("div");
+        divTitulo.setAttribute('class', "divDadosConta");
+        div.appendChild(divTitulo);
+
+        h1 = document.createElement("h1");
+        h1.innerText = "Meus Dados / " + enderecos["linhas"][0]["CLIENDENT"];
+        divTitulo.appendChild(h1);
+
+        divDados = document.createElement("div");
+        divDados.setAttribute('class', "meusDadosEnd");
+        div.appendChild(divDados);
+
+        form = document.createElement("form");
+        divDados.appendChild(form);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta5");
+        form.appendChild(div)
+
+        label = document.createElement("label");
+        label.innerText = "CEP*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados5");
+        input.setAttribute('id', "CEPE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "number");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["CEP"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta6");
+        form.appendChild(div)
+
+        label = document.createElement("label");
+        label.innerText = "Cidade*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados6");
+        input.setAttribute('id', "NCIDADE1E" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["CIDADE"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta2");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "UF*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados2");
+        input.setAttribute('id', "NUF1E" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["UF"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "Endereço*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados1");
+        input.setAttribute('id', "ENDERECOE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["ENDERECO"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "Bairro*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados1");
+        input.setAttribute('id', "BAIRROE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["BAIRRO"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta3");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "Número*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados3");
+        input.setAttribute('id', "NUMEROE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "number");
+        input.setAttribute('value', enderecos["linhas"][0]["NUMERO"]);
+        div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta4");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "Complemento";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados4");
+        input.setAttribute('id', "COMPLEMENTOE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["COMPLEMENTO"]);
+        div.appendChild(input);
+
+        document.querySelector("#contemEnd" + e.target.id).style.display = "block";
+        setVisible("#contemEnd" + e.target.id);
+    }, alert, "&SCLIENDENT=" + e.target.id);
+
 }
 
 function cadastrarEndereco(e) {
+    if (document.querySelector(".adicionarEnd"))
+    {
+        e.target.parentNode.parentNode.parentNode.parentNode.parentNode.removeChild(document.querySelector(".adicionarEnd"));
+    }
+
     setInvisible();
     document.querySelector(".divMenuCliente").style.display = "block";
     setVisible(".divMenuCliente");
@@ -532,7 +552,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta5");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "CEP*";
@@ -560,7 +580,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta2");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "UF*";
@@ -574,7 +594,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "Endereço*";
@@ -588,7 +608,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta1");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "Bairro*";
@@ -602,7 +622,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta3");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "Número*";
@@ -634,6 +654,12 @@ function cadastrarEndereco(e) {
     div.innerText = "Salvar";
     document.querySelector(".adicionarEnd").appendChild(div);
     div.addEventListener("click", salvarEnd);
+
+    var campos = document.querySelector(".adicionarEnd").querySelectorAll(".camposMeusDados");
+    for (var i = 0; i < campos.length; i++)
+    {
+        campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.05)";
+    }
 }
 
 function salvarEnd() {
@@ -644,13 +670,14 @@ function salvarEnd() {
         logon = window.localStorage.getItem("logon");
         logon = JSON.parse(logon);
 
-        requisicaoHTTP("projetoPratico", "cliente", "salvarEndereco", alert, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+        requisicaoHTTP("projetoPratico", "cliente", "salvarEndereco", function (msg) {
+            alert(msg);
+            verMeusDados();
+        }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
                 + "&CEP=" + document.querySelector("#CEPEN").value + "&ENDERECO=" + document.querySelector("#ENDERECOEN").value
                 + "&NUMERO=" + document.querySelector("#NUMEROEN").value + "&BAIRRO=" + document.querySelector("#BAIRROEN").value
                 + "&NCIDADE1=" + document.querySelector("#NCIDADE1EN").value + "&NUF1=" + document.querySelector("#NUF1EN").value
                 + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOEN").value);
-
-        verMeusDados();
     } else {
         alert("Preencha todos os campos obrigatórios!");
     }
@@ -727,7 +754,7 @@ function setarCamposCinza(msg) {
     for (var i = 0; i < campos.length; i++)
     {
         campos[i].setAttribute("readonly", true);
-        campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.3)";
+        campos[i].style.backgroundColor = "rgba(203, 209, 215, .3)";
     }
 
     if (msg) {
