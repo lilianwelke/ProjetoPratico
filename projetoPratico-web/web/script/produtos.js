@@ -567,7 +567,11 @@ function alterarEnd() {
     logon = window.localStorage.getItem("logon");
     logon = JSON.parse(logon);
 
-    var divPrincipal, divSuperior, input, br, label, button, form;
+    var divPrincipal, divSuperior, input, br, label, button, form, divBack;
+
+    divBack = document.createElement("div");
+    document.querySelector("article").appendChild(divBack);
+    divBack.setAttribute("id", "divBack");
 
     divPrincipal = document.createElement("div");
     document.querySelector("article").appendChild(divPrincipal);
@@ -626,6 +630,7 @@ function selecionarEnd(e) {
     document.querySelector("#CEPC").setAttribute("value", selecionado);
     calcularFreteCarrinho();
 
+    e.target.parentNode.parentNode.removeChild(document.querySelector("#divBack"));
     e.target.parentNode.parentNode.removeChild(document.querySelector("#divAlteraEnds"));
 }
 

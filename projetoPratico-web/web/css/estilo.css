@@ -458,20 +458,29 @@ article {
     background-color: #fbfbfc;
     margin: 0 37%;
     top: 15em;
-    border: solid 0.1em rgba(11, 55, 103, .7);
+    border: solid .1em rgba(203, 209, 215, .3);
 }
+
 #divAlteraEndsSup { 
-    height: 20px;
-    border: solid 0.05em rgba(11, 55, 103, 0.7);
-    padding: 5px 0 0 5px;
+    height: 2em;
+    border: solid .05em rgba(203, 209, 215, 0.6);
+    padding-left: .51em;
+    line-height: 2em;
 }
 .btnOk { 
     text-align: center;
     border: solid 0.09em rgba(11, 55, 103, .75);
     cursor: pointer;
     width: 10%;
-    display: inline-block;
-    margin: 7% 0 0 40%;
+    margin: 5% auto;
+    padding: 1%;
+}
+#divBack { 
+    width: 100%;
+    background-color: rgba(1, 1, 1, .5);
+    height: 100%;
+    position: fixed;
+    top: 0;
 }
 
 /* LOGIN */
@@ -708,12 +717,19 @@ section {
     margin: 1em 0 0 0;
     background-color: rgba(203, 209, 215, .09);
 }
-.meusDados form, .meusDadosEnd form { 
+.meusDados form, .meusDadosEnd form, .meusDadosEndNovo form { 
     padding-top: 3%;
 }
 .meusDadosEnd { 
     width: 100%;
     height: 260px;
+    position: relative;
+    margin: 1em 0 0 0;
+    background-color: rgba(203, 209, 215, .09);
+}
+.meusDadosEndNovo {
+    width: 100%;
+    height: 330px;
     position: relative;
     margin: 1em 0 0 0;
     background-color: rgba(203, 209, 215, .09);
@@ -746,6 +762,9 @@ section {
 .divCamposDadosConta6 { 
     width: 41%;
 }
+.divCamposDadosConta7 { 
+    width: 90%;
+}
 .camposMeusDados { 
     border-style: solid;
     border-width: 0.07em;
@@ -774,6 +793,9 @@ section {
 }
 .camposMeusDados6 {
     width: 22em;
+}
+.camposMeusDados7 {
+    width: 45em;
 }
 .btnMeusDados, .btnMeusDadosEnd { 
     margin: 2em auto 0.5em;
@@ -935,8 +957,7 @@ footer {
 }
 .contemImgFooter {
     width: 12em;
-    position: relative;
-    top: 1.75em;
+    margin-top: 1.75em;
     display: inline-block;
 }
 .logoGrande {
@@ -944,7 +965,7 @@ footer {
 }
 .contemFooterDados { 
     position: relative;
-    bottom: 4em;
+    bottom: 6.5em;
     right: 4em;
 }
 .iconesSociais {

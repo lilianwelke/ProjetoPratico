@@ -318,27 +318,30 @@ function irMinhaConta() {
 }
 
 function verMeusDados() {
-    setInvisible();
-    document.querySelector(".divMenuCliente").style.display = "block";
-    setVisible(".divMenuCliente");
-    document.querySelector(".contemMeusDados").style.display = "block";
-    setVisible(".contemMeusDados");
-
     var logon = {};
     logon = window.localStorage.getItem("logon");
     logon = JSON.parse(logon);
 
-    document.querySelector("#editarMeusDados").addEventListener("click", editarMeusDados);
-    document.querySelector("#cancelarMeusDados").addEventListener("click", cancelarMeusDados);
-    document.querySelector("#salvarMeusDados").addEventListener("click", salvarMeusDados);
-
-    document.querySelector("#SENHAPXE").addEventListener("blur", validarSenhaAntiga);
-
-    document.querySelector("#CEPE").addEventListener("blur", verificarCepe);
-
     if (logon["cliente"][0]["codigo"])
     {
-        requisicaoHTTP("projetoPratico", "cliente", "buscarDadosCli", setarClienteCampos, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
+        requisicaoHTTP("projetoPratico", "cliente", "buscarDadosCli", function (cliente) {
+
+            setInvisible();
+            document.querySelector(".divMenuCliente").style.display = "block";
+            setVisible(".divMenuCliente");
+            document.querySelector(".contemMeusDados").style.display = "block";
+            setVisible(".contemMeusDados");
+
+            document.querySelector("#editarMeusDados").addEventListener("click", editarMeusDados);
+            document.querySelector("#cancelarMeusDados").addEventListener("click", cancelarMeusDados);
+            document.querySelector("#salvarMeusDados").addEventListener("click", salvarMeusDados);
+
+            document.querySelector("#SENHAPXE").addEventListener("blur", validarSenhaAntiga);
+
+            document.querySelector("#CEPE").addEventListener("blur", verificarCepe);
+
+            setarClienteCampos(cliente);
+        }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
     }
 }
 
@@ -365,6 +368,8 @@ function setarClienteCampos(cliente) {
     document.querySelector("#SENHAPXE").value = '';
     document.querySelector("#SENHANOVAE").value = '';
     document.querySelector("#SENHADENOVOE").value = '';
+
+    setarCamposCinza();
 }
 
 function listarEndereco(e) {
@@ -391,11 +396,11 @@ function listarEndereco(e) {
         div.appendChild(divTitulo);
 
         h1 = document.createElement("h1");
-        h1.innerText = "Meus Dados / " + enderecos["linhas"][0]["CLIENDENT"];
+        h1.innerText = "Endereços de Entrega / " + enderecos["linhas"][0]["CLIENDENT"];
         divTitulo.appendChild(h1);
 
         divDados = document.createElement("div");
-        divDados.setAttribute('class', "meusDadosEnd");
+        divDados.setAttribute('class', "meusDadosEndNovo");
         div.appendChild(divDados);
 
         form = document.createElement("form");
@@ -403,7 +408,7 @@ function listarEndereco(e) {
 
         div = document.createElement("div");
         div.setAttribute('class', "divCamposDadosConta divCamposDadosConta5");
-        form.appendChild(div)
+        form.appendChild(div);
 
         label = document.createElement("label");
         label.innerText = "CEP*";
@@ -411,7 +416,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados5");
-        input.setAttribute('id', "CEPE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "CEPE" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "number");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["CEP"]);
@@ -419,7 +424,7 @@ function listarEndereco(e) {
 
         div = document.createElement("div");
         div.setAttribute('class', "divCamposDadosConta divCamposDadosConta6");
-        form.appendChild(div)
+        form.appendChild(div);
 
         label = document.createElement("label");
         label.innerText = "Cidade*";
@@ -427,7 +432,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados6");
-        input.setAttribute('id', "NCIDADE1E" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "NCIDADE1E" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["CIDADE"]);
@@ -443,7 +448,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados2");
-        input.setAttribute('id', "NUF1E" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "NUF1E" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["UF"]);
@@ -459,7 +464,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados1");
-        input.setAttribute('id', "ENDERECOE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "ENDERECOE" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["ENDERECO"]);
@@ -475,7 +480,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados1");
-        input.setAttribute('id', "BAIRROE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "BAIRROE" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["BAIRRO"]);
@@ -491,7 +496,7 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados3");
-        input.setAttribute('id', "NUMEROE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "NUMEROE" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "number");
         input.setAttribute('value', enderecos["linhas"][0]["NUMERO"]);
@@ -507,11 +512,54 @@ function listarEndereco(e) {
 
         input = document.createElement("input");
         input.setAttribute('class', "camposMeusDados camposMeusDados4");
-        input.setAttribute('id', "COMPLEMENTOE" + (parseFloat(i) + parseFloat(1)));
+        input.setAttribute('id', "COMPLEMENTOE" + enderecos["linhas"][0]["SCLIENDENT"]);
         input.setAttribute('type', "text");
         input.setAttribute('readonly', "true");
         input.setAttribute('value', enderecos["linhas"][0]["COMPLEMENTO"]);
         div.appendChild(input);
+
+        div = document.createElement("div");
+        div.setAttribute('class', "divCamposDadosConta divCamposDadosConta7");
+        form.appendChild(div);
+
+        label = document.createElement("label");
+        label.innerText = "Apelido*";
+        div.appendChild(label);
+
+        input = document.createElement("input");
+        input.setAttribute('class', "camposMeusDados camposMeusDados7");
+        input.setAttribute('id', "APELIDON" + enderecos["linhas"][0]["SCLIENDENT"]);
+        input.setAttribute('type', "text");
+        input.setAttribute('readonly', "true");
+        input.setAttribute('value', enderecos["linhas"][0]["CLIENDENT"]);
+        div.appendChild(input);
+
+        divTitulo = document.createElement("div");
+        divTitulo.setAttribute('class', "btnMeusDados");
+        divTitulo.setAttribute('id', "editar" + enderecos["linhas"][0]["SCLIENDENT"]);
+        divTitulo.innerText = "Editar";
+        divTitulo.style.marginLeft = ".25em";
+        divDados.appendChild(divTitulo);
+
+        divTitulo = document.createElement("div");
+        divTitulo.setAttribute('class', "btnMeusDados");
+        divTitulo.setAttribute('id', "salvar" + enderecos["linhas"][0]["SCLIENDENT"]);
+        divTitulo.innerText = "Salvar";
+        divTitulo.style.marginLeft = ".25em";
+        divDados.appendChild(divTitulo);
+
+        divTitulo = document.createElement("div");
+        divTitulo.setAttribute('class', "btnMeusDados");
+        divTitulo.setAttribute('id', "cancelar" + enderecos["linhas"][0]["SCLIENDENT"]);
+        divTitulo.innerText = "Cancelar";
+        divTitulo.style.marginLeft = ".25em";
+        divDados.appendChild(divTitulo);
+
+        document.querySelector("#cancelarMeusDados").cliente = enderecos;
+
+        document.querySelector("#editar" + enderecos["linhas"][0]["SCLIENDENT"]).addEventListener("click", editarMeusDados);
+        document.querySelector("#salvar" + enderecos["linhas"][0]["SCLIENDENT"]).addEventListener("click", salvarMeuEnd);
+        document.querySelector("#cancelar" + enderecos["linhas"][0]["SCLIENDENT"]).addEventListener("click", cancelarMeusDados);
 
         document.querySelector("#contemEnd" + e.target.id).style.display = "block";
         setVisible("#contemEnd" + e.target.id);
@@ -544,7 +592,7 @@ function cadastrarEndereco(e) {
     divTitulo.appendChild(h1);
 
     divDados = document.createElement("div");
-    divDados.setAttribute('class', "meusDadosEnd");
+    divDados.setAttribute('class', "meusDadosEndNovo");
     div.appendChild(divDados);
 
     form = document.createElement("form");
@@ -566,7 +614,7 @@ function cadastrarEndereco(e) {
 
     div = document.createElement("div");
     div.setAttribute('class', "divCamposDadosConta divCamposDadosConta6");
-    form.appendChild(div)
+    form.appendChild(div);
 
     label = document.createElement("label");
     label.innerText = "Cidade*";
@@ -649,6 +697,20 @@ function cadastrarEndereco(e) {
     div.appendChild(input);
 
     div = document.createElement("div");
+    div.setAttribute('class', "divCamposDadosConta divCamposDadosConta7");
+    form.appendChild(div);
+
+    label = document.createElement("label");
+    label.innerText = "Apelido*";
+    div.appendChild(label);
+
+    input = document.createElement("input");
+    input.setAttribute('class', "camposMeusDados camposMeusDados7");
+    input.setAttribute('id', "APELIDON");
+    input.setAttribute('type', "text");
+    div.appendChild(input);
+
+    div = document.createElement("div");
     div.setAttribute('class', "btnMeusDadosEnd");
     div.setAttribute('id', "salvarEnd");
     div.innerText = "Salvar";
@@ -660,11 +722,45 @@ function cadastrarEndereco(e) {
     {
         campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.05)";
     }
+
+    document.querySelector("#CEPEN").addEventListener("blur", verificarCepeN);
+}
+
+function verificarCepeN(e) {
+    var http = new XMLHttpRequest();
+    var cep = e.target.value;
+
+    if (cep.length === 8) {
+        http.open('GET', 'https://viacep.com.br/ws/' + cep + '/json/', true);
+        http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        http.addEventListener('load', function () {
+            if (http.status === 200) {
+                var dados = JSON.parse(http.response);
+                if (dados.erro) {
+                    document.querySelector("#NCIDADE1EN").value = "";
+                    document.querySelector("#NUF1EN").value = "";
+                    alert("CEP inválido! O CEP informado não existe!");
+                } else {
+                    document.querySelector("#NCIDADE1EN").value = dados.localidade;
+                    document.querySelector("#NUF1EN").value = dados.uf;
+                }
+            }
+        });
+        http.send(null);
+    } else if (cep.length > 0) {
+        document.querySelector("#NCIDADE1EN").value = "";
+        document.querySelector("#NUF1EN").value = "";
+        alert("CEP inválido! Informe um CEP de 8 números!");
+    } else {
+        document.querySelector("#NCIDADE1EN").value = "";
+        document.querySelector("#NUF1EN").value = "";
+    }
 }
 
 function salvarEnd() {
     if (document.querySelector("#CEPEN").value.trim() !== "" && document.querySelector("#ENDERECOEN").value.trim() !== ""
-            && document.querySelector("#NUMEROEN").value.trim() !== "" && document.querySelector("#BAIRROEN").value.trim())
+            && document.querySelector("#NUMEROEN").value.trim() !== "" && document.querySelector("#BAIRROEN").value.trim() !== ""
+            && document.querySelector("#APELIDON").value.trim() !== "")
     {
         var logon = {};
         logon = window.localStorage.getItem("logon");
@@ -672,12 +768,12 @@ function salvarEnd() {
 
         requisicaoHTTP("projetoPratico", "cliente", "salvarEndereco", function (msg) {
             alert(msg);
-            verMeusDados();
+            irMinhaConta();
         }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
                 + "&CEP=" + document.querySelector("#CEPEN").value + "&ENDERECO=" + document.querySelector("#ENDERECOEN").value
                 + "&NUMERO=" + document.querySelector("#NUMEROEN").value + "&BAIRRO=" + document.querySelector("#BAIRROEN").value
                 + "&NCIDADE1=" + document.querySelector("#NCIDADE1EN").value + "&NUF1=" + document.querySelector("#NUF1EN").value
-                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOEN").value);
+                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOEN").value + "&APELIDO=" + document.querySelector("#APELIDON").value);
     } else {
         alert("Preencha todos os campos obrigatórios!");
     }
@@ -749,6 +845,21 @@ function salvarMeusDados() {
     }
 }
 
+function salvarMeuEnd(e) {
+    if (document.querySelector("#editarMeusDados").editando)
+    {
+        var id = e.target.id.replace('salvar', '');
+        requisicaoHTTP("projetoPratico", "cliente", "salvarEditEnd", function (msg) {
+            alert(msg);
+            setarCamposCinza();
+        }, alert, "&SCLIENDENT=" + id + "&CEP=" + document.querySelector("#CEPE" + id).value
+                + "&ENDERECO=" + document.querySelector("#ENDERECOE" + id).value
+                + "&NUMERO=" + document.querySelector("#NUMEROE" + id).value + "&BAIRRO=" + document.querySelector("#BAIRROE" + id).value
+                + "&NCIDADE1=" + document.querySelector("#NCIDADE1E" + id).value + "&NUF1=" + document.querySelector("#NUF1E" + id).value
+                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOE" + id).value + "&APELIDO=" + document.querySelector("#APELIDON" + id).value);
+    }
+}
+
 function setarCamposCinza(msg) {
     var campos = document.querySelectorAll(".camposMeusDados");
     for (var i = 0; i < campos.length; i++)
@@ -786,7 +897,7 @@ function verificarCepe() {
     } else if (cep.length > 0) {
         document.querySelector("#NCIDADE1E").value = "";
         document.querySelector("#NUF1E").value = "";
-        alert("CEP inválido! Informe uma CEP de 8 números!");
+        alert("CEP inválido! Informe um CEP de 8 números!");
     } else {
         document.querySelector("#NCIDADE1E").value = "";
         document.querySelector("#NUF1E").value = "";

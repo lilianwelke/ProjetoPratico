@@ -511,9 +511,33 @@ public class cliente {
         endereco.fieldByName("NUMERO").asString(vs.getParameter("NUMERO"));
         endereco.fieldByName("BAIRRO").asString(vs.getParameter("BAIRRO"));
         endereco.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
+        endereco.fieldByName("CLIENDENT").asString(vs.getParameter("APELIDO"));
         endereco.post();
 
         return "Novo endereço cadastrado com sucesso!";
+    }
+    
+     public String salvarEditEnd(VariavelSessao vs) throws ExcecaoTecnicon {
+        TClientDataSet endereco = TClientDataSet.create(vs, "CLIENDENT");
+        endereco.createDataSet();
+        endereco.condicao("WHERE CLIENDENT.SCLIENDENT = " + vs.getParameter("SCLIENDENT"));
+        endereco.open();
+
+        TSQLDataSetEmp cidade = TSQLDataSetEmp.create(vs);
+        cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
+        cidade.open();
+
+        endereco.edit();        
+        endereco.fieldByName("CEP").asString(vs.getParameter("CEP"));
+        endereco.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
+        endereco.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
+        endereco.fieldByName("NUMERO").asString(vs.getParameter("NUMERO"));
+        endereco.fieldByName("BAIRRO").asString(vs.getParameter("BAIRRO"));
+        endereco.fieldByName("COMPLEMENTO").asString(vs.getParameter("COMPLEMENTO"));
+        endereco.fieldByName("CLIENDENT").asString(vs.getParameter("APELIDO"));
+        endereco.post();
+
+        return "Dados atualizados com sucesso!";
     }
 
 //    public String enviarMensagemCliente(VariavelSessao vs) throws ExcecaoTecnicon, AddressException {
