@@ -36,7 +36,7 @@ function irInicio() {
     document.querySelector("#NUMERO").value = "";
     document.querySelector("#BAIRRO").value = "";
     document.querySelector("#FONE").value = "";
-    document.querySelector("#CELULAR").value = "";
+    document.querySelector("#DATANASCIMENTO").value = "";
     document.querySelector("#NCIDADE1").value = "";
     document.querySelector("#NUF1").value = "";
     document.querySelector("#COMPLEMENTO").value = "";
@@ -54,7 +54,6 @@ function irInicio() {
     document.querySelector(".fundoInicio").style.display = "block";
     setVisible(".fundoInicio");
 }
-
 
 function criarConta() {
     setVisiblePrincipais();
@@ -78,8 +77,20 @@ function cadastrarCliente() {
     {
         if (document.querySelector("#SENHAPX").value === document.querySelector("#confirmSenha").value)
         {
-            requisicaoHTTP("projetoPratico", "cliente", "inserirCliente", continuarConta, alert, "&NOME=" + document.querySelector("#NOME").value
-                    + "&EMAIL=" + document.querySelector("#EMAIL").value + "&SENHAPX=" + document.querySelector("#SENHAPX").value);
+            setInvisible();
+            document.querySelector("section").style.display = "block";
+            document.querySelector(".divContinuarConta").style.display = "block";
+            setVisible("section");
+            setVisible(".divContinuarConta");
+
+            var nomeCliente = document.querySelector("#NOME").value.split(" ");
+
+            document.querySelector(".olaCliente").innerText = "Bem vinda(o) " + nomeCliente[0] + "! Precisamos de mais algumas informações";
+
+            document.querySelector("#salvarDadosConta").addEventListener("click", continuarCadastro);
+
+            document.querySelector("#CEP").addEventListener("blur", verificarCep);
+
         } else {
             alert("As senhas informadas não são iguais!");
             document.querySelector("#SENHAPX").value = "";
@@ -90,41 +101,21 @@ function cadastrarCliente() {
     }
 }
 
-function continuarConta(cliente) {
-    document.querySelector("#NOME").value = "";
-    document.querySelector("#EMAIL").value = "";
-    document.querySelector("#SENHAPX").value = "";
-    document.querySelector("#confirmSenha").value = "";
-
-    setInvisible();
-    document.querySelector("section").style.display = "block";
-    document.querySelector(".divContinuarConta").style.display = "block";
-    setVisible("section");
-    setVisible(".divContinuarConta");
-
-    var nomeCliente = cliente["NOME"].split(" ");
-
-    document.querySelector(".olaCliente").innerText = "Bem vinda(o) " + nomeCliente[0] + "! Precisamos de mais algumas informações";
-
-    document.querySelector("#salvarDadosConta").addEventListener("click", continuarCadastro);
-    document.querySelector("#salvarDadosConta").dados = cliente;
-
-    document.querySelector("#CEP").addEventListener("blur", verificarCep);
-}
-
 function continuarCadastro() {
     if (document.querySelector("#CGC").value.trim() !== "" && document.querySelector("#CEP").value.trim() !== "" &&
             document.querySelector("#ENDERECO").value.trim() !== "" && document.querySelector("#NUMERO").value.trim() !== ""
-            && document.querySelector("#BAIRRO").value.trim() !== "" && document.querySelector("#CELULAR").value.trim() !== "")
+            && document.querySelector("#BAIRRO").value.trim() !== "" && document.querySelector("#FONE").value.trim() !== ""
+            && document.querySelector("#DATANASCIMENTO").value.trim() !== "")
     {
-        var botao = document.querySelector("#salvarDadosConta").dados;
-        requisicaoHTTP("projetoPratico", "cliente", "inserirClienteEnd", enviarEmailConfirmacao, alert, "&CCLIFOR=" + botao["CCLIFOR"]
-                + "&NOME=" + botao["NOME"] + "&EMAIL=" + botao["EMAIL"] + "&CPF=" + document.querySelector("#CGC").value
-                + "&CEP=" + document.querySelector("#CEP").value + "&ENDERECO=" + document.querySelector("#ENDERECO").value
-                + "&NUMERO=" + document.querySelector("#NUMERO").value + "&BAIRRO=" + document.querySelector("#BAIRRO").value
-                + "&FONE=" + document.querySelector("#FONE").value + "&CELULAR=" + document.querySelector("#CELULAR").value
-                + "&NCIDADE1=" + document.querySelector("#NCIDADE1").value + "&NUF1=" + document.querySelector("#NUF1").value
-                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTO").value);
+        requisicaoHTTP("TecniconECommerce", "Login", "registraCliente", enviarEmailConfirmacao, alert,
+                "&nomeCad=" + document.querySelector("#NOME").value + "&emailCad=" + document.querySelector("#EMAIL").value
+                + "&cepCad=" + document.querySelector("#CEP").value + "&enderecoCad=" + document.querySelector("#ENDERECO").value
+                + "&numeroCad=" + document.querySelector("#NUMERO").value + "&bairroCad=" + document.querySelector("#BAIRRO").value
+                + "&telefoneCad=" + document.querySelector("#FONE").value
+                + "&nascimentoCad=" + document.querySelector("#DATANASCIMENTO").value.split("-").reverse().join("/")
+                + "&cidadeCad=" + document.querySelector("#NCIDADE1").value + "&ufCad=" + document.querySelector("#NUF1").value
+                + "&complementoCad=" + document.querySelector("#COMPLEMENTO").value + "&cgcCad=" + document.querySelector("#CGC").value
+                + "&senhaCad=" + document.querySelector("#SENHAPX").value + "&filial=1");
     } else {
         alert("Preencha todos os campos obrigatórios!");
     }
@@ -162,37 +153,46 @@ function verificarCep() {
 }
 
 function enviarEmailConfirmacao() {
-    var botao = document.querySelector("#salvarDadosConta").dados;
-    requisicaoHTTP("projetoPratico", "cliente", "enviarEmailConfirmacao", finalizarConta, alert, "&DESTINATARIO=" + botao["EMAIL"]
-            + "&NOME=" + botao["NOME"]);
+    requisicaoHTTP("projetoPratico", "cliente", "enviarEmailConfirmacao", finalizarConta, alert,
+            "&DESTINATARIO=" + document.querySelector("#EMAIL").value + "&NOME=" + document.querySelector("#NOME").value);
 }
 
 function finalizarConta(mensagem) {
     alert(mensagem);
+    requisicaoHTTP("projetoPratico", "cliente", "buscarCpf", function (cpf) {
+        requisicaoHTTP("Tecnicon", "EfetuaLogin", "obterTelaHtml", function (cliente) {
+            var logon = {'cliente': []};
+            logon.cliente.push({'codigo': cliente.cliforenduser, 'data': new Date()});
+            window.localStorage.setItem('logon', JSON.stringify(logon));
 
-    document.querySelector("#CGC").value = "";
-    document.querySelector("#CEP").value = "";
-    document.querySelector("#ENDERECO").value = "";
-    document.querySelector("#NUMERO").value = "";
-    document.querySelector("#BAIRRO").value = "";
-    document.querySelector("#FONE").value = "";
-    document.querySelector("#CELULAR").value = "";
-    document.querySelector("#NCIDADE1").value = "";
-    document.querySelector("#NUF1").value = "";
-    document.querySelector("#COMPLEMENTO").value = "";
+            document.querySelector("#NOME").value = "";
+            document.querySelector("#EMAIL").value = "";
+            document.querySelector("#SENHAPX").value = "";
+            document.querySelector("#confirmSenha").value = "";
+            document.querySelector("#CGC").value = "";
+            document.querySelector("#CEP").value = "";
+            document.querySelector("#ENDERECO").value = "";
+            document.querySelector("#NUMERO").value = "";
+            document.querySelector("#BAIRRO").value = "";
+            document.querySelector("#FONE").value = "";
+            document.querySelector("#DATANASCIMENTO").value = "";
+            document.querySelector("#NCIDADE1").value = "";
+            document.querySelector("#NUF1").value = "";
+            document.querySelector("#COMPLEMENTO").value = "";
 
-    var logon = {'cliente': []};
-    logon.cliente.push({'codigo': document.querySelector("#salvarDadosConta").dados["CCLIFOR"], 'data': new Date()});
-    window.localStorage.setItem('logon', JSON.stringify(logon));
+            validarLogon();
 
-    validarLogon();
+            setInvisible();
 
-    setInvisible();
-    document.querySelector("header").style.display = "block";
-    document.querySelector("nav").style.display = "block";
-    document.querySelector("article").style.display = "block";
-    document.querySelector("footer").style.display = "block";
-    irMinhaConta();
+            document.querySelector("header").style.display = "block";
+            document.querySelector("nav").style.display = "block";
+            document.querySelector("article").style.display = "block";
+            document.querySelector("footer").style.display = "block";
+            irMinhaConta();
+
+        }, alert, "&tipologin=cliente&usuario=" + document.querySelector("#EMAILL").value
+                + "&senha=" + document.querySelector("#SENHAL").value + '&cnpj=' + cpf + "&ecommerce=S");
+    }, alert, "&EMAIL=" + document.querySelector("#EMAILL").value);
 
 }
 
@@ -218,8 +218,10 @@ function verificarLogin() {
 function fazerLogin() {
     if (document.querySelector("#EMAILL").value.trim() !== "" && document.querySelector("#SENHAL").value.trim() !== "")
     {
-        requisicaoHTTP("projetoPratico", "cliente", "fazerLogin", logar, alert, "&EMAIL=" + document.querySelector("#EMAILL").value
-                + "&SENHA=" + document.querySelector("#SENHAL").value);
+        requisicaoHTTP("projetoPratico", "cliente", "buscarCpf", function (cpf) {
+            requisicaoHTTP("Tecnicon", "EfetuaLogin", "obterTelaHtml", logar, alert, "&tipologin=cliente&usuario=" + document.querySelector("#EMAILL").value
+                    + "&senha=" + document.querySelector("#SENHAL").value + '&cnpj=' + cpf + "&ecommerce=S");
+        }, alert, "&EMAIL=" + document.querySelector("#EMAILL").value);
     } else {
         alert("Preencha todos os campos obrigatórios!");
     }
@@ -227,7 +229,7 @@ function fazerLogin() {
 
 function logar(cliente) {
     var logon = {'cliente': []};
-    logon.cliente.push({'codigo': cliente, 'data': new Date()});
+    logon.cliente.push({'codigo': cliente.cliforenduser, 'data': new Date()});
     window.localStorage.setItem('logon', JSON.stringify(logon));
     validarLogon();
     document.querySelector("#EMAILL").value = "";
@@ -250,6 +252,52 @@ function logar(cliente) {
     document.querySelector(".logar").pagina = undefined;
 
 }
+
+login = function (e) {
+    var email = document.querySelector('#emailLogin').value;
+    var cnpj = document.querySelector('#cnpjLogin').value;
+    var senha = document.querySelector('#senhaLogin').value;
+    if (email && cnpj && senha) {
+        executaServico("Tecnicon", "EfetuaLogin.obterTelaHtml", function (erro) {
+            alert(erro);
+        }, function (data) {
+            var dados = JSON.parse(data);
+            configuracoes.sessao = dados.SESSAO;
+            configuracoes.cclifor = dados.cliforenduser;
+            configuracoes.filialcf = dados.filialcfuser;
+            configuracoes.nomefilialuser = dados.nomefilialuser;
+
+            salvaStorage();
+            buscaStorage();
+
+            loginECommerce.acompanhamentoPedidos();
+        }, '&tipologin=cliente&usuario=' + email + '&cnpj=' + cnpj + '&senha=' + senha);
+    }
+
+};
+
+function salvaStorage() {
+    localStorage.setItem('cclifor', configuracoes.cclifor);
+    localStorage.setItem('filialcf', configuracoes.filialcf);
+    localStorage.setItem('nomefilialuser', configuracoes.nomefilialuser);
+}
+
+function buscaStorage() {
+    configuracoes.cclifor = localStorage.getItem('cclifor');
+    configuracoes.filialcf = localStorage.getItem('filialcf');
+    configuracoes.nomefilialuser = localStorage.getItem('nomefilialuser');
+    configuracoes.empresaLogada = localStorage.getItem('emp');
+    configuracoes.filialLogada = localStorage.getItem('filial');
+    configuracoes.localLogado = localStorage.getItem('local');
+
+    if (configuracoes.nomefilialuser) {
+        document.querySelector('#usuarioLogado-ec').innerHTML = 'Olá ' + configuracoes.nomefilialuser;
+    }
+    //if (configuracoes.empresaLogada && configuracoes.filialLogada && configuracoes.cclifor && configuracoes.filialLogada) {
+    // document.querySelector('#').setAttribute("src", "/Tecnicon/RetornaImg?tipo=USUARIO&empresa=" + configuracoes.empresaLogada + "&filial=" + configuracoes.filialLogada + "&cclifor=" + configuracoes.cclifor + "&filialcf=" + configuracoes.filialcf + "&ecommerce=S");
+    // }
+}
+
 
 function deslogar() {
     localStorage.removeItem('logon');

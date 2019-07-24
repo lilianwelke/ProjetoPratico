@@ -1,9 +1,9 @@
 function requisicaoHTTP(projeto, classe, metodo, funcaoOK, funcaoErro, parametros) {
     var http = new XMLHttpRequest();
-    http.open('POST', 'http://portal.tecnicon.com.br:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=|filial=|local=|parametro=' +
+    http.open('POST', 'http://portal.tecnicon.com.br:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=17|filial=1|local=1|parametro=' +
             'projeto=' + projeto + '|classe=' + classe + '|metodo=' + metodo + '|recurso=metadados' + parametros, true);
 
-//    http.open('POST', 'http://192.168.1.196:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=|filial=|local=|parametro=' +
+//    http.open('POST', 'http://192.168.1.196:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=17|filial=1|local=1|parametro=' +
 //            'projeto=' + projeto + '|classe=' + classe + '|metodo=' + metodo + '|recurso=metadados' + parametros, true);
 
     http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

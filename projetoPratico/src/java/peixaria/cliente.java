@@ -152,6 +152,16 @@ public class cliente {
         return cliente.fieldByName("CCLIFOR").asInteger();
     }
 
+    public String buscarCpf(VariavelSessao vs) throws ExcecaoTecnicon {
+        TSQLDataSetEmp endCliente = TSQLDataSetEmp.create(vs);
+        endCliente.commandText("SELECT CLIFOREND.CGC "
+                + " FROM CLIFOREND "
+                + " WHERE CLIFOREND.EMAIL = '" + vs.getParameter("EMAIL") + "'");
+        endCliente.open();
+
+        return endCliente.fieldByName("CGC").asString();
+    }
+
     public String redefinirSenha(VariavelSessao vs) throws ExcecaoTecnicon {
         try {
             TSQLDataSetEmp cliente = TSQLDataSetEmp.create(vs);
@@ -516,8 +526,8 @@ public class cliente {
 
         return "Novo endereço cadastrado com sucesso!";
     }
-    
-     public String salvarEditEnd(VariavelSessao vs) throws ExcecaoTecnicon {
+
+    public String salvarEditEnd(VariavelSessao vs) throws ExcecaoTecnicon {
         TClientDataSet endereco = TClientDataSet.create(vs, "CLIENDENT");
         endereco.createDataSet();
         endereco.condicao("WHERE CLIENDENT.SCLIENDENT = " + vs.getParameter("SCLIENDENT"));
@@ -527,7 +537,7 @@ public class cliente {
         cidade.commandText("SELECT CIDADE.CCIDADE FROM CIDADE WHERE CIDADE.CIDADE = '" + vs.getParameter("NCIDADE1").toUpperCase() + "'");
         cidade.open();
 
-        endereco.edit();        
+        endereco.edit();
         endereco.fieldByName("CEP").asString(vs.getParameter("CEP"));
         endereco.fieldByName("ENDERECO").asString(vs.getParameter("ENDERECO"));
         endereco.fieldByName("CCIDADE").asInteger(cidade.fieldByName("CCIDADE").asInteger());
