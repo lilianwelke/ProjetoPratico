@@ -210,12 +210,11 @@ public class cliente {
 
     public String buscarDadosCli(VariavelSessao vs) throws ExcecaoTecnicon {
         TSQLDataSetEmp clienteSql = TSQLDataSetEmp.create(vs);
-        clienteSql.commandText("SELECT CLIFOREND.NOMEFILIAL, CLIFOREND.EMAIL, LOGINPX.USUARIOPX, CLIFOREND.FONE, CLIFOREND.CELULAR, CLIFOREND.CGC, "
+        clienteSql.commandText("SELECT CLIFOREND.NOMEFILIAL, CLIFOREND.EMAIL, '' USUARIOPX, CLIFOREND.FONE, CLIFOREND.CELULAR, CLIFOREND.CGC, "
                 + " CLIFOREND.COMPLEMENTO, CLIFOREND.BAIRRO, CLIFOREND.NUMERO, CLIFOREND.ENDERECO, CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF"
-                + " FROM LOGINPX"
-                + " INNER JOIN CLIFOREND ON (CLIFOREND.CCLIFOR = LOGINPX.CCLIFOR)"
+                + " FROM CLIFOREND"
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE)"
-                + " WHERE LOGINPX.CCLIFOR = " + vs.getParameter("CCLIFOR"));
+                + " WHERE CLIFOREND.CCLIFOR = " + vs.getParameter("CCLIFOR"));
         clienteSql.open();
 
         return clienteSql.jsonData();
@@ -356,7 +355,8 @@ public class cliente {
 
         item.close();
         item.commandText(" SELECT PEDIDOITEM.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PEDIDOITEM.UNITARIOCLI, PEDIDO.FRETE, "
-                + " PEDIDOITEM.QTDE, PRODUTO.UNIDADE, PEDIDOITEM.UNITARIOCLI * PEDIDOITEM.QTDE AS TOTALITEM, PEDIDO.FRETE, PEDIDO.PEDIDO"
+                + " PEDIDOITEM.QTDE, PRODUTO.UNIDADE, PEDIDOITEM.UNITARIOCLI * PEDIDOITEM.QTDE AS TOTALITEM, PEDIDO.FRETE, PEDIDO.PEDIDO, "
+                + " (SELECT NFSITEM.NFS FROM NFSITEM WHERE NFSITEM.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM) NFS"
                 + " FROM PEDIDO"
                 + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO) "
                 + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PEDIDOITEM.CPRODUTO) "
@@ -383,6 +383,7 @@ public class cliente {
                 itens.put("UNIDADE", item.fieldByName("UNIDADE").asString());
                 itens.put("TOTALITEM", item.fieldByName("TOTALITEM").asDouble());
                 itens.put("FRETE", item.fieldByName("FRETE").asDouble());
+                itens.put("NFS", item.fieldByName("NFS").asDouble());
 
                 if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
                     itens.put("IMAGEM", retornoImg.getString("src"));
@@ -399,6 +400,30 @@ public class cliente {
             throw new ExcecaoMsg(e.getMessage());
         }
         return itensArray;
+    }
+
+    public String terminarRegistroCliente(VariavelSessao vs) throws ExcecaoTecnicon {
+        TClientDataSet contatoCli = TClientDataSet.create(vs, "CONTATOCLI");
+        contatoCli.createDataSet();
+
+        TSQLDataSetEmp cliente = TSQLDataSetEmp.create(vs);
+
+        try {
+            cliente.commandText("SELECT CLIFOREND.CCLIFOR FROM CLIFOREND WHERE CLIFOREND.EMAIL = '" + vs.getParameter("EMAIL") + "'");
+            cliente.open();
+
+            contatoCli.insert();
+            contatoCli.fieldByName("CCLIFOR").asInteger(cliente.fieldByName("CCLIFOR").asInteger());
+            contatoCli.fieldByName("FILIALCF").asInteger(1);
+            contatoCli.fieldByName("CONTATO").asString(vs.getParameter("NOME"));
+            contatoCli.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
+            contatoCli.fieldByName("VINCOMPRA").asString("F");
+            contatoCli.post();
+        } catch (Exception e) {
+            throw new ExcecaoMsg(e.getMessage());
+        }
+        
+        return "OK";
     }
 
     public String enviarEmailConfirmacao(VariavelSessao vs) throws ExcecaoTecnicon {

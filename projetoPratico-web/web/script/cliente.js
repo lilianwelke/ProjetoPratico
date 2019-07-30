@@ -107,7 +107,7 @@ function continuarCadastro() {
             && document.querySelector("#BAIRRO").value.trim() !== "" && document.querySelector("#FONE").value.trim() !== ""
             && document.querySelector("#DATANASCIMENTO").value.trim() !== "")
     {
-        requisicaoHTTP("TecniconECommerce", "Login", "registraCliente", enviarEmailConfirmacao, alert,
+        requisicaoHTTP("TecniconECommerce", "Login", "registraCliente", terminarRegistroCliente, alert,
                 "&nomeCad=" + document.querySelector("#NOME").value + "&emailCad=" + document.querySelector("#EMAIL").value
                 + "&cepCad=" + document.querySelector("#CEP").value + "&enderecoCad=" + document.querySelector("#ENDERECO").value
                 + "&numeroCad=" + document.querySelector("#NUMERO").value + "&bairroCad=" + document.querySelector("#BAIRRO").value
@@ -152,19 +152,19 @@ function verificarCep() {
     }
 }
 
-function enviarEmailConfirmacao() {
-    requisicaoHTTP("projetoPratico", "cliente", "enviarEmailConfirmacao", finalizarConta, alert,
-            "&DESTINATARIO=" + document.querySelector("#EMAIL").value + "&NOME=" + document.querySelector("#NOME").value);
+function terminarRegistroCliente() {
+    requisicaoHTTP("projetoPratico", "cliente", "terminarRegistroCliente", function ()
+    {
+        requisicaoHTTP("projetoPratico", "cliente", "enviarEmailConfirmacao", finalizarConta, alert,
+                "&DESTINATARIO=" + document.querySelector("#EMAIL").value + "&NOME=" + document.querySelector("#NOME").value);
+    }, alert, "&EMAIL=" + document.querySelector("#EMAIL").value + "&NOME=" + document.querySelector("#NOME").value);
+
 }
 
 function finalizarConta(mensagem) {
     alert(mensagem);
     requisicaoHTTP("projetoPratico", "cliente", "buscarCpf", function (cpf) {
         requisicaoHTTP("Tecnicon", "EfetuaLogin", "obterTelaHtml", function (cliente) {
-            var logon = {'cliente': []};
-            logon.cliente.push({'codigo': cliente.cliforenduser, 'data': new Date()});
-            window.localStorage.setItem('logon', JSON.stringify(logon));
-
             document.querySelector("#NOME").value = "";
             document.querySelector("#EMAIL").value = "";
             document.querySelector("#SENHAPX").value = "";
@@ -180,6 +180,9 @@ function finalizarConta(mensagem) {
             document.querySelector("#NUF1").value = "";
             document.querySelector("#COMPLEMENTO").value = "";
 
+            var logon = {'cliente': []};
+            logon.cliente.push({'codigo': cliente.cliforenduser, 'data': new Date()});
+            window.localStorage.setItem('logon', JSON.stringify(logon));
             validarLogon();
 
             setInvisible();
@@ -188,11 +191,12 @@ function finalizarConta(mensagem) {
             document.querySelector("nav").style.display = "block";
             document.querySelector("article").style.display = "block";
             document.querySelector("footer").style.display = "block";
+
             irMinhaConta();
 
-        }, alert, "&tipologin=cliente&usuario=" + document.querySelector("#EMAILL").value
-                + "&senha=" + document.querySelector("#SENHAL").value + '&cnpj=' + cpf + "&ecommerce=S");
-    }, alert, "&EMAIL=" + document.querySelector("#EMAILL").value);
+        }, alert, "&tipologin=cliente&usuario=" + document.querySelector("#EMAIL").value
+                + "&senha=" + document.querySelector("#SENHAPX").value + '&cnpj=' + cpf + "&ecommerce=S");
+    }, alert, "&EMAIL=" + document.querySelector("#EMAIL").value);
 
 }
 
@@ -250,54 +254,7 @@ function logar(cliente) {
     }
 
     document.querySelector(".logar").pagina = undefined;
-
 }
-
-login = function (e) {
-    var email = document.querySelector('#emailLogin').value;
-    var cnpj = document.querySelector('#cnpjLogin').value;
-    var senha = document.querySelector('#senhaLogin').value;
-    if (email && cnpj && senha) {
-        executaServico("Tecnicon", "EfetuaLogin.obterTelaHtml", function (erro) {
-            alert(erro);
-        }, function (data) {
-            var dados = JSON.parse(data);
-            configuracoes.sessao = dados.SESSAO;
-            configuracoes.cclifor = dados.cliforenduser;
-            configuracoes.filialcf = dados.filialcfuser;
-            configuracoes.nomefilialuser = dados.nomefilialuser;
-
-            salvaStorage();
-            buscaStorage();
-
-            loginECommerce.acompanhamentoPedidos();
-        }, '&tipologin=cliente&usuario=' + email + '&cnpj=' + cnpj + '&senha=' + senha);
-    }
-
-};
-
-function salvaStorage() {
-    localStorage.setItem('cclifor', configuracoes.cclifor);
-    localStorage.setItem('filialcf', configuracoes.filialcf);
-    localStorage.setItem('nomefilialuser', configuracoes.nomefilialuser);
-}
-
-function buscaStorage() {
-    configuracoes.cclifor = localStorage.getItem('cclifor');
-    configuracoes.filialcf = localStorage.getItem('filialcf');
-    configuracoes.nomefilialuser = localStorage.getItem('nomefilialuser');
-    configuracoes.empresaLogada = localStorage.getItem('emp');
-    configuracoes.filialLogada = localStorage.getItem('filial');
-    configuracoes.localLogado = localStorage.getItem('local');
-
-    if (configuracoes.nomefilialuser) {
-        document.querySelector('#usuarioLogado-ec').innerHTML = 'Olá ' + configuracoes.nomefilialuser;
-    }
-    //if (configuracoes.empresaLogada && configuracoes.filialLogada && configuracoes.cclifor && configuracoes.filialLogada) {
-    // document.querySelector('#').setAttribute("src", "/Tecnicon/RetornaImg?tipo=USUARIO&empresa=" + configuracoes.empresaLogada + "&filial=" + configuracoes.filialLogada + "&cclifor=" + configuracoes.cclifor + "&filialcf=" + configuracoes.filialcf + "&ecommerce=S");
-    // }
-}
-
 
 function deslogar() {
     localStorage.removeItem('logon');
@@ -1104,7 +1061,7 @@ function chamarItensCompra(e) {
 
 function verItensCompra(itens) {
     var table = document.getElementsByClassName("tableItem " + itens[0]['PEDIDO'])[0];
-    var thead, tbody, tr, th, td, dvImg, img;
+    var thead, tbody, tr, th, td, dvImg, img, div, frame;
 
     thead = document.createElement('thead');
     table.appendChild(thead);
@@ -1179,9 +1136,43 @@ function verItensCompra(itens) {
     tr = document.createElement('tr');
     tbody.appendChild(tr);
 
-    td = document.createElement('td');
-    td.setAttribute('colspan', '3');
-    tr.appendChild(td);
+    if (itens[0]['NFS'] > 0)
+    {
+        td = document.createElement('td');
+        td.setAttribute('class', 'tdDanfe');
+        tr.appendChild(td);
+
+        div = document.createElement('div');
+        td.setAttribute('id', 'dvPDF');
+        td.appendChild(div);
+
+        frame = document.createElement('iframe');
+        frame.setAttribute('id', 'iframeRel');
+        frame.setAttribute('type', 'application/pdf');
+        frame.setAttribute('src', 'http://portal.tecnicon.com.br:7078/Tecnicon/Controller?sessao=-9876'
+                + '&acao=TecniconRelatorioEsp.RelatorioEsp.gerarRelatorio'
+                + '&slImpressoras=MATRICIAL&tiporetorno=X&tipoImp=R&numCopias=1&impDuplex=false&RE_PRINT=&relatorioesp=772&NFE=&NFS=' + itens[0]['NFS']
+                + '&DISPLVIA=S&MODELOECONOMICONFCE=N&mime=pdf&zoom=100&btnOKFilial=S');
+
+//Request URL: http://portal.tecnicon.com.br:7078/Tecnicon/Controller?sessao=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDE3IiwiaXNzIjoiNjEwMTciLCJpYXQiO
+//jE1NjQ0NTYyNDl9.6QDQB0b8BOemN_m8yRkFdEzUAZ2FaBu-mZ23fGe6O94&acao=TecniconRelatorioEsp.RelatorioEsp.gerarRelatorio&&slImpressoras=MATRICIAL
+//&tiporetorno=X&tipoImp=R&numCopias=1&impDuplex=false&RE_PRINT=&btnOKFilial=OK&relatorioesp=772&NFS=392&NFE=&DISPLVIA=S&SNFECONSULTAITEM=
+//&btnPreview=Imprimir&btnSelFilial=Selecionar%20filial&btnPreviewImpressora=Imprimir%20-%20Configura%C3%A7%C3%A3o%20Impressora&
+//&MODELOECONOMICONFCE=N&mime=pdf&zoom=100&mime=pdf
+
+        frame.style.position = 'absolute';
+        frame.style.height = '83.3%';
+        frame.style.width = '99.7%';
+        div.appendChild(frame);
+
+        td = document.createElement('td');
+        td.setAttribute('colspan', '2');
+        tr.appendChild(td);
+    } else {
+        td = document.createElement('td');
+        td.setAttribute('colspan', '3');
+        tr.appendChild(td);
+    }
 
     td = document.createElement('td');
     td.innerText = 'Frete';
@@ -1193,6 +1184,10 @@ function verItensCompra(itens) {
     td.innerText = "R$ " + itens[0]['FRETE'].toFixed(2).replace('.', ',');
 
     tr.appendChild(td);
+}
+
+function chamarDanfe(NFS) {
+
 }
 
 function esconderItensCompra(e) {

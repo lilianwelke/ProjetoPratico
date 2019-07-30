@@ -62,6 +62,17 @@ public class venda {
         pedido.fieldByName("CFILIAL").asInteger(1);
         pedido.fieldByName("FRETE").asDouble(Funcoes.strToDouble(vs.getParameter("FRETE")));
 
+        lote.close();
+        lote.commandText("SELECT CONTATO, EMAIL "
+                + " FROM CONTATOCLI "
+                + " WHERE CONTATOCLI.CCLIFOR = " + pedido.fieldByName("CCLIFOR").asInteger()
+                + " AND CONTATOCLI.FILIALCF = " + pedido.fieldByName("FILIALCF").asInteger()
+                + " AND CONTATOCLI.VINCOMPRA = 'F'");
+        lote.open();
+
+        pedido.fieldByName("CONTATO").asString(lote.fieldByName("CONTATO").asString());
+        pedido.fieldByName("EMAIL").asString(lote.fieldByName("EMAIL").asString());
+
         pedido.post();
 
         for (int i = 0; i < itens.length(); i++) {
@@ -187,95 +198,113 @@ public class venda {
     }
 
     public String inserirNfs(VariavelSessao vs, TClientDataSet ds1) throws ExcecaoTecnicon {
-        if (ds1.fieldByName("DUPLICATA").asString().startsWith("PX")) {
-            String[] duplicata = ds1.fieldByName("DUPLICATA").asString().split("PX");
-            String codPedido = duplicata[1];
+        try {
+            if (ds1.fieldByName("DUPLICATA").asString().startsWith("PX")) {
+                String[] duplicata = ds1.fieldByName("DUPLICATA").asString().split("PX");
+                String codPedido = duplicata[1];
 
-            TSQLDataSetEmp pedido = TSQLDataSetEmp.create(vs);
-            pedido.commandText("SELECT PEDIDO.CIOF, PEDIDO.CCUSTO, PEDIDO.CLOCAL, PEDIDO.FRETE "
-                    + " FROM PEDIDO "
-                    + " WHERE PEDIDO.PEDIDO = " + codPedido);
-            pedido.open();
+                TSQLDataSetEmp pedido = TSQLDataSetEmp.create(vs);
+                pedido.commandText("SELECT PEDIDO.CIOF, PEDIDO.CCUSTO, PEDIDO.CLOCAL, PEDIDO.FRETE "
+                        + " FROM PEDIDO "
+                        + " WHERE PEDIDO.PEDIDO = " + codPedido);
+                pedido.open();
 
-            TClientDataSet nfs = TClientDataSet.create(vs, "NFSAIDA");
-            nfs.createDataSet();
+                TClientDataSet nfs = TClientDataSet.create(vs, "NFSAIDA");
+                nfs.createDataSet();
 
-            double valorTotalNfs = pedido.fieldByName("FRETE").asDouble();
+                TClientDataSet duplicatasReceber = TClientDataSet.create(vs, "RECEBER");
+                duplicatasReceber.createDataSet();
+                duplicatasReceber.condicao("WHERE DUPLICATA = '" + ds1.fieldByName("DUPLICATA").asString() + "'");
+                duplicatasReceber.open();
 
-            nfs.insert();
-            nfs.fieldByName("CFILIAL").asInteger(1);
-            nfs.fieldByName("CCLIFOR").asString(ds1.fieldByName("CCLIFOR").asString());
-            nfs.fieldByName("FILIALCF").asString("1");
-            nfs.fieldByName("CIOF").asString(pedido.fieldByName("CIOF").asString());
-            nfs.fieldByName("CCUSTO").asInteger(pedido.fieldByName("CCUSTO").asInteger());
-            nfs.fieldByName("CLOCAL").asInteger(pedido.fieldByName("CLOCAL").asInteger());
-            nfs.fieldByName("CMODELONF").asString("1");
-            nfs.fieldByName("NF").asString(Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 9, 2)
-                    + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 4, 2)
-                    + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 1, 2));
-            nfs.fieldByName("NF1").asString(Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 9, 2)
-                    + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 4, 2)
-                    + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 1, 2));
-            nfs.fieldByName("VALOR_TOTAL").asDouble(0d);
-            nfs.fieldByName("DATA").asDate(new Date());
-            nfs.fieldByName("FRETE").asDouble(pedido.fieldByName("FRETE").asDouble());
-            nfs.post();
+                double valorTotalNfs = 0.0;
 
-            pedido.close();
-            pedido.commandText("SELECT PEDIDOITEM.CPRODUTO, PEDIDOITEM.QTDE, NFSITEMLOTE.SPRODUTOLOTE, NFSITEMLOTE.CLOCALLOTE, "
-                    + " NFSITEMLOTE.QTDE AS QTDELOTE, PEDIDOITEM.PEDIDOITEM, PEDIDOITEM.UNITARIOCLI, NFSITEMLOTE.SNFSITEMLOTE "
-                    + " FROM PEDIDOITEM"
-                    + " LEFT JOIN NFSITEMLOTE ON (NFSITEMLOTE.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM)"
-                    + " WHERE PEDIDOITEM.PEDIDO = " + codPedido);
-            pedido.open();
+                nfs.insert();
+                nfs.fieldByName("CFILIAL").asInteger(1);
+                nfs.fieldByName("CCLIFOR").asString(ds1.fieldByName("CCLIFOR").asString());
+                nfs.fieldByName("FILIALCF").asString("1");
+                nfs.fieldByName("CIOF").asString(pedido.fieldByName("CIOF").asString());
+                nfs.fieldByName("CFOP").asString("5101");
+                nfs.fieldByName("CCUSTO").asInteger(pedido.fieldByName("CCUSTO").asInteger());
+                nfs.fieldByName("CLOCAL").asInteger(pedido.fieldByName("CLOCAL").asInteger());
+                nfs.fieldByName("CMODELONF").asString("31");
+                nfs.fieldByName("NF").asString(Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 9, 2)
+                        + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 4, 2)
+                        + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 1, 2));
+                nfs.fieldByName("NF1").asString(Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 9, 2)
+                        + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 4, 2)
+                        + Funcoes.copy(vs, Funcoes.formatarData(new Date(), "dd.MM.yyyy"), 1, 2));
+                nfs.fieldByName("VALOR_TOTAL").asDouble(0d);
+                nfs.fieldByName("DATA").asDate(new Date());
+                nfs.fieldByName("DATASAIDA").asDate(new Date());
+                nfs.fieldByName("FRETE").asDouble(pedido.fieldByName("FRETE").asDouble());
+                nfs.fieldByName("QTDE").asDouble(1.0);
+                nfs.post();
 
-            TClientDataSet nfsItem = TClientDataSet.create(vs, "NFSITEM");
-            nfsItem.createDataSet();
+                pedido.close();
+                pedido.commandText("SELECT PEDIDOITEM.CPRODUTO, PEDIDOITEM.QTDE, NFSITEMLOTE.SPRODUTOLOTE, NFSITEMLOTE.CLOCALLOTE, "
+                        + " NFSITEMLOTE.QTDE AS QTDELOTE, PEDIDOITEM.PEDIDOITEM, PEDIDOITEM.UNITARIOCLI, NFSITEMLOTE.SNFSITEMLOTE "
+                        + " FROM PEDIDOITEM"
+                        + " LEFT JOIN NFSITEMLOTE ON (NFSITEMLOTE.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM)"
+                        + " WHERE PEDIDOITEM.PEDIDO = " + codPedido);
+                pedido.open();
 
-            TClientDataSet nfsItemLote = TClientDataSet.create(vs, "NFSITEMLOTE");
-            nfsItemLote.createDataSet();
+                TClientDataSet nfsItem = TClientDataSet.create(vs, "NFSITEM");
+                nfsItem.createDataSet();
 
-            int pedidoItem = 0;
+                TClientDataSet nfsItemLote = TClientDataSet.create(vs, "NFSITEMLOTE");
+                nfsItemLote.createDataSet();
 
-            while (!pedido.eof()) {
-                nfsItem.insert();
-                nfsItem.fieldByName("NFS").asString(nfs.fieldByName("NFS").asString());
-                nfsItem.fieldByName("CCUSTO").asInteger(nfs.fieldByName("CCUSTO").asInteger());
-                nfsItem.fieldByName("CIOF").asString(nfs.fieldByName("CIOF").asString());
-                nfsItem.fieldByName("UNITARIOCLI").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());
-                nfsItem.fieldByName("UNITARIO").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());
-                nfsItem.fieldByName("TOTAL").asDouble(0d);
-                nfsItem.fieldByName("IPI").asDouble(0d);
-                nfsItem.fieldByName("CPRODUTO").asInteger(pedido.fieldByName("CPRODUTO").asInteger());
-                nfsItem.fieldByName("CLOCAL").asInteger(nfs.fieldByName("CLOCAL").asInteger());
-                nfsItem.fieldByName("QTDE").asDouble(pedido.fieldByName("QTDE").asDouble());
-                nfsItem.fieldByName("CIPI").asInteger(1313);
-                nfsItem.fieldByName("QTDECLIENTE").asDouble(nfsItem.fieldByName("QTDE").asDouble());
-                nfsItem.fieldByName("PEDIDOITEM").asInteger(pedido.fieldByName("PEDIDOITEM").asInteger());
-                nfsItem.post();
+                int pedidoItem = 0;
 
-                valorTotalNfs += nfsItem.fieldByName("UNITARIO").asDouble() * nfsItem.fieldByName("QTDE").asDouble();
+                while (!pedido.eof()) {
+                    nfsItem.insert();
+                    nfsItem.fieldByName("NFS").asString(nfs.fieldByName("NFS").asString());
+                    nfsItem.fieldByName("CCUSTO").asInteger(nfs.fieldByName("CCUSTO").asInteger());
+                    nfsItem.fieldByName("CIOF").asString(nfs.fieldByName("CIOF").asString());
+                    nfsItem.fieldByName("CFOP").asString("5101");
+                    nfsItem.fieldByName("UNITARIOCLI").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());
+                    nfsItem.fieldByName("UNITARIO").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());                    
+                    nfsItem.fieldByName("IPI").asDouble(0d);
+                    nfsItem.fieldByName("CPRODUTO").asInteger(pedido.fieldByName("CPRODUTO").asInteger());
+                    nfsItem.fieldByName("CLOCAL").asInteger(nfs.fieldByName("CLOCAL").asInteger());
+                    nfsItem.fieldByName("QTDE").asDouble(pedido.fieldByName("QTDE").asDouble());
+                    nfsItem.fieldByName("TOTAL").asDouble(nfsItem.fieldByName("UNITARIO").asDouble() * nfsItem.fieldByName("QTDE").asDouble());
+                    nfsItem.fieldByName("CIPI").asInteger(1313);
+                    nfsItem.fieldByName("QTDECLIENTE").asDouble(nfsItem.fieldByName("QTDE").asDouble());
+                    nfsItem.fieldByName("PEDIDOITEM").asInteger(pedido.fieldByName("PEDIDOITEM").asInteger());
+                    nfsItem.fieldByName("ST").asString("000");
+                    nfsItem.post();
 
-                pedidoItem = pedido.fieldByName("PEDIDOITEM").asInteger();
+                    valorTotalNfs += nfsItem.fieldByName("UNITARIO").asDouble() * nfsItem.fieldByName("QTDE").asDouble();
 
-                while (!pedido.eof() && pedidoItem == pedido.fieldByName("PEDIDOITEM").asInteger()) {
-                    if (!pedido.fieldByName("SPRODUTOLOTE").asString().isEmpty()) {
-                        nfsItemLote.close();
-                        nfsItemLote.condicao(" WHERE NFSITEMLOTE.SNFSITEMLOTE = " + pedido.fieldByName("SNFSITEMLOTE").asInteger());
-                        nfsItemLote.open();
+                    pedidoItem = pedido.fieldByName("PEDIDOITEM").asInteger();
 
-                        nfsItemLote.edit();
-                        nfsItemLote.fieldByName("NFSITEM").asInteger(nfsItem.fieldByName("NFSITEM").asInteger());
-                        nfsItemLote.post();
+                    while (!pedido.eof() && pedidoItem == pedido.fieldByName("PEDIDOITEM").asInteger()) {
+                        if (!pedido.fieldByName("SPRODUTOLOTE").asString().isEmpty()) {
+                            nfsItemLote.close();
+                            nfsItemLote.condicao(" WHERE NFSITEMLOTE.SNFSITEMLOTE = " + pedido.fieldByName("SNFSITEMLOTE").asInteger());
+                            nfsItemLote.open();
+
+                            nfsItemLote.edit();
+                            nfsItemLote.fieldByName("NFSITEM").asInteger(nfsItem.fieldByName("NFSITEM").asInteger());
+                            nfsItemLote.post();
+                        }
+                        pedido.next();
                     }
-                    pedido.next();
                 }
+
+                nfs.edit();
+                nfs.fieldByName("VALOR_TOTAL").asDouble(valorTotalNfs);
+                nfs.post();
+
+                duplicatasReceber.edit();
+                duplicatasReceber.fieldByName("NFS").asInteger(nfs.fieldByName("NFS").asInteger());
+                duplicatasReceber.post();
+
             }
-
-            nfs.edit();
-            nfs.fieldByName("VALOR_TOTAL").asDouble(valorTotalNfs);
-            nfs.post();
-
+        } catch (Exception e) {
+            throw new ExcecaoTecnicon(vs, e.getMessage());
         }
 
         return "OK";
