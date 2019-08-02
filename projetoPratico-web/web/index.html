@@ -57,6 +57,16 @@
             </div>
             <div class="divCarrinho" style="display: none;">
             </div>
+            <div class="boxFormasPag" style="display: none;">
+                <div class="divTitleFormPag">
+                    <h1>Formas de Pagamento</h1>
+                </div>
+                <div class="divFormPagCentro">
+                    <div class="divFormPag"><img class="imgPag" id="boleto" src="img/boleto.png" title=""/></div>
+                    <div class="divFormPag"><img class="imgPag" id="pagSeguro" src="img/pagSeguro.png" title=""/></div>
+                    <div class="divFormPag"><img class="imgPag" id="payPal" src="img/payPal.png" title=""/></div>
+                </div>
+            </div>
             <div class="divSobre" style="display: none;">
                 <div class="overlaySobre"></div>
                 <div class="infosSobre">
@@ -65,7 +75,7 @@
                     <h1>Veja nosso catálago de opções e faça seu pedido.</h1>                    
                     <h1>E o mais importante, você pode fazer tudo isso online!</h1>                  
                 </div>     
-                <div class="imgSobre"><img class="fotoSobre" src="img/pier2.png" title=""><img></div>
+                <div class="imgSobre"><img class="fotoSobre" src="img/pier2.jpg" title=""/></div>
             </div>
             <div class="divContato" style="display: none;">
                 <div class="divSobreLabel">
@@ -270,5 +280,6 @@
         <script src="script/utils.js"></script>
         <script src="script/sobre.js"></script>
         <script src="script/cliente.js"></script>
+        <script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
     </body>
 </html>

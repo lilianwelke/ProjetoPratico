@@ -558,7 +558,7 @@ function listarCarrinho() {
         arrr[k].addEventListener("blur", atualizarQtde);
     }
 
-    document.querySelector('#finalizarCompra').addEventListener('click', finalizarCompra);
+    document.querySelector('#finalizarCompra').addEventListener('click', escolherFormaPag);
 
 }
 
@@ -753,33 +753,66 @@ function setarCidadeFrete(cidadeFrete) {
     }
 }
 
-function finalizarCompra() {
+function escolherFormaPag() {
     var logon = {};
     logon = window.localStorage.getItem("logon");
     logon = JSON.parse(logon);
 
     if (logon)
     {
-        var itens = [];
-        itens = window.localStorage.getItem('carrinho');
-        itens = JSON.parse(itens);
+        setInvisible();
+        document.querySelector(".boxFormasPag").style.display = "block";
+        setVisible(".boxFormasPag");
 
-        var todosItens = [];
-        var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+        document.querySelector("#boleto").addEventListener("click", finalizarBoleto);
+        document.querySelector("#pagSeguro").addEventListener("click", finalizarPagSeguro);
 
-        for (var i = 0; i < itens['produtos'].length; i++) {
-            todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
-                PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
-                QTDE: itens['produtos'][i]['qtde']});
-        }
-        requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
-                + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
-                + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0));
+
     } else {
         alert("Para finalizar a compra você precisa estar logado!");
         verificarLogin();
     }
+}
 
+function finalizarBoleto() {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    var itens = [];
+    itens = window.localStorage.getItem('carrinho');
+    itens = JSON.parse(itens);
+
+    var todosItens = [];
+    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+
+    for (var i = 0; i < itens['produtos'].length; i++) {
+        todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+            PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+            QTDE: itens['produtos'][i]['qtde']});
+    }
+    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+            + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
+            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0));
+}
+
+function finalizarPagSeguro() {
+    var http = new XMLHttpRequest();
+    http.open('POST', 'https://ws.pagseguro.uol.com.br/v2/authorizations/request/?'
+            + 'appId=app8016438382&AppKey=8E2B81326262C4BAA431BF95A123B5CD', true);
+
+    http.setRequestHeader("Content-Type", "application/xml;charset=ISO-8859-1");
+    http.addEventListener('load', function () {
+        if (http.status === 200) {
+            var dados = xmlToJSON(http.responseXML);
+            if (dados.erro) {
+                funcaoErro(dados.erro);
+            } else if (dados.result) {
+                funcaoOK(dados.result);
+            }
+        }
+    });
+    http.send(null);
 }
 
 function compraConcluida(data) {

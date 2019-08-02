@@ -355,8 +355,7 @@ public class cliente {
 
         item.close();
         item.commandText(" SELECT PEDIDOITEM.CPRODUTO, GRUPO.GRUPO, PRODUTO.MERCADORIA, PRODUTO.DESCRICAO, PEDIDOITEM.UNITARIOCLI, PEDIDO.FRETE, "
-                + " PEDIDOITEM.QTDE, PRODUTO.UNIDADE, PEDIDOITEM.UNITARIOCLI * PEDIDOITEM.QTDE AS TOTALITEM, PEDIDO.FRETE, PEDIDO.PEDIDO, "
-                + " (SELECT NFSITEM.NFS FROM NFSITEM WHERE NFSITEM.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM) NFS"
+                + " PEDIDOITEM.QTDE, PRODUTO.UNIDADE, PEDIDOITEM.UNITARIOCLI * PEDIDOITEM.QTDE AS TOTALITEM, PEDIDO.FRETE, PEDIDO.PEDIDO "
                 + " FROM PEDIDO"
                 + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO) "
                 + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PEDIDOITEM.CPRODUTO) "
@@ -383,7 +382,6 @@ public class cliente {
                 itens.put("UNIDADE", item.fieldByName("UNIDADE").asString());
                 itens.put("TOTALITEM", item.fieldByName("TOTALITEM").asDouble());
                 itens.put("FRETE", item.fieldByName("FRETE").asDouble());
-                itens.put("NFS", item.fieldByName("NFS").asDouble());
 
                 if (!retornoImg.isNull("src") && !retornoImg.getString("src").equals("")) {
                     itens.put("IMAGEM", retornoImg.getString("src"));

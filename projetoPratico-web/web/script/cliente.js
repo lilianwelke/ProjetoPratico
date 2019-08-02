@@ -1061,7 +1061,7 @@ function chamarItensCompra(e) {
 
 function verItensCompra(itens) {
     var table = document.getElementsByClassName("tableItem " + itens[0]['PEDIDO'])[0];
-    var thead, tbody, tr, th, td, dvImg, img, div, frame;
+    var thead, tbody, tr, th, td, dvImg, img;
 
     thead = document.createElement('thead');
     table.appendChild(thead);
@@ -1136,43 +1136,9 @@ function verItensCompra(itens) {
     tr = document.createElement('tr');
     tbody.appendChild(tr);
 
-    if (itens[0]['NFS'] > 0)
-    {
-        td = document.createElement('td');
-        td.setAttribute('class', 'tdDanfe');
-        tr.appendChild(td);
-
-        div = document.createElement('div');
-        td.setAttribute('id', 'dvPDF');
-        td.appendChild(div);
-
-        frame = document.createElement('iframe');
-        frame.setAttribute('id', 'iframeRel');
-        frame.setAttribute('type', 'application/pdf');
-        frame.setAttribute('src', 'http://portal.tecnicon.com.br:7078/Tecnicon/Controller?sessao=-9876'
-                + '&acao=TecniconRelatorioEsp.RelatorioEsp.gerarRelatorio'
-                + '&slImpressoras=MATRICIAL&tiporetorno=X&tipoImp=R&numCopias=1&impDuplex=false&RE_PRINT=&relatorioesp=772&NFE=&NFS=' + itens[0]['NFS']
-                + '&DISPLVIA=S&MODELOECONOMICONFCE=N&mime=pdf&zoom=100&btnOKFilial=S');
-
-//Request URL: http://portal.tecnicon.com.br:7078/Tecnicon/Controller?sessao=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDE3IiwiaXNzIjoiNjEwMTciLCJpYXQiO
-//jE1NjQ0NTYyNDl9.6QDQB0b8BOemN_m8yRkFdEzUAZ2FaBu-mZ23fGe6O94&acao=TecniconRelatorioEsp.RelatorioEsp.gerarRelatorio&&slImpressoras=MATRICIAL
-//&tiporetorno=X&tipoImp=R&numCopias=1&impDuplex=false&RE_PRINT=&btnOKFilial=OK&relatorioesp=772&NFS=392&NFE=&DISPLVIA=S&SNFECONSULTAITEM=
-//&btnPreview=Imprimir&btnSelFilial=Selecionar%20filial&btnPreviewImpressora=Imprimir%20-%20Configura%C3%A7%C3%A3o%20Impressora&
-//&MODELOECONOMICONFCE=N&mime=pdf&zoom=100&mime=pdf
-
-        frame.style.position = 'absolute';
-        frame.style.height = '83.3%';
-        frame.style.width = '99.7%';
-        div.appendChild(frame);
-
-        td = document.createElement('td');
-        td.setAttribute('colspan', '2');
-        tr.appendChild(td);
-    } else {
-        td = document.createElement('td');
-        td.setAttribute('colspan', '3');
-        tr.appendChild(td);
-    }
+    td = document.createElement('td');
+    td.setAttribute('colspan', '3');
+    tr.appendChild(td);
 
     td = document.createElement('td');
     td.innerText = 'Frete';
@@ -1184,10 +1150,6 @@ function verItensCompra(itens) {
     td.innerText = "R$ " + itens[0]['FRETE'].toFixed(2).replace('.', ',');
 
     tr.appendChild(td);
-}
-
-function chamarDanfe(NFS) {
-
 }
 
 function esconderItensCompra(e) {
