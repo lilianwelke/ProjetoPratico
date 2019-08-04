@@ -266,7 +266,7 @@ article {
     cursor: pointer;
 }
 .verMaisMini:hover, .comprarMais:hover, #finalizarCompra:hover, #entrarLogin:hover, #criarConta:hover, #salvarDadosConta:hover, #enviarMensagem:hover,
-.btnMeusDados:hover, #calcularFreteCarrinho:hover, .btnMeusDadosEnd:hover, #alterarEnd:hover, .btnOk:hover {
+.btnMeusDados:hover, #calcularFreteCarrinho:hover, .btnMeusDadosEnd:hover, #alterarEnd:hover, .btnOk:hover, #CONFIRMPG:hover {
     background-color: rgba(203, 209, 215, .3);
 }
 .promocaoMini {
@@ -933,7 +933,7 @@ section {
 #contemEnviarMensagem { 
     margin: 3em auto .5em;  
 }
-#enviarMensagem {
+#enviarMensagem, #CONFIRMPG {
     width: 15%;
     text-align: center;
     display: inline-block;
@@ -962,6 +962,49 @@ section {
 .imgPag{
     width: 100%;
     cursor: pointer;
+}
+.formCreditCardPS { 
+    padding-top: 4.10%;
+}
+.divCreditCardPS {
+    width: 50%;
+    height: 285px;
+    position: relative;
+    margin: 2em auto;
+    background-color: rgba(203, 209, 215, .09);
+}
+.divCamposDadosPS { 
+    margin: 0 6.8% 2.8%;
+    display: inline-block;
+}
+.divCamposDadosPS1 {
+    width: 34%;
+}
+.divCamposDadosPS2 {
+    width: 31%;
+}
+.divCamposDadosPS3 {
+    width: 20%;
+}
+.divCamposDadosPS3 label { 
+    display: block;
+}
+.camposDadosPS1 {
+    min-width: 12em;
+}
+.camposDadosPS2{
+    width: 6em;
+}
+.camposDadosPS3 { 
+    width: 2em;
+    display: inline-block;
+}
+.camposDadosPS4 { 
+    width: 4em;
+    display: inline-block;
+}
+.contemConfirmPG { 
+    margin: 2em auto .5em;
 }
 
 /* RODAPE */
