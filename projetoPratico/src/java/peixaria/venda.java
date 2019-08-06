@@ -7,17 +7,28 @@ import br.com.tecnicon.server.dataset.TClientDataSet;
 import br.com.tecnicon.server.dataset.TSQLDataSetEmp;
 import br.com.tecnicon.server.execoes.ExcecaoMsg;
 import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
+import br.com.tecnicon.server.interfaces.ParametrosForm;
 import br.com.tecnicon.server.interfaces.RelatorioEsp;
 import br.com.tecnicon.server.model.EmailConfig;
 import br.com.tecnicon.server.sessao.VariavelSessao;
 import br.com.tecnicon.server.util.funcoes.Funcoes;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 @Stateless
 @LocalBean
@@ -264,7 +275,7 @@ public class venda {
                     nfsItem.fieldByName("CIOF").asString(nfs.fieldByName("CIOF").asString());
                     nfsItem.fieldByName("CFOP").asString("5101");
                     nfsItem.fieldByName("UNITARIOCLI").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());
-                    nfsItem.fieldByName("UNITARIO").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());                    
+                    nfsItem.fieldByName("UNITARIO").asDouble(pedido.fieldByName("UNITARIOCLI").asDouble());
                     nfsItem.fieldByName("IPI").asDouble(0d);
                     nfsItem.fieldByName("CPRODUTO").asInteger(pedido.fieldByName("CPRODUTO").asInteger());
                     nfsItem.fieldByName("CLOCAL").asInteger(nfs.fieldByName("CLOCAL").asInteger());
@@ -356,6 +367,226 @@ public class venda {
         end.open();
 
         return end.jsonData();
+    }
+
+    public String goTransaction(VariavelSessao vs) throws ExcecaoTecnicon, SAXException, IOException, Exception {
+        try {
+            String urlTransaction = "https://ws.sandbox.pagseguro.uol.com.br/v2/transactions/";
+
+            TSQLDataSetEmp end = TSQLDataSetEmp.create(vs);
+            if (vs.getParameter("CENDERECO").equals("0")) {
+                end.commandText("SELECT NUMERO, ENDERECO, BAIRRO, COMPLEMENTO, CIDADE.CIDADE, CIDADE.UF, CEP1, 'PADRAO' AS REFER "
+                        + " FROM CLIFOREND "
+                        + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE)"
+                        + " WHERE CCLIFOR = " + vs.getParameter("CCFLIFOR"));
+            } else {
+                end.commandText("SELECT NUMERO, ENDERECO, BAIRRO, COMPLEMENTO, CIDADE.CIDADE, CIDADE.UF, CLIENDENT.CEP CEP1, CLIENDENT AS REFER "
+                        + " FROM CLIENDENT "
+                        + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE)"
+                        + " WHERE CCLIFOR = " + vs.getParameter("CCFLIFOR")
+                        + " AND CLIENDENT.CCLIENDENT = " + vs.getParameter("CENDERECO"));
+            }
+            end.open();
+
+            TClientDataSet transacoesEfetuadas = TClientDataSet.create(vs, "TRANSACOESEFETUADAS");
+            transacoesEfetuadas.createDataSet();
+            transacoesEfetuadas.condicao("WHERE TRANSACOESEFETUADAS.TABELAORIGEM = 'ECOMMERCE'"
+                    + " AND TRANSACOESEFETUADAS.SEQORIGEM = 1");
+            transacoesEfetuadas.open();
+
+            if (!transacoesEfetuadas.isEmpty()) {
+                transacoesEfetuadas.edit();
+            } else {
+                transacoesEfetuadas.insert();
+            }
+
+            transacoesEfetuadas.fieldByName("TABELAORIGEM").asString("ECOMMERCE");
+            transacoesEfetuadas.fieldByName("SEQORIGEM").asString(vs.getParameter("SEQORIGEM"));
+            transacoesEfetuadas.fieldByName("TIPOPAGAMENTO").asString(vs.getParameter("TIPOPAGAMENTO"));
+            transacoesEfetuadas.fieldByName("VALORPARCELAS").asDouble(Funcoes.strToDouble(vs.getParameter("installmentValue")));
+            transacoesEfetuadas.fieldByName("QTDEPARCELAS").asString(vs.getParameter("installmentQuantity"));
+            transacoesEfetuadas.fieldByName("VALORTOTAL").asDouble(Funcoes.strToDouble(vs.getParameter("TOTALTRANSACAO")));
+            transacoesEfetuadas.fieldByName("VALORFRETE").asDouble(Funcoes.strToDouble(vs.getParameter("shippingCost")));
+            transacoesEfetuadas.fieldByName("TIPOFRETE").asString(vs.getParameter("shippingType"));
+            transacoesEfetuadas.fieldByName("REFERENCIA").asString(vs.getParameter("reference"));
+            transacoesEfetuadas.fieldByName("JUROSPARCELA").asDouble(0.0);
+
+            JSONArray itens = new JSONArray(vs.getParameter("JSONITENS"));
+
+            transacoesEfetuadas.fieldByName("QTDEITEM").asInteger(itens.length());
+            transacoesEfetuadas.post();
+
+            JSONObject joRet = new JSONObject();
+
+            StringBuilder params = new StringBuilder();
+            params.append("email=").append(URLEncoder.encode(vs.getParameter("email")));
+            params.append("&token=").append(URLEncoder.encode(vs.getParameter("token")));
+            params.append("&paymentMode=default");
+            params.append("&paymentMethod=").append(((vs.getParameter("TIPOPAGAMENTO").equals("1") ? "creditCard" : "creditCard")));
+            params.append("&currency=").append(URLEncoder.encode(vs.getParameter("currency")));
+
+            for (int pos = 0; pos < itens.length(); pos++) {
+                JSONObject jO = new JSONObject(itens.get(pos).toString());
+
+                params.append("&itemId").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("cProduto")));
+                params.append("&itemDescription").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("descricao")));
+                params.append("&itemAmount").append(pos + 1).append("=").append(URLEncoder.encode(
+                        Funcoes.formatFloat("#0.00", Funcoes.strToDouble(jO.getString("unitario"))).replace(".", "").replace(",", ".")));
+                params.append("&itemQuantity").append(pos + 1).append("=").append(Funcoes.strToInt(jO.getString("qtde")));
+                //params.append("&itemShippingCost").append(pos + 1).append("=").append();
+            }
+
+            params.append("&notificationURL=").append(URLEncoder.encode("http://portal.tecnicon.com.br:7078/peixaria/"));
+            params.append("&reference=").append(end.fieldByName("REFER").asString());
+            params.append("&senderName=").append(URLEncoder.encode(vs.getParameter("senderName")));
+            params.append("&senderCPF=").append(URLEncoder.encode(vs.getParameter("senderCPF")));
+            params.append("&senderAreaCode=").append(URLEncoder.encode(vs.getParameter("senderAreaCode")));
+            params.append("&senderPhone=").append(URLEncoder.encode(vs.getParameter("senderPhone")));
+            params.append("&senderEmail=").append(URLEncoder.encode(vs.getParameter("senderEmail")));
+            params.append("&senderHash=").append(URLEncoder.encode(vs.getParameter("senderHash")));
+
+            params.append("&shippingAddressStreet=").append(end.fieldByName("ENDERECO").asString());
+            params.append("&shippingAddressNumber=").append(end.fieldByName("NUMERO").asString());
+            params.append("&shippingAddressComplement=").append(end.fieldByName("COMPLEMENTO").asString());
+            params.append("&shippingAddressDistrict=").append(end.fieldByName("BAIRRO").asString());
+            params.append("&shippingAddressPostalCode=").append(end.fieldByName("CP1").asString());
+            params.append("&shippingAddressCity=").append(end.fieldByName("CIDADE").asString());
+            params.append("&shippingAddressState=").append(end.fieldByName("UF").asString());
+            params.append("&shippingAddressCountry=").append(URLEncoder.encode(vs.getParameter("shippingAddressCountry")));
+
+            params.append("&creditCardToken=").append(URLEncoder.encode(vs.getParameter("creditCardToken")));
+            params.append("&installmentQuantity=").append(URLEncoder.encode(vs.getParameter("installmentQuantity")));
+            params.append("&installmentValue=").append(URLEncoder.encode(
+                    Funcoes.formatFloat("#0.00", Funcoes.strToDouble(vs.getParameter("installmentValue"))).replace(".", "").replace(",", ".")));
+            params.append("&creditCardHolderName=").append(URLEncoder.encode(vs.getParameter("creditCardHolderName")));
+            params.append("&creditCardHolderCPF=").append(URLEncoder.encode(vs.getParameter("creditCardHolderCPF")));
+            params.append("&creditCardHolderBirthDate=").append(URLEncoder.encode(vs.getParameter("creditCardHolderBirthDate")));
+            params.append("&creditCardHolderAreaCode=").append(URLEncoder.encode(vs.getParameter("creditCardHolderAreaCode")));
+            params.append("&creditCardHolderPhone=").append(URLEncoder.encode(vs.getParameter("creditCardHolderPhone")));
+
+            params.append("&billingAddressStreet=").append(URLEncoder.encode(vs.getParameter("billingAddressStreet")));
+            params.append("&billingAddressNumber=").append(URLEncoder.encode(vs.getParameter("billingAddressNumber")));
+            params.append("&billingAddressComplement=").append(URLEncoder.encode(vs.getParameter("billingAddressComplement")));
+            params.append("&billingAddressDistrict=").append(URLEncoder.encode(vs.getParameter("billingAddressDistrict")));
+            params.append("&billingAddressPostalCode=").append(URLEncoder.encode(vs.getParameter("billingAddressPostalCode")));
+            params.append("&billingAddressCity=").append(URLEncoder.encode(vs.getParameter("billingAddressCity")));
+            params.append("&billingAddressState=").append(URLEncoder.encode(vs.getParameter("billingAddressState")));
+            params.append("&billingAddressCountry=").append(URLEncoder.encode(vs.getParameter("billingAddressCountry")));
+
+            String xmlRet = sendPostTransacao(urlTransaction, params.toString());
+
+            if (xmlRet.contains("erro:")) {
+                return xmlRet;
+            }
+
+            Document doc = new UtilsRequest().strToDoc(xmlRet);
+
+            if (doc.getElementsByTagName("errors") != null && doc.getElementsByTagName("error").item(0) != null) {
+                String errors = doc.getElementsByTagName("code").item(0).getTextContent() + " - " + doc.getElementsByTagName("message").item(0).getTextContent();
+                return "erro:" + errors;
+            } else {
+                String paymentLink = (doc.getElementsByTagName("paymentLink") != null && doc.getElementsByTagName("paymentLink").item(0) != null ? doc.getElementsByTagName("paymentLink").item(0).getTextContent() : "");
+                String cStatus = (doc.getElementsByTagName("status") != null && doc.getElementsByTagName("status").item(0) != null ? doc.getElementsByTagName("status").item(0).getTextContent() : "");
+                String xStatus = getStatusCompra(Funcoes.strToInt(cStatus));
+                String codeTransaction = (doc.getElementsByTagName("code") != null && doc.getElementsByTagName("code").item(0) != null ? doc.getElementsByTagName("code").item(0).getTextContent() : "");
+                String recoveryCode = (doc.getElementsByTagName("recoveryCode") != null && doc.getElementsByTagName("recoveryCode").item(0) != null ? doc.getElementsByTagName("recoveryCode").item(0).getTextContent() : "");
+                String cancellationSource = (doc.getElementsByTagName("cancellationSource") != null && doc.getElementsByTagName("cancellationSource").item(0) != null ? doc.getElementsByTagName("cancellationSource").item(0).getTextContent() : "");
+
+                transacoesEfetuadas.edit();
+                transacoesEfetuadas.fieldByName("LINKPAGAMENTO").asString(paymentLink);
+                transacoesEfetuadas.fieldByName("CSTATUS").asString(cStatus);
+                transacoesEfetuadas.fieldByName("XSTATUS").asString(xStatus);
+                transacoesEfetuadas.fieldByName("RECOVERYCODE").asString(recoveryCode);
+                transacoesEfetuadas.fieldByName("CODE").asString(codeTransaction);
+                transacoesEfetuadas.fieldByName("XMLRETORNO").asString(xmlRet);
+                transacoesEfetuadas.post();
+
+                joRet.put("STRANSACAO", transacoesEfetuadas.fieldByName("STRANSACAO").asString());
+                joRet.put("paymentLink", paymentLink);
+                joRet.put("cStatus", cStatus);
+                joRet.put("xStatus", xStatus);
+                joRet.put("codeTransaction", codeTransaction);
+                joRet.put("recoveryCode", recoveryCode);
+                joRet.put("cancellationSource", getStatusCancelamento(cancellationSource));
+                return joRet.toString();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExcecaoTecnicon(vs, e.getMessage(), e);
+        }
+    }
+
+    private String sendPostTransacao(String url, String parametros) throws Exception {
+        URL obj = new URL(url);
+        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+        con.setDoOutput(true);
+        con.setRequestMethod("POST");
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        con.setRequestProperty("charset", "utf-8");
+        con.setRequestProperty("Content-Length", String.valueOf(parametros.length()));
+        con.setUseCaches(false);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(parametros);
+        wr.flush();
+        wr.close();
+        int responseCode = con.getResponseCode();
+        if (responseCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
+            List<String> errors = new UtilsRequest().readErrosXml(con.getErrorStream());
+            StringBuilder errosOK = new StringBuilder();
+
+            for (String error : errors) {
+                errosOK.append(error + "#TEC#");
+            }
+            if (!errosOK.toString().isEmpty()) {
+                return "erro:" + errosOK.toString();
+            }
+        }
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        return response.toString();
+    }
+
+    public String getStatusCancelamento(String canc) {
+        switch (canc.trim()) {
+            case "INTERNAL":
+                return "Cancelamento efetuado pelo PagSeguro";
+            case "EXTERNAL":
+                return "Cancelameto efetuado pela Instituição Financeira";
+        }
+        return "";
+    }
+
+    public String getStatusCompra(int cStatus) {
+        switch (cStatus) {
+            case 1:
+                return "Aguardando Pagamento";
+            case 2:
+                return "Em análise";
+            case 3:
+                return "Paga";
+            case 4:
+                return "Disponível";
+            case 5:
+                return "Em disputa";
+            case 6:
+                return "Devolvida";
+            case 7:
+                return "Cancelada";
+            case 8:
+                return "Debitado";
+            case 9:
+                return "Retenção temporária";
+        }
+        return "Pendente";
     }
 
 }

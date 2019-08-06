@@ -559,7 +559,7 @@ function listarCarrinho() {
     }
 
     document.querySelector('#finalizarCompra').addEventListener('click', escolherFormaPag);
-
+    document.querySelector("#CEPC").end = 0;
 }
 
 function alterarEnd() {
@@ -619,15 +619,17 @@ function alterarEnd() {
 function selecionarEnd(e) {
 
     var end = document.getElementsByName("end");
-    var selecionado;
+    var selecionado, cEndereco;
 
     for (var i = 0; i < end.length; i++) {
         if (end[i].checked) {
             selecionado = end[i].value;
+            cEndereco = end[i].id;
         }
     }
 
     document.querySelector("#CEPC").setAttribute("value", selecionado);
+    document.querySelector("#CEPC").end = cEndereco;
     calcularFreteCarrinho();
 
     e.target.parentNode.parentNode.removeChild(document.querySelector("#divBack"));
@@ -814,7 +816,7 @@ function finalizarPagSeguro() {
     }, function (erro) {
         console.log(erro);
         return;
-    }, '&EMAIL=lw005973@cfjl.com.br&TOKEN=7B94AE2148D147CBABC8E52D7068C191&TIPOAMBIENTE=2', false, false);
+    }, '&EMAIL=lw005973@cfjl.com.br&TOKEN=7B94AE2148D147CBABC8E52D7068C191', false, false);
 }
 
 function getDadosPagSeguro() {
@@ -841,10 +843,28 @@ function obterParcelas() {
             document.querySelector("#CONFIRMPG").brand = response.brand.name;
             PagSeguroDirectPayment.getInstallments({
                 amount: parseFloat(document.querySelector(".totalCarrinho").innerText.replace(',', '.').substring(3)),
-                maxInstallmentNoInterest: 2,
+                maxInstallmentNoInterest: 12,
                 brand: response.brand.name,
                 success: function (response) {
-                    parcelas = response.installments.visa; //setar as parcelas ao combo
+                    parcelas = response.installments.visa;
+                    var combo = document.querySelector("#cbParcelas");
+
+                    if (document.querySelector("#cbParcelas").querySelector('option'))
+                    {
+                        do
+                            combo.removeChild(document.querySelector("#cbParcelas").querySelector('option'));
+                        while (combo.childNodes.length > 0)
+                    }
+
+                    var opt;
+                    for (var i = 0; i < parcelas.length; i++)
+                    {
+                        opt = document.createElement('option');
+                        opt.setAttribute('value', parcelas[i].quantity);
+                        opt.text = parcelas[i].quantity + " parcela(s) de R$ " + parcelas[i].installmentAmount.toFixed(2).replace('.', ',');
+                        combo.appendChild(opt);
+                    }
+
                 },
                 error: function (response) {
                     console.log(response);
@@ -878,6 +898,11 @@ function obterTokenCartao() {
 }
 
 function gotTransaction(cardToken) {
+    var logon = {};
+    logon = window.localStorage.getItem("logon");
+    logon = JSON.parse(logon);
+
+    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
 
     var params = [];
     params.push('email=lw005973@cfjl.com.br');
@@ -888,66 +913,70 @@ function gotTransaction(cardToken) {
     params.push('currency=BRL');
 
     params.push('senderHash=' + document.querySelector("#CONFIRMPG").hash);
-    params.push('senderName=' + 'RAQUEL WELKE');
-    params.push('senderEmail=' + 'lilian.welke@tecnicon.com.br');
+    params.push('senderName=PIER 95');
+    params.push('senderEmail=v12020968474721906225@sandbox.pagseguro.com.br');
     params.push('senderAreaCode=55');
-    params.push('senderPhone=' + '996206500');
-    params.push('senderCPF=' + '94310067077');
+    params.push('senderPhone=999999999');
+    params.push('senderCPF=94310067077');
 
     params.push('creditCardToken=' + cardToken);
     params.push('installmentQuantity=' + '1');
-    params.push('installmentValue=' + '100.00');
-    //params.push('noInterestInstallmentQuantity=12');
-    params.push('creditCardHolderName=' + 'RAQUEL WELKE');
-    params.push('creditCardHolderCPF=' + '94310067077');
-    params.push('creditCardHolderBirthDate=' + '03/03/1995');
+    params.push('installmentValue=' + '55');
+    params.push('noInterestInstallmentQuantity=12');
+
+    params.push('creditCardHolderName=PIER 95');
+    params.push('creditCardHolderCPF=94310067077');
+    params.push('creditCardHolderBirthDate=03/03/1990');
     params.push('creditCardHolderAreaCode=55');
-    params.push('creditCardHolderPhone=' + '996206500');
-    params.push('billingAddressStreet=' + 'RUA');
-    params.push('billingAddressNumber=' + '11');
-    params.push('billingAddressDistrict=' + 'CENTRO');
-    params.push('billingAddressCity=' + 'NOVO MACHADO');
-    params.push('billingAddressState=' + 'RS');
-    params.push('billingAddressCountry=' + 'BRA');
-    params.push('billingAddressPostalCode=' + '98955000');
-    params.push('billingAddressComplement=' + 'AA');
+    params.push('creditCardHolderPhone=999999999');
+
+    params.push('billingAddressStreet=RUA PRINCIPAL');
+    params.push('billingAddressNumber=123');
+    params.push('billingAddressDistrict=CENTRO');
+    params.push('billingAddressCity=NOVO MACHADO');
+    params.push('billingAddressState=RS');
+    params.push('billingAddressCountry=BRA');
+    params.push('billingAddressPostalCode=98955000');
+    params.push('billingAddressComplement=NAO');
 
     params.push('shippingAddressRequired=TRUE');
-    params.push('shippingAddressStreet=' + 'RUA');
-    params.push('shippingAddressNumber=' + '11');
-    params.push('shippingAddressDistrict=' + 'CENTRO');
-    params.push('shippingAddressCity=' + 'NOVO MACHADO');
-    params.push('shippingAddressState=' + 'RS');
+    params.push('shippingAddressStreet=' + '');
+    params.push('shippingAddressNumber=' + '');
+    params.push('shippingAddressDistrict=' + '');
+    params.push('shippingAddressCity=' + '');
+    params.push('shippingAddressState=' + '');
     params.push('shippingAddressCountry=' + 'BRA');
-    params.push('shippingAddressPostalCode=55');
-    params.push('shippingAddressComplement=' + 'AA');
-    params.push('shippingCost=' + '15.00');
-    params.push('shippingType=' + '3');
-    params.push('reference=' + '55');
+    params.push('shippingAddressPostalCode=' + '');
+    params.push('shippingAddressComplement=' + '');
+    params.push('reference=' + '');
+    params.push('shippingCost=' + frete);
+    params.push('shippingType=3');
+
 
     var itens = [];
     itens = window.localStorage.getItem('carrinho');
     itens = JSON.parse(itens);
 
     var todosItens = [];
-    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+
 
     for (var i = 0; i < itens['produtos'].length; i++) {
-        todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
-            PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
-            QTDE: itens['produtos'][i]['qtde']}); //falta a descrição do item
+        todosItens.push({cProduto: parseInt(itens['produtos'][i]['cproduto']),
+            descricao: itens['produtos'][i]['descricao'],
+            unitario: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+            qtde: itens['produtos'][i]['qtde']});
     }
 
-    requisicaoHTTP('SmartCityPagSeguro', 'SCRequest', 'goTransaction', function (data) {
-        var ret = trim(data);
-        if (ret.includes('erro:')) {
-            alert(ret);
+    requisicaoHTTP('projetoPratico', 'venda', 'goTransaction', function (data) {
+        var ret = data;
+        if (ret.includes && ret.includes('erro:')) {
+            console.log(ret);
         } else {
-            var joRet = JSON.parse(ret);
-            alert('Transação Efetuada com Sucesso!\n' + joRet.xStatus);
+            alert('Transação Efetuada com Sucesso!\n' + ret.xStatus);
             document.querySelector("#CONFIRMPG").hash = "";
+            document.querySelector("#CEPC").end = "";
         }
-    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS=' + encodeURIComponent(todosItens) + '&TIPOAMBIENTE=2' + '&TABELAORIGEM=' + 'ECOMMERCE' + '&SEQORIGEM=' + '01' + '&TOTALTRANSACAO=' + '100.00' + "&SHIPPINGCOST=15" + '&CSCPESSOA=0', false);
+    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS=' + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO=' + document.querySelector('#totalCarrinho').innerText.replace(',', '.').substring(3) + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end, false);
 
 }
 
