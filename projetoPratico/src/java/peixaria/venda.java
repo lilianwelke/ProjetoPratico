@@ -44,6 +44,9 @@ public class venda {
         TClientDataSet duplicatasReceber = TClientDataSet.create(vs, "RECEBER");
         duplicatasReceber.createDataSet();
 
+        TClientDataSet cartaoCobranca = TClientDataSet.create(vs, "CARTAOCOBRANCA");
+        cartaoCobranca.createDataSet();
+
         TClientDataSet nfsItemLote = TClientDataSet.create(vs, "NFSITEMLOTE");
         nfsItemLote.createDataSet();
 
@@ -143,37 +146,53 @@ public class venda {
             }
         }
 
-        duplicatasReceber.insert();
-        duplicatasReceber.fieldByName("CFILIAL").asInteger(1);
-        duplicatasReceber.fieldByName("DATA").asDate(new Date());
-        duplicatasReceber.fieldByName("CCLIFOR").asInteger(Funcoes.strToInt(vs.getParameter("CCLIFOR")));
-        duplicatasReceber.fieldByName("FILIALCF").asInteger(1);
-        duplicatasReceber.fieldByName("CCARTEIRA").asInteger(1);
-        duplicatasReceber.fieldByName("PARCELA").asString("1/1");
-        duplicatasReceber.fieldByName("DUPLICATA").asString("PX" + pedido.fieldByName("PEDIDO").asInteger());
-        duplicatasReceber.fieldByName("NOSSONUMERO").asString(duplicatasReceber.fieldByName("DUPLICATA").asString());
-        duplicatasReceber.fieldByName("VCTO").asDate(Funcoes.incDay(new Date(), 7));
-        duplicatasReceber.fieldByName("VCTOP").asDate(Funcoes.incDay(new Date(), 7));
-        duplicatasReceber.fieldByName("VALOR").asDouble(valor);
-        duplicatasReceber.post();
+        if (Funcoes.strToBool(vs.getParameter("creditCard"))) {
+            cartaoCobranca.insert();
+            cartaoCobranca.fieldByName("CFILIAL").asInteger(1);
+            cartaoCobranca.fieldByName("CBANDEIRACREDITO").asInteger(24);
+            cartaoCobranca.fieldByName("DATA").asDate(new Date());
+            cartaoCobranca.fieldByName("HORA").asTime(new Date());
+            cartaoCobranca.fieldByName("VALOR").asDouble(valor);
+            cartaoCobranca.fieldByName("DEBITOCREDITO").asString("C");
+            cartaoCobranca.fieldByName("NUMPARCELAS").asInteger(1);
+            cartaoCobranca.fieldByName("DIASVCTO").asInteger(5);
+            cartaoCobranca.fieldByName("NCARTAO").asString("4111111111111111");
+            
+            cartaoCobranca.post();
+        } else {
 
-        try {
+            duplicatasReceber.insert();
+            duplicatasReceber.fieldByName("CFILIAL").asInteger(1);
+            duplicatasReceber.fieldByName("DATA").asDate(new Date());
+            duplicatasReceber.fieldByName("CCLIFOR").asInteger(Funcoes.strToInt(vs.getParameter("CCLIFOR")));
+            duplicatasReceber.fieldByName("FILIALCF").asInteger(1);
+            duplicatasReceber.fieldByName("CCARTEIRA").asInteger(1);
+            duplicatasReceber.fieldByName("PARCELA").asString("1/1");
+            duplicatasReceber.fieldByName("DUPLICATA").asString("PX" + pedido.fieldByName("PEDIDO").asInteger());
+            duplicatasReceber.fieldByName("NOSSONUMERO").asString(duplicatasReceber.fieldByName("DUPLICATA").asString());
+            duplicatasReceber.fieldByName("VCTO").asDate(Funcoes.incDay(new Date(), 7));
+            duplicatasReceber.fieldByName("VCTOP").asDate(Funcoes.incDay(new Date(), 7));
+            duplicatasReceber.fieldByName("VALOR").asDouble(valor);
+            duplicatasReceber.post();
 
-            vs.addParametros("filial", "1");
-            vs.addParametros("cusuario", "25");
-            vs.addParametros("empresa", "17");
-            vs.addParametros("usuario", "CFJL.LILIAN");
-            vs.addParametros("CCARTEIRA", "26");
-            vs.addParametros("cbMsgDescVcto", "false");
-            vs.addParametros("CUSTOBLOQUETO", duplicatasReceber.fieldByName("VALOR").asString());
-            vs.addParametros("SRECEBER", duplicatasReceber.fieldByName("SRECEBER").asString());
+            try {
 
-            TClassLoader.execMethod("BloquetoImprime/BloquetoImprime", "enviarSelecionados", vs);
+                vs.addParametros("filial", "1");
+                vs.addParametros("cusuario", "25");
+                vs.addParametros("empresa", "17");
+                vs.addParametros("usuario", "CFJL.LILIAN");
+                vs.addParametros("CCARTEIRA", "26");
+                vs.addParametros("cbMsgDescVcto", "false");
+                vs.addParametros("CUSTOBLOQUETO", duplicatasReceber.fieldByName("VALOR").asString());
+                vs.addParametros("SRECEBER", duplicatasReceber.fieldByName("SRECEBER").asString());
 
-            vs.setRetornoOK("Compra realizada com sucesso! \nUm e-mail com o boleto da compra foi enviado para o seu e-mail.");
+                TClassLoader.execMethod("BloquetoImprime/BloquetoImprime", "enviarSelecionados", vs);
 
-        } catch (ExcecaoTecnicon ex) {
-            throw new ExcecaoTecnicon(vs, ex.getMessage());
+                vs.setRetornoOK("Compra realizada com sucesso! \nUm e-mail com o boleto da compra foi enviado para o seu e-mail.");
+
+            } catch (ExcecaoTecnicon ex) {
+                throw new ExcecaoTecnicon(vs, ex.getMessage());
+            }
         }
 
         return "OK";
@@ -378,14 +397,15 @@ public class venda {
                 end.commandText("SELECT NUMERO, ENDERECO, BAIRRO, COMPLEMENTO, CIDADE.CIDADE, CIDADE.UF, CEP1, 'PADRAO' AS REFER "
                         + " FROM CLIFOREND "
                         + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE)"
-                        + " WHERE CCLIFOR = " + vs.getParameter("CCFLIFOR"));
+                        + " WHERE CCLIFOR = " + vs.getParameter("CCLIFOR"));
             } else {
                 end.commandText("SELECT NUMERO, ENDERECO, BAIRRO, COMPLEMENTO, CIDADE.CIDADE, CIDADE.UF, CLIENDENT.CEP CEP1, CLIENDENT AS REFER "
                         + " FROM CLIENDENT "
                         + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE)"
-                        + " WHERE CCLIFOR = " + vs.getParameter("CCFLIFOR")
-                        + " AND CLIENDENT.CCLIENDENT = " + vs.getParameter("CENDERECO"));
+                        + " WHERE CCLIFOR = " + vs.getParameter("CCLIFOR")
+                        + " AND CLIENDENT.SCLIENDENT = " + vs.getParameter("CENDERECO"));
             }
+
             end.open();
 
             TClientDataSet transacoesEfetuadas = TClientDataSet.create(vs, "TRANSACOESEFETUADAS");
@@ -406,7 +426,12 @@ public class venda {
             transacoesEfetuadas.fieldByName("VALORPARCELAS").asDouble(Funcoes.strToDouble(vs.getParameter("installmentValue")));
             transacoesEfetuadas.fieldByName("QTDEPARCELAS").asString(vs.getParameter("installmentQuantity"));
             transacoesEfetuadas.fieldByName("VALORTOTAL").asDouble(Funcoes.strToDouble(vs.getParameter("TOTALTRANSACAO")));
-            transacoesEfetuadas.fieldByName("VALORFRETE").asDouble(Funcoes.strToDouble(vs.getParameter("shippingCost")));
+
+            if (Funcoes.isDouble(vs.getParameter("shippingCost"))) {
+                transacoesEfetuadas.fieldByName("VALORFRETE").asDouble(Funcoes.strToDouble(vs.getParameter("shippingCost")));
+            } else {
+                transacoesEfetuadas.fieldByName("VALORFRETE").asDouble(0.0);
+            }
             transacoesEfetuadas.fieldByName("TIPOFRETE").asString(vs.getParameter("shippingType"));
             transacoesEfetuadas.fieldByName("REFERENCIA").asString(vs.getParameter("reference"));
             transacoesEfetuadas.fieldByName("JUROSPARCELA").asDouble(0.0);
@@ -428,12 +453,11 @@ public class venda {
             for (int pos = 0; pos < itens.length(); pos++) {
                 JSONObject jO = new JSONObject(itens.get(pos).toString());
 
-                params.append("&itemId").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("cProduto")));
-                params.append("&itemDescription").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("descricao")));
+                params.append("&itemId").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("CPRODUTO")));
+                params.append("&itemDescription").append(pos + 1).append("=").append(URLEncoder.encode(jO.getString("DESCRICAO")));
                 params.append("&itemAmount").append(pos + 1).append("=").append(URLEncoder.encode(
-                        Funcoes.formatFloat("#0.00", Funcoes.strToDouble(jO.getString("unitario"))).replace(".", "").replace(",", ".")));
-                params.append("&itemQuantity").append(pos + 1).append("=").append(Funcoes.strToInt(jO.getString("qtde")));
-                //params.append("&itemShippingCost").append(pos + 1).append("=").append();
+                        Funcoes.formatFloat("#0.00", jO.getDouble("PRECO")).replace(".", "").replace(",", ".")));
+                params.append("&itemQuantity").append(pos + 1).append("=").append(Funcoes.strToInt(jO.getString("QTDE")));
             }
 
             params.append("&notificationURL=").append(URLEncoder.encode("http://portal.tecnicon.com.br:7078/peixaria/"));
@@ -445,14 +469,16 @@ public class venda {
             params.append("&senderEmail=").append(URLEncoder.encode(vs.getParameter("senderEmail")));
             params.append("&senderHash=").append(URLEncoder.encode(vs.getParameter("senderHash")));
 
-            params.append("&shippingAddressStreet=").append(end.fieldByName("ENDERECO").asString());
-            params.append("&shippingAddressNumber=").append(end.fieldByName("NUMERO").asString());
-            params.append("&shippingAddressComplement=").append(end.fieldByName("COMPLEMENTO").asString());
-            params.append("&shippingAddressDistrict=").append(end.fieldByName("BAIRRO").asString());
-            params.append("&shippingAddressPostalCode=").append(end.fieldByName("CP1").asString());
-            params.append("&shippingAddressCity=").append(end.fieldByName("CIDADE").asString());
-            params.append("&shippingAddressState=").append(end.fieldByName("UF").asString());
+            params.append("&shippingAddressStreet=").append(URLEncoder.encode(end.fieldByName("ENDERECO").asString()));
+            params.append("&shippingAddressNumber=").append(URLEncoder.encode(end.fieldByName("NUMERO").asString()));
+            params.append("&shippingAddressComplement=").append(URLEncoder.encode(end.fieldByName("COMPLEMENTO").asString()));
+            params.append("&shippingAddressDistrict=").append(URLEncoder.encode(end.fieldByName("BAIRRO").asString()));
+            params.append("&shippingAddressPostalCode=").append(URLEncoder.encode(end.fieldByName("CEP1").asString()));
+            params.append("&shippingAddressCity=").append(URLEncoder.encode(end.fieldByName("CIDADE").asString()));
+            params.append("&shippingAddressState=").append(URLEncoder.encode(end.fieldByName("UF").asString()));
             params.append("&shippingAddressCountry=").append(URLEncoder.encode(vs.getParameter("shippingAddressCountry")));
+            params.append("&shippingType=").append(URLEncoder.encode(vs.getParameter("shippingType")));
+            params.append("&shippingCost=").append(URLEncoder.encode(vs.getParameter("shippingCost")));
 
             params.append("&creditCardToken=").append(URLEncoder.encode(vs.getParameter("creditCardToken")));
             params.append("&installmentQuantity=").append(URLEncoder.encode(vs.getParameter("installmentQuantity")));
@@ -501,6 +527,13 @@ public class venda {
                 transacoesEfetuadas.fieldByName("XMLRETORNO").asString(xmlRet);
                 transacoesEfetuadas.post();
 
+                vs.addParametros("creditCard", "TRUE");
+                vs.addParametros("ITENS", vs.getParameter("JSONITENS"));
+                vs.addParametros("FRETE", (Funcoes.isDouble(vs.getParameter("shippingCost")) ? vs.getParameter("shippingCost") : "0.0"));
+                vs.addParametros("CCLIFOR", vs.getParameter("CCLIFOR"));
+                vs.addParametros("NCARTAR", vs.getParameter("CCLIFOR"));
+
+                //inserirPedido(vs);
                 joRet.put("STRANSACAO", transacoesEfetuadas.fieldByName("STRANSACAO").asString());
                 joRet.put("paymentLink", paymentLink);
                 joRet.put("cStatus", cStatus);

@@ -406,7 +406,7 @@ function listarCarrinho() {
 
             td = document.createElement('td');
             tr.appendChild(td);
-            td.innerText = "R$ " + (parseFloat(itensCarrinho['produtos'][i]['preco'].substring(3))
+            td.innerText = "R$ " + (parseFloat(itensCarrinho['produtos'][i]['preco'].substring(3).replace(",", "."))
                     * parseFloat(itensCarrinho['produtos'][i]['qtde'])).toFixed(2).replace(".", ",") + " ";
 
             td = document.createElement('td');
@@ -426,7 +426,8 @@ function listarCarrinho() {
             cspn.innerText = itensCarrinho['produtos'][i]['cproduto'];
 
             subtotal = parseFloat(subtotal)
-                    + (parseFloat(itensCarrinho['produtos'][i]['preco'].substring(3)) * parseFloat(itensCarrinho['produtos'][i]['qtde']));
+                    + (parseFloat(itensCarrinho['produtos'][i]['preco'].substring(3).replace(",", "."))
+                            * parseFloat(itensCarrinho['produtos'][i]['qtde']));
         }
 
         tr = document.createElement('tr');
@@ -920,8 +921,13 @@ function gotTransaction(cardToken) {
     params.push('senderCPF=94310067077');
 
     params.push('creditCardToken=' + cardToken);
-    params.push('installmentQuantity=' + '1');
-    params.push('installmentValue=' + '55');
+
+    var index = document.querySelector("#cbParcelas").selectedIndex;
+    var parc = document.querySelector("#cbParcelas").querySelectorAll('option')[index].value;
+    var qtde = document.querySelector("#cbParcelas").querySelectorAll('option')[index].text.split("$ ")[1].replace(",", ".")
+
+    params.push('installmentQuantity=' + parc);
+    params.push('installmentValue=' + qtde);
     params.push('noInterestInstallmentQuantity=12');
 
     params.push('creditCardHolderName=PIER 95');
@@ -961,10 +967,10 @@ function gotTransaction(cardToken) {
 
 
     for (var i = 0; i < itens['produtos'].length; i++) {
-        todosItens.push({cProduto: parseInt(itens['produtos'][i]['cproduto']),
-            descricao: itens['produtos'][i]['descricao'],
-            unitario: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
-            qtde: itens['produtos'][i]['qtde']});
+        todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+            DESCRICAO: itens['produtos'][i]['descricao'],
+            UNITARIO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+            QTDE: itens['produtos'][i]['qtde']});
     }
 
     requisicaoHTTP('projetoPratico', 'venda', 'goTransaction', function (data) {
@@ -976,7 +982,7 @@ function gotTransaction(cardToken) {
             document.querySelector("#CONFIRMPG").hash = "";
             document.querySelector("#CEPC").end = "";
         }
-    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS=' + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO=' + document.querySelector('#totalCarrinho').innerText.replace(',', '.').substring(3) + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end, false);
+    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS=' + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO=' + document.querySelector('.totalCarrinho').innerText.replace(',', '.').substring(3) + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end, false);
 
 }
 
