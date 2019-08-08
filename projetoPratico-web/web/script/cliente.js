@@ -1138,7 +1138,15 @@ function verItensCompra(itens) {
 
     td = document.createElement('td');
     td.setAttribute('colspan', '3');
-    tr.appendChild(td);
+    if (itens[0]['SCARTAOCOBRANCA'] > 0) {
+        td.innerText = 'Cancelar Compra realizada com Cartão de Crédito';
+        td.setAttribute('class', 'tdCancelarCarta');
+        td.setAttribute('id', 'cartaoCobranca-' + itens[0]['SCARTAOCOBRANCA']);
+        tr.appendChild(td);
+        document.querySelector("#cartaoCobranca-" + itens[0]['SCARTAOCOBRANCA']).addEventListener("click", cancelarVendaCartao);
+    } else {
+        tr.appendChild(td);
+    }
 
     td = document.createElement('td');
     td.innerText = 'Frete';
@@ -1178,6 +1186,16 @@ function limparCampos(e) {
     document.querySelector("#emailClienteMensagem").value = "";
     document.querySelector("#nomeClienteMensagem").value = "";
     document.querySelector("#mensagemSobre").value = "*Mensagem";
+}
+
+function cancelarVendaCartao(e) {
+    requisicaoHTTP('projetoPratico', 'venda', 'cancelarVendaCartao', function (data) {
+        alert("Compra cancelada com sucesso");
+    }, function (erro) {
+        console.log(erro);
+        return;
+    }, '&EMAIL=lw005973@cfjl.com.br&TOKEN=7B94AE2148D147CBABC8E52D7068C191&CARTAOCOBRANCA=' + e.target.id, false, false);
+
 }
 
 init();

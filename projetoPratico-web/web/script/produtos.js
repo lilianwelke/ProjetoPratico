@@ -524,6 +524,19 @@ function listarCarrinho() {
         td.innerText = 'R$ ' + subtotal.toFixed(2).replace(".", ",");
 
         dvFinalizar = document.createElement('div');
+        dvFinalizar.setAttribute('id', 'boxDataEntrega');
+        dv.appendChild(dvFinalizar);
+
+        spn = document.createElement('span');
+        spn.innerText = 'Data Entrega';
+        dvFinalizar.appendChild(spn);
+
+        inpt = document.createElement('input');
+        inpt.setAttribute('id', 'dataEntrega');
+        inpt.setAttribute('type', 'date');
+        dvFinalizar.appendChild(inpt);
+
+        dvFinalizar = document.createElement('div');
         dvFinalizar.setAttribute('id', 'finalizarCompra');
         dv.appendChild(dvFinalizar);
         dvFinalizar.innerText = 'Finalizar Compra';
@@ -796,7 +809,8 @@ function finalizarBoleto() {
     }
     requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
             + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
-            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0));
+            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0)
+            + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"));
 }
 
 function finalizarPagSeguro() {
@@ -924,7 +938,7 @@ function gotTransaction(cardToken) {
 
     var index = document.querySelector("#cbParcelas").selectedIndex;
     var parc = document.querySelector("#cbParcelas").querySelectorAll('option')[index].value;
-    var qtde = document.querySelector("#cbParcelas").querySelectorAll('option')[index].text.split("$ ")[1].replace(",", ".")
+    var qtde = document.querySelector("#cbParcelas").querySelectorAll('option')[index].text.split("$ ")[1].replace(",", ".");
 
     params.push('installmentQuantity=' + parc);
     params.push('installmentValue=' + qtde);
@@ -969,7 +983,7 @@ function gotTransaction(cardToken) {
     for (var i = 0; i < itens['produtos'].length; i++) {
         todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
             DESCRICAO: itens['produtos'][i]['descricao'],
-            UNITARIO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+            PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
             QTDE: itens['produtos'][i]['qtde']});
     }
 
@@ -978,11 +992,16 @@ function gotTransaction(cardToken) {
         if (ret.includes && ret.includes('erro:')) {
             console.log(ret);
         } else {
-            alert('Transação Efetuada com Sucesso!\n' + ret.xStatus);
             document.querySelector("#CONFIRMPG").hash = "";
             document.querySelector("#CEPC").end = "";
+            document.querySelector("#CONFIRMPG").brand = "";
+            compraConcluida('Transação Efetuada com Sucesso!\n' + ret.xStatus);
         }
-    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS=' + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO=' + document.querySelector('.totalCarrinho').innerText.replace(',', '.').substring(3) + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end, false);
+    }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(1) + '&JSONITENS='
+            + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO='
+            + document.querySelector('.totalCarrinho').innerText.replace(',', '.').substring(3)
+            + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end
+            + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"), false);
 
 }
 

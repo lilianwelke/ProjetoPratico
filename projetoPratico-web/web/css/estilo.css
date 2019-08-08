@@ -482,6 +482,15 @@ article {
     position: fixed;
     top: 0;
 }
+#boxDataEntrega { 
+    margin: 2em 0 0 auto;
+    max-width: 14.4em;
+    text-align: center;
+}
+#dataEntrega { 
+    border: solid 0.09em rgba(11, 55, 103, .75);
+    outline: none;
+}
 
 /* LOGIN */
 section {
@@ -864,6 +873,10 @@ section {
 }
 .tdFrete { 
     padding-left: 3%;
+}
+.tdCancelarCarta {
+    padding-left: 1em;
+    cursor: pointer;
 }
 
 /* SOBRE */
