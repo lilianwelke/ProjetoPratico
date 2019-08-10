@@ -359,7 +359,8 @@ public class cliente {
                 + " (SELECT CARTAOCOBRANCA.SCARTAOCOBRANCA FROM CARTAOCOBRANCA "
                 + " INNER JOIN NFSITEM ON (NFSITEM.NFS = CARTAOCOBRANCA.NFS) "
                 + " INNER JOIN PEDIDOITEM P ON (P.PEDIDOITEM = NFSITEM.PEDIDOITEM) "
-                + " WHERE P.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM) AS SCARTAOCOBRANCA "
+                + " WHERE P.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM"
+                + " AND CARTAOCOBRANCA.DEBITOCREDITO = 'C') AS SCARTAOCOBRANCA "
                 + " FROM PEDIDO"
                 + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO) "
                 + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = PEDIDOITEM.CPRODUTO) "
@@ -442,7 +443,7 @@ public class cliente {
                     usuarioEmail.fieldByName("SSL").asString(), 17, 0);
 
             String content = "Olá " + vs.getParameter("NOME") + "! "
-                    + " <br/>Agradecemos seu cadastro na Píer! "
+                    + " <br/>Agradecemos seu cadastro na Pier! "
                     + " <br/>Estamos aqui para atendê-lo com os melhores peixes e o melhor, tudo online!"
                     + " <br/>Você pode acessar o nosso site pelo link: http://portal.tecnicon.com.br:7078/peixaria/"
                     + " <br/><br/><br/><br/>"
@@ -455,7 +456,7 @@ public class cliente {
             email.enviarEmail(vs.getParameter("DESTINATARIO"),
                     "",
                     "",
-                    "Bem-vindo à Píer!",
+                    "Bem-vindo à Pier!",
                     content,
                     config,
                     anexos,

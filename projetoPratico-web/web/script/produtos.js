@@ -837,7 +837,6 @@ function finalizarBoleto() {
 
 function finalizarPagSeguro() {
     requisicaoHTTP('SmartCityPagSeguro', 'SCRequest', 'getIdSession', function (data) {
-        var hash;
 
         PagSeguroDirectPayment.setSessionId(data);
 
@@ -1122,7 +1121,7 @@ function gotTransaction(cardToken) {
 function compraConcluida(data) {
     alert(data);
     localStorage.removeItem("carrinho");
-    listarCarrinho();
+    irCarrinho();
 }
 
 init();
