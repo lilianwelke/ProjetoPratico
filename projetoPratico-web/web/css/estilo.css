@@ -424,7 +424,6 @@ article {
     border-style: solid;
     border-width: 0.07em;
     border-color: rgba(11, 55, 103, .5);
-    background-color: rgba(203, 209, 215, .09);
     outline: none;
     line-height: 1.5em;
     font-size: 1em;
@@ -488,8 +487,15 @@ article {
     text-align: center;
 }
 #dataEntrega { 
-    border: solid 0.09em rgba(11, 55, 103, .75);
+    border-style: solid;
+    border-width: 0.07em;
+    border-color: rgba(11, 55, 103, .5);
     outline: none;
+    line-height: 1.5em;
+    font-size: 1em;
+    color: #444;
+    padding: .2em;
+    width: 9em;
 }
 
 /* LOGIN */
@@ -966,6 +972,7 @@ section {
     box-shadow: 0px 0px 3px -1px #0b3767;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 .divFormPag { 
     width: 25%;
@@ -1018,6 +1025,15 @@ section {
 }
 .contemConfirmPG { 
     margin: 2em auto .5em;
+}
+.divPS { 
+    padding: 5% 14% 9%;
+}
+.divPS h2 { 
+    font-weight: normal;
+}
+.divImgPS { 
+    cursos: pointer;
 }
 
 /* RODAPE */

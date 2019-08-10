@@ -206,62 +206,63 @@ public class venda {
         return "OK";
     }
 
-    public void validaSaldo(VariavelSessao vs, JSONArray itens) throws ExcecaoTecnicon {
+    public String validaSaldo(VariavelSessao vs) throws ExcecaoTecnicon {
+        return validaSaldo(vs, new JSONArray(vs.getParameter("ITENS")));
+    }
+
+    public String validaSaldo(VariavelSessao vs, JSONArray itens) throws ExcecaoTecnicon {
         TSQLDataSetEmp produtoSaldo = TSQLDataSetEmp.create(vs);
         StringBuilder prodSemSaldo = new StringBuilder();
 
         Date dataEntrega = Funcoes.strToDate(vs, vs.getParameter("DTPREV"));
 
-        for (int i = 0; i < itens.length(); i++) {
-            produtoSaldo.close();
-            produtoSaldo.commandText("SELECT SUM(SALDOPREV.SALDO) SALDO, PRODUTO.MERCADORIA "
-                    + " FROM ("
-                    + " SELECT SUM(SALDOPRODUTOLOTE.SALDO) SALDO, SALDOPRODUTOLOTE.CPRODUTO "
-                    + " FROM SALDOPRODUTOLOTE "
-                    + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE)"
-                    + " WHERE SALDOPRODUTOLOTE.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
-                    + " AND PRODUTOLOTE.ATIVO = 'S' "
-                    + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(dataEntrega, "dd.MM.yyyy") + "'"
-                    + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO"
-                    + " UNION ALL "
-                    + " SELECT SUM(OCITEM.QTDE) SALDO, OCITEM.CPRODUTO "
-                    + " FROM OCITEM "
-                    + " WHERE OCITEM.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
-                    + " AND OCITEM.PREVDT BETWEEN '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy")
-                    + "' AND '" + Funcoes.formatarData(dataEntrega, "dd.MM.yyyy") + "'"
-                    + " AND NOT EXISTS (SELECT NFEITEM.OCITEM FROM NFEITEM"
-                    + " WHERE NFEITEM.OCITEM = OCITEM.OCITEM)"
-                    + " AND NOT EXTISTS (SELECT NFEITEM.NFEITEM FROM NFEITEM"
-                    + " INNER JOIN OCITEMBX ON (OCITEMBX.NFEITEM = NFEITEM.NFEITEM)"
-                    + " WHERE OCITEMBX.OCITEM = OCITEM.OCITEM"
-                    + " )"
-                    + " GROUP BY OCITEM.CPRODUTO"
-                    + " ) SALDOPREV"
-                    + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = SALDOPREV.CPRODUTO) "
-                    + " GROUP BY PRODUTO.CPRODUTO, PRODUTO.MERCADORIA"
-                    + " HAVING SUM(SALDOPRODUTOLOTE.SALDO) < " + itens.getJSONObject(i).getDouble("QTDE"));
+        try {
+            for (int i = 0; i < itens.length(); i++) {
+                produtoSaldo.close();
+                produtoSaldo.commandText("SELECT SUM(SALDOPREV.SALDO) SALDO, PRODUTO.MERCADORIA "
+                        + " FROM ("
+                        + " SELECT SUM(SALDOPRODUTOLOTE.SALDO) SALDO, SALDOPRODUTOLOTE.CPRODUTO "
+                        + " FROM SALDOPRODUTOLOTE "
+                        + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE)"
+                        + " WHERE SALDOPRODUTOLOTE.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
+                        + " AND PRODUTOLOTE.ATIVO = 'S' "
+                        + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(dataEntrega, "dd.MM.yyyy") + "'"
+                        + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO"
+                        + " UNION ALL "
+                        + " SELECT SUM(OCITEM.QTDE) SALDO, OCITEM.CPRODUTO "
+                        + " FROM OCITEM "
+                        + " WHERE OCITEM.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
+                        + " AND OCITEM.PREVDT BETWEEN '" + Funcoes.formatarData(new Date(), "dd.MM.yyyy")
+                        + "' AND '" + Funcoes.formatarData(dataEntrega, "dd.MM.yyyy") + "'"
+                        + " AND NOT EXISTS (SELECT NFEITEM.OCITEM FROM NFEITEM"
+                        + " WHERE NFEITEM.OCITEM = OCITEM.OCITEM)"
+                        + " AND NOT EXISTS (SELECT NFEITEM.NFEITEM FROM NFEITEM"
+                        + " INNER JOIN OCITEMBX ON (OCITEMBX.NFEITEM = NFEITEM.NFEITEM)"
+                        + " WHERE OCITEMBX.OCITEM = OCITEM.OCITEM"
+                        + " )"
+                        + " GROUP BY OCITEM.CPRODUTO"
+                        + " ) SALDOPREV"
+                        + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = SALDOPREV.CPRODUTO) "
+                        + " GROUP BY PRODUTO.CPRODUTO, PRODUTO.MERCADORIA"
+                        + " HAVING SUM(SALDOPREV.SALDO) < " + itens.getJSONObject(i).getDouble("QTDE"));
+                produtoSaldo.open();
 
-            produtoSaldo.commandText("SELECT SUM(SALDOPRODUTOLOTE.SALDO) SALDO, PRODUTO.MERCADORIA "
-                    + " FROM SALDOPRODUTOLOTE "
-                    + " INNER JOIN PRODUTOLOTE ON (PRODUTOLOTE.SPRODUTOLOTE = SALDOPRODUTOLOTE.SPRODUTOLOTE)"
-                    + " INNER JOIN PRODUTO ON (PRODUTO.CPRODUTO = SALDOPRODUTOLOTE.CPRODUTO) "
-                    + " WHERE SALDOPRODUTOLOTE.CPRODUTO = " + itens.getJSONObject(i).getInt("CPRODUTO")
-                    + " AND PRODUTOLOTE.ATIVO = 'S' "
-                    + " AND PRODUTOLOTE.VCTO >= '" + Funcoes.formatarData(dataEntrega, "dd.MM.yyyy") + "'"
-                    + " GROUP BY SALDOPRODUTOLOTE.CPRODUTO, PRODUTO.MERCADORIA"
-                    + " HAVING SUM(SALDOPRODUTOLOTE.SALDO) < " + itens.getJSONObject(i).getDouble("QTDE"));
-            produtoSaldo.open();
-
-            if (!produtoSaldo.isEmpty()) {
-                prodSemSaldo.append(produtoSaldo.fieldByName("MERCADORIA").asString()).append(" - Saldo: ")
-                        .append(produtoSaldo.fieldByName("SALDO").asDouble()).append("\n");
+                if (!produtoSaldo.isEmpty()) {
+                    prodSemSaldo.append(produtoSaldo.fieldByName("MERCADORIA").asString()).append(" - Saldo: ")
+                            .append(produtoSaldo.fieldByName("SALDO").asDouble()).append("\n");
+                }
             }
+
+            if (!prodSemSaldo.toString().isEmpty()) {
+                throw new ExcecaoMsg(vs, "Produtos com saldo em estoque menor do que a quantidade requisitada:\n"
+                        + prodSemSaldo.toString() + "Para finalizar a compra, informe uma quantidade disponível.");
+            }
+
+        } catch (Exception e) {
+            throw new ExcecaoMsg(vs, e.getMessage());
         }
 
-        if (!prodSemSaldo.toString().isEmpty()) {
-            throw new ExcecaoMsg(vs, "Produtos com saldo em estoque menor do que a quantidade requisitada:\n"
-                    + prodSemSaldo.toString() + "Para finalizar a compra, informe uma quantidade disponível.");
-        }
+        return "OK";
     }
 
     public String inserirNfs(VariavelSessao vs, TClientDataSet ds1) throws ExcecaoTecnicon {
@@ -460,7 +461,12 @@ public class venda {
             transacoesEfetuadas.fieldByName("TABELAORIGEM").asString("ECOMMERCE");
             transacoesEfetuadas.fieldByName("SEQORIGEM").asString(vs.getParameter("SEQORIGEM"));
             transacoesEfetuadas.fieldByName("TIPOPAGAMENTO").asString(vs.getParameter("TIPOPAGAMENTO"));
-            transacoesEfetuadas.fieldByName("VALORPARCELAS").asDouble(Funcoes.strToDouble(vs.getParameter("installmentValue")));
+            if (Funcoes.validaVSCampo(vs, "installmentValue")) {
+                transacoesEfetuadas.fieldByName("VALORPARCELAS").asDouble(Funcoes.strToDouble(vs.getParameter("installmentValue")));
+            }
+//            if (true) {
+//                throw new ExcecaoMsg(vs, "oi");
+//            }
             transacoesEfetuadas.fieldByName("QTDEPARCELAS").asString(vs.getParameter("installmentQuantity"));
             transacoesEfetuadas.fieldByName("VALORTOTAL").asDouble(Funcoes.strToDouble(vs.getParameter("TOTALTRANSACAO")));
 
@@ -483,8 +489,8 @@ public class venda {
             StringBuilder params = new StringBuilder();
             params.append("email=").append(URLEncoder.encode(vs.getParameter("email")));
             params.append("&token=").append(URLEncoder.encode(vs.getParameter("token")));
-            params.append("&paymentMode=default");
-            params.append("&paymentMethod=").append(((vs.getParameter("TIPOPAGAMENTO").equals("1") ? "creditCard" : "creditCard")));
+            params.append("&paymentMode=").append(URLEncoder.encode(vs.getParameter("paymentMode")));
+            params.append("&paymentMethod=").append(URLEncoder.encode(vs.getParameter("paymentMethod")));
             params.append("&currency=").append(URLEncoder.encode(vs.getParameter("currency")));
 
             for (int pos = 0; pos < itens.length(); pos++) {
@@ -517,24 +523,37 @@ public class venda {
             params.append("&shippingType=").append(URLEncoder.encode(vs.getParameter("shippingType")));
             params.append("&shippingCost=").append(URLEncoder.encode(vs.getParameter("shippingCost")));
 
-            params.append("&creditCardToken=").append(URLEncoder.encode(vs.getParameter("creditCardToken")));
-            params.append("&installmentQuantity=").append(URLEncoder.encode(vs.getParameter("installmentQuantity")));
-            params.append("&installmentValue=").append(URLEncoder.encode(
-                    Funcoes.formatFloat("#0.00", Funcoes.strToDouble(vs.getParameter("installmentValue"))).replace(".", "").replace(",", ".")));
-            params.append("&creditCardHolderName=").append(URLEncoder.encode(vs.getParameter("creditCardHolderName")));
-            params.append("&creditCardHolderCPF=").append(URLEncoder.encode(vs.getParameter("creditCardHolderCPF")));
-            params.append("&creditCardHolderBirthDate=").append(URLEncoder.encode(vs.getParameter("creditCardHolderBirthDate")));
-            params.append("&creditCardHolderAreaCode=").append(URLEncoder.encode(vs.getParameter("creditCardHolderAreaCode")));
-            params.append("&creditCardHolderPhone=").append(URLEncoder.encode(vs.getParameter("creditCardHolderPhone")));
+            if (vs.getParameter("paymentMethod").equals("creditCard")) {
+                params.append("&creditCardToken=").append(URLEncoder.encode(vs.getParameter("creditCardToken")));
+                params.append("&installmentQuantity=").append(URLEncoder.encode(vs.getParameter("installmentQuantity")));
+                params.append("&installmentValue=").append(URLEncoder.encode(
+                        Funcoes.formatFloat("#0.00", Funcoes.strToDouble(vs.getParameter("installmentValue"))).replace(".", "").replace(",", ".")));
+                params.append("&creditCardHolderName=").append(URLEncoder.encode(vs.getParameter("creditCardHolderName")));
+                params.append("&creditCardHolderCPF=").append(URLEncoder.encode(vs.getParameter("creditCardHolderCPF")));
+                params.append("&creditCardHolderBirthDate=").append(URLEncoder.encode(vs.getParameter("creditCardHolderBirthDate")));
+                params.append("&creditCardHolderAreaCode=").append(URLEncoder.encode(vs.getParameter("creditCardHolderAreaCode")));
+                params.append("&creditCardHolderPhone=").append(URLEncoder.encode(vs.getParameter("creditCardHolderPhone")));
 
-            params.append("&billingAddressStreet=").append(URLEncoder.encode(vs.getParameter("billingAddressStreet")));
-            params.append("&billingAddressNumber=").append(URLEncoder.encode(vs.getParameter("billingAddressNumber")));
-            params.append("&billingAddressComplement=").append(URLEncoder.encode(vs.getParameter("billingAddressComplement")));
-            params.append("&billingAddressDistrict=").append(URLEncoder.encode(vs.getParameter("billingAddressDistrict")));
-            params.append("&billingAddressPostalCode=").append(URLEncoder.encode(vs.getParameter("billingAddressPostalCode")));
-            params.append("&billingAddressCity=").append(URLEncoder.encode(vs.getParameter("billingAddressCity")));
-            params.append("&billingAddressState=").append(URLEncoder.encode(vs.getParameter("billingAddressState")));
-            params.append("&billingAddressCountry=").append(URLEncoder.encode(vs.getParameter("billingAddressCountry")));
+                params.append("&billingAddressStreet=").append(URLEncoder.encode(vs.getParameter("billingAddressStreet")));
+                params.append("&billingAddressNumber=").append(URLEncoder.encode(vs.getParameter("billingAddressNumber")));
+                params.append("&billingAddressComplement=").append(URLEncoder.encode(vs.getParameter("billingAddressComplement")));
+                params.append("&billingAddressDistrict=").append(URLEncoder.encode(vs.getParameter("billingAddressDistrict")));
+                params.append("&billingAddressPostalCode=").append(URLEncoder.encode(vs.getParameter("billingAddressPostalCode")));
+                params.append("&billingAddressCity=").append(URLEncoder.encode(vs.getParameter("billingAddressCity")));
+                params.append("&billingAddressState=").append(URLEncoder.encode(vs.getParameter("billingAddressState")));
+                params.append("&billingAddressCountry=").append(URLEncoder.encode(vs.getParameter("billingAddressCountry")));
+            }
+            String bankName = "";
+            if (vs.getParameter("paymentMethod").equals("eft")) {
+
+                if (vs.getParameter("bankName").equals("BANCO_BRASIL")) {
+                    bankName = "bancodobrasil";
+                } else {
+                    bankName = vs.getParameter("bankName");
+                }
+
+                params.append("&bankName=").append(URLEncoder.encode(bankName));
+            }
 
             String xmlRet = sendPostTransacao(urlTransaction, params.toString());
 
@@ -568,11 +587,10 @@ public class venda {
                 vs.addParametros("ITENS", vs.getParameter("JSONITENS"));
                 vs.addParametros("FRETE", (Funcoes.isDouble(vs.getParameter("shippingCost")) ? vs.getParameter("shippingCost") : "0.0"));
                 vs.addParametros("CCLIFOR", vs.getParameter("CCLIFOR"));
-                vs.addParametros("NCARTAO", "4111111111111111");
+                vs.addParametros("NCARTAO", vs.getParameter("CARDNUMER"));
                 vs.addParametros("codeTransaction", codeTransaction.replaceAll("-", ""));
 
-                inserirPedido(vs);
-
+                //inserirPedido(vs);
                 joRet.put("STRANSACAO", transacoesEfetuadas.fieldByName("STRANSACAO").asString());
                 joRet.put("paymentLink", paymentLink);
                 joRet.put("cStatus", cStatus);

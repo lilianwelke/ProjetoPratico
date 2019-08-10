@@ -436,7 +436,7 @@ function listarCarrinho() {
 
         td = document.createElement('td');
         tr.appendChild(td);
-        td.innerText = (logon ? 'Endereço de Entrega:' : 'Calcular Frete:');
+        td.innerText = (logon ? 'Endereço de Entrega:' : 'Simule o Frete:');
         td.setAttribute('colspan', '3');
 
         td = document.createElement('td');
@@ -464,7 +464,6 @@ function listarCarrinho() {
         input.setAttribute('id', 'CEPC');
         input.setAttribute('class', 'campoCep');
         td.appendChild(input);
-
 
         dvCalcular = document.createElement('div');
         dvCalcular.setAttribute('id', 'calcularFreteCarrinho');
@@ -523,18 +522,21 @@ function listarCarrinho() {
         td.setAttribute('class', 'totalCarrinho');
         td.innerText = 'R$ ' + subtotal.toFixed(2).replace(".", ",");
 
-        dvFinalizar = document.createElement('div');
-        dvFinalizar.setAttribute('id', 'boxDataEntrega');
-        dv.appendChild(dvFinalizar);
+        tr = document.createElement('tr');
+        tr.setAttribute('class', 'totalizadorCarrinho');
+        tbody.appendChild(tr);
 
-        spn = document.createElement('span');
-        spn.innerText = 'Data Entrega';
-        dvFinalizar.appendChild(spn);
+        td = document.createElement('td');
+        td.innerText = 'Data Entrega:';
+        tr.appendChild(td);
 
+        td = document.createElement('td');
         inpt = document.createElement('input');
         inpt.setAttribute('id', 'dataEntrega');
         inpt.setAttribute('type', 'date');
-        dvFinalizar.appendChild(inpt);
+        td.appendChild(inpt);
+        tr.appendChild(td);
+        td.setAttribute('colspan', '5');
 
         dvFinalizar = document.createElement('div');
         dvFinalizar.setAttribute('id', 'finalizarCompra');
@@ -776,14 +778,31 @@ function escolherFormaPag() {
 
     if (logon)
     {
-        setInvisible();
-        document.querySelector(".boxFormasPag").style.display = "block";
-        setVisible(".boxFormasPag");
+        if (document.querySelector('#dataEntrega').value)
+        {
+            var itens = [];
+            itens = window.localStorage.getItem('carrinho');
+            itens = JSON.parse(itens);
 
-        document.querySelector("#boleto").addEventListener("click", finalizarBoleto);
-        document.querySelector("#pagSeguro").addEventListener("click", finalizarPagSeguro);
+            var todosItens = [];
 
+            for (var i = 0; i < itens['produtos'].length; i++) {
+                todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+                    QTDE: itens['produtos'][i]['qtde']});
+            }
 
+            requisicaoHTTP("projetoPratico", "venda", "validaSaldo", function () {
+                setInvisible();
+                document.querySelector(".boxFormasPag").style.display = "block";
+                setVisible(".boxFormasPag");
+
+                document.querySelector("#boleto").addEventListener("click", finalizarBoleto);
+                document.querySelector("#pagSeguro").addEventListener("click", finalizarPagSeguro);
+            }, alert, "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
+                    + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"));
+        } else {
+            alert("Preencha a data de entrega!");
+        }
     } else {
         alert("Para finalizar a compra você precisa estar logado!");
         verificarLogin();
@@ -791,26 +810,29 @@ function escolherFormaPag() {
 }
 
 function finalizarBoleto() {
-    var logon = {};
-    logon = window.localStorage.getItem("logon");
-    logon = JSON.parse(logon);
+    if (confirm('Deseja finalizar a compra?'))
+    {
+        var logon = {};
+        logon = window.localStorage.getItem("logon");
+        logon = JSON.parse(logon);
 
-    var itens = [];
-    itens = window.localStorage.getItem('carrinho');
-    itens = JSON.parse(itens);
+        var itens = [];
+        itens = window.localStorage.getItem('carrinho');
+        itens = JSON.parse(itens);
 
-    var todosItens = [];
-    var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+        var todosItens = [];
+        var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
 
-    for (var i = 0; i < itens['produtos'].length; i++) {
-        todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
-            PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
-            QTDE: itens['produtos'][i]['qtde']});
+        for (var i = 0; i < itens['produtos'].length; i++) {
+            todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+                PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+                QTDE: itens['produtos'][i]['qtde']});
+        }
+        requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
+                + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
+                + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0)
+                + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"));
     }
-    requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
-            + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
-            + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0)
-            + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"));
 }
 
 function finalizarPagSeguro() {
@@ -819,19 +841,109 @@ function finalizarPagSeguro() {
 
         PagSeguroDirectPayment.setSessionId(data);
 
+        PagSeguroDirectPayment.getPaymentMethods({
+            amount: parseFloat(document.querySelector(".totalCarrinho").innerText.replace(',', '.').substring(3)),
+            success: function (response) {
+                document.querySelector('#bancoBrasilPS').src = 'https://stc.pagseguro.uol.com.br/' + response.paymentMethods.ONLINE_DEBIT.options.BANCO_BRASIL.images.MEDIUM.path;
+                document.querySelector('#bancoBrasilPS').name = response.paymentMethods.ONLINE_DEBIT.options.BANCO_BRASIL.name;
+                document.querySelector('#visaPS').src = 'https://stc.pagseguro.uol.com.br/' + response.paymentMethods.CREDIT_CARD.options.VISA.images.MEDIUM.path;
+                document.querySelector('#visaPS').name = response.paymentMethods.CREDIT_CARD.options.VISA.name;
+
+                setInvisible();
+                document.querySelector(".boxPS").style.display = "block";
+                setVisible(".boxPS");
+
+                document.querySelector('#bancoBrasilPS').addEventListener("click", finalizarDebitoPS);
+                document.querySelector('#visaPS').addEventListener("click", getDadosPagSeguro);
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+
         PagSeguroDirectPayment.onSenderHashReady(function (response) {
             if (response.status === 'error') {
                 console.log(response.message);
                 return false;
             }
             document.querySelector("#CONFIRMPG").hash = response.senderHash;
-            getDadosPagSeguro(hash);
         });
 
     }, function (erro) {
         console.log(erro);
         return;
     }, '&EMAIL=lw005973@cfjl.com.br&TOKEN=7B94AE2148D147CBABC8E52D7068C191', false, false);
+}
+
+function finalizarDebitoPS() {
+    if (confirm('Deseja finalizar a compra?'))
+    {
+        var logon = {};
+        logon = window.localStorage.getItem("logon");
+        logon = JSON.parse(logon);
+
+        var frete = document.querySelector('#freteCarrinho').innerText.replace(',', '.').substring(3);
+
+        var params = [];
+        params.push('email=lw005973@cfjl.com.br');
+        params.push('token=7B94AE2148D147CBABC8E52D7068C191');
+
+        params.push('paymentMode=default');
+        params.push('paymentMethod=eft');
+        params.push('currency=BRL');
+
+        params.push('senderHash=' + document.querySelector("#CONFIRMPG").hash);
+        params.push('senderName=PIER 95');
+        params.push('senderEmail=v12020968474721906225@sandbox.pagseguro.com.br');
+        params.push('senderAreaCode=55');
+        params.push('senderPhone=999999999');
+        params.push('senderCPF=94310067077');
+
+        params.push('shippingAddressRequired=TRUE');
+        params.push('shippingAddressStreet=' + '');
+        params.push('shippingAddressNumber=' + '');
+        params.push('shippingAddressDistrict=' + '');
+        params.push('shippingAddressCity=' + '');
+        params.push('shippingAddressState=' + '');
+        params.push('shippingAddressCountry=' + 'BRA');
+        params.push('shippingAddressPostalCode=' + '');
+        params.push('shippingAddressComplement=' + '');
+        params.push('reference=' + '');
+        params.push('shippingCost=' + frete);
+        params.push('shippingType=3');
+
+        params.push('bankName=' + document.querySelector('#bancoBrasilPS').name);
+
+        var itens = [];
+        itens = window.localStorage.getItem('carrinho');
+        itens = JSON.parse(itens);
+
+        var todosItens = [];
+
+
+        for (var i = 0; i < itens['produtos'].length; i++) {
+            todosItens.push({CPRODUTO: parseInt(itens['produtos'][i]['cproduto']),
+                DESCRICAO: itens['produtos'][i]['descricao'],
+                PRECO: parseFloat(itens['produtos'][i]['preco'].replace(',', '.').replace('R$', '').trim()),
+                QTDE: itens['produtos'][i]['qtde']});
+        }
+
+        requisicaoHTTP('projetoPratico', 'venda', 'goTransaction', function (data) {
+            var ret = data;
+            if (ret.includes && ret.includes('erro:')) {
+                console.log(ret);
+            } else {
+                document.querySelector("#CONFIRMPG").hash = "";
+                document.querySelector("#CEPC").end = "";
+                document.querySelector("#CONFIRMPG").brand = "";
+                compraConcluida('Transação Efetuada com Sucesso!\n' + ret.xStatus);
+            }
+        }, alert, '&' + params.join('&') + '&TIPOPAGAMENTO=' + parseInt(2) + '&JSONITENS='
+                + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO='
+                + document.querySelector('.totalCarrinho').innerText.replace(',', '.').substring(3)
+                + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end
+                + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"), false);
+    }
 }
 
 function getDadosPagSeguro() {
@@ -1001,7 +1113,8 @@ function gotTransaction(cardToken) {
             + encodeURIComponent(JSON.stringify(todosItens)) + '&TOTALTRANSACAO='
             + document.querySelector('.totalCarrinho').innerText.replace(',', '.').substring(3)
             + '&CCLIFOR=' + logon["cliente"][0]["codigo"] + '&CENDERECO=' + document.querySelector("#CEPC").end
-            + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"), false);
+            + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/")
+            + '&CARDNUMER=' + document.querySelector("#CARDNUMBERPS").value, false);
 
 }
 
