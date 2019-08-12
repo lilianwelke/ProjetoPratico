@@ -812,14 +812,33 @@ public class venda {
         try {
             String[] sCartaoCobranca = vs.getParameter("CARTAOCOBRANCA").split("-");
             TSQLDataSetEmp cartaoCobranca = TSQLDataSetEmp.create(vs);
-            cartaoCobranca.commandText("SELECT OBS FROM CARTAOCOBRANCA WHERE SCARTAOCOBRANCA = " + sCartaoCobranca[1]);
+            cartaoCobranca.commandText("SELECT OBS, NFS FROM CARTAOCOBRANCA WHERE SCARTAOCOBRANCA = " + sCartaoCobranca[1]);
             cartaoCobranca.open();
 
             String xmlRet = sendPost("https://ws.sandbox.pagseguro.uol.com.br/v2/transactions/cancels",
                     vs.getParameter("EMAIL"), vs.getParameter("TOKEN"), cartaoCobranca.fieldByName("OBS").asString());
-            Document doc = new UtilsRequest().strToDoc(xmlRet);
-            String id = doc.getElementsByTagName("id").item(0).getTextContent();
-            return id;
+
+            if (xmlRet.contains("erro:")) {
+                return xmlRet;
+            }
+
+            ParametrosForm pf = (ParametrosForm) TecniconLookup.lookup("TecniconParametrosForm", "ParametrosFormImpl");
+
+            TClientDataSet nfs = TClientDataSet.create(vs, "NFSAIDA");
+            nfs.createDataSet();
+
+            nfs.condicao("WHERE NFSAIDA.NFS = " + cartaoCobranca.fieldByName("NFS").asString());
+            nfs.open();
+
+            nfs.edit();
+            nfs.fieldByName("CIOF").asString(pf.retornaRegraNegocio(vs, vs.getValor("filial"), 1377));
+            nfs.post();
+
+            return "Compra cancelada com sucesso!";
+
+//            Document doc = new UtilsRequest().strToDoc(xmlRet);
+//            String id = doc.getElementsByTagName("id").item(0).getTextContent();
+//            return id;
         } catch (Exception e) {
             e.printStackTrace();
             throw new ExcecaoTecnicon(vs, e.getMessage(), e);
