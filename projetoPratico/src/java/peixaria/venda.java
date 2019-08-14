@@ -426,14 +426,14 @@ public class venda {
 
     public String consultarTodosEnds(VariavelSessao vs) throws ExcecaoTecnicon {
         TSQLDataSetEmp end = TSQLDataSetEmp.create(vs);
-        end.commandText("SELECT ENDEREC.CEP, ENDEREC.CIDADE, ENDEREC.UF, ENDEREC.PADRAO"
+        end.commandText("SELECT ENDEREC.APELIDO, ENDEREC.CEP, ENDEREC.CIDADE, ENDEREC.UF, ENDEREC.PADRAO"
                 + " FROM ( "
-                + " SELECT CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF, 0 AS PADRAO "
+                + " SELECT 'Padrão' AS APELIDO, CLIFOREND.CEP, CIDADE.CIDADE, CIDADE.UF, 0 AS PADRAO "
                 + " FROM CLIFOREND "
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIFOREND.CCIDADE) "
                 + " WHERE CLIFOREND.CCLIFOR = " + vs.getParameter("CCLIFOR")
                 + " UNION ALL "
-                + " SELECT CLIENDENT.CEP, CIDADE.CIDADE, CIDADE.UF, CLIENDENT.SCLIENDENT AS PADRAO "
+                + " SELECT CLIENDENT AS APELIDO, CLIENDENT.CEP, CIDADE.CIDADE, CIDADE.UF, CLIENDENT.SCLIENDENT AS PADRAO "
                 + " FROM CLIENDENT "
                 + " INNER JOIN CIDADE ON (CIDADE.CCIDADE = CLIENDENT.CCIDADE) "
                 + " WHERE CLIENDENT.CCLIFOR = " + vs.getParameter("CCLIFOR")
@@ -826,13 +826,24 @@ public class venda {
 
             TClientDataSet nfs = TClientDataSet.create(vs, "NFSAIDA");
             nfs.createDataSet();
-
             nfs.condicao("WHERE NFSAIDA.NFS = " + cartaoCobranca.fieldByName("NFS").asString());
             nfs.open();
 
             nfs.edit();
             nfs.fieldByName("CIOF").asString(pf.retornaRegraNegocio(vs, vs.getValor("filial"), 1377));
             nfs.post();
+
+            TClientDataSet nfsItem = TClientDataSet.create(vs, "NFSITEM");
+            nfsItem.createDataSet();
+            nfsItem.condicao("WHERE NFSITEM.NFS = " + cartaoCobranca.fieldByName("NFS").asString());
+            nfsItem.open();
+
+            while (!nfsItem.eof()) {
+                nfsItem.edit();
+                nfsItem.fieldByName("CIOF").asString(pf.retornaRegraNegocio(vs, vs.getValor("filial"), 1377));
+                nfsItem.post();
+                nfsItem.next();
+            }
 
             return "Compra cancelada com sucesso!";
 

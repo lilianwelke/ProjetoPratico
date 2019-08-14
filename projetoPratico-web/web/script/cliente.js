@@ -259,6 +259,7 @@ function logar(cliente) {
 function deslogar() {
     localStorage.removeItem('logon');
     validarLogon();
+    verificarLogin();
 }
 
 function setVisiblePrincipais() {
@@ -341,7 +342,7 @@ function verMeusDados() {
             document.querySelector("#cancelarMeusDados").addEventListener("click", cancelarMeusDados);
             document.querySelector("#salvarMeusDados").addEventListener("click", salvarMeusDados);
 
-            document.querySelector("#SENHAPXE").addEventListener("blur", validarSenhaAntiga);
+            //document.querySelector("#SENHAPXE").addEventListener("blur", validarSenhaAntiga);
 
             document.querySelector("#CEPE").addEventListener("blur", verificarCepe);
 
@@ -358,8 +359,10 @@ function setarClienteCampos(cliente) {
 
     document.querySelector("#NOMEE").value = cliente["linhas"][0]["NOMEFILIAL"];
     document.querySelector("#EMAILE").value = cliente["linhas"][0]["EMAIL"];
-    document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
-    document.querySelector("#FONEE").value = cliente["linhas"][0]["FONE"];
+    //document.querySelector("#USUARIOPXE").value = cliente["linhas"][0]["USUARIOPX"];
+    document.querySelector("#DATANASCIMENTOE").value = cliente["linhas"][0]["DATANASCIMENTO"].substring(0, 4) + "-"
+            + cliente["linhas"][0]["DATANASCIMENTO"].substring(4, 6) + "-"
+            + cliente["linhas"][0]["DATANASCIMENTO"].substring(6, 8);
     document.querySelector("#CELULARE").value = cliente["linhas"][0]["CELULAR"];
     document.querySelector("#COMPLEMENTOE").value = cliente["linhas"][0]["COMPLEMENTO"];
     document.querySelector("#BAIRROE").value = cliente["linhas"][0]["BAIRRO"];
@@ -370,7 +373,7 @@ function setarClienteCampos(cliente) {
     document.querySelector("#NUF1E").value = cliente["linhas"][0]["UF"];
     document.querySelector("#CEPE").value = cliente["linhas"][0]["CEP"];
     document.querySelector("#CGCE").value = cliente["linhas"][0]["CGC"];
-    document.querySelector("#SENHAPXE").value = '';
+    //document.querySelector("#SENHAPXE").value = '';
     document.querySelector("#SENHANOVAE").value = '';
     document.querySelector("#SENHADENOVOE").value = '';
 
@@ -816,19 +819,19 @@ function validarSenhaAntiga() {
 function salvarMeusDados() {
     if (document.querySelector("#editarMeusDados").editando)
     {
-        var senhaAntiga = document.querySelector("#SENHAPXE").value.trim();
+        //var senhaAntiga = document.querySelector("#SENHAPXE").value.trim();
         var senhaNova = document.querySelector("#SENHANOVAE").value.trim();
         var senhaConfirm = document.querySelector("#SENHADENOVOE").value.trim();
 
-        if (senhaAntiga.length > 0 || senhaNova.length > 0 || senhaConfirm.length > 0)
+        if (senhaNova.length > 0 || senhaConfirm.length > 0)
         {
-            if (!(senhaAntiga.length > 0 && senhaNova.length > 0 && senhaConfirm.length > 0))
+            if (!(senhaNova.length > 0 && senhaConfirm.length > 0))
             {
                 alert("Informe todos os campos referentes a senha!");
                 return;
             } else {
                 if (senhaNova !== senhaConfirm) {
-                    alert("As senhas novas não coicidem!");
+                    alert("As senhas não coicidem!");
                     return;
                 }
             }
@@ -840,12 +843,13 @@ function salvarMeusDados() {
 
         requisicaoHTTP("projetoPratico", "cliente", "salvarEditCli", setarCamposCinza, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
                 + "&NOME=" + document.querySelector("#NOMEE").value + "&EMAIL=" + document.querySelector("#EMAILE").value
-                + "&USUARIOPX=" + document.querySelector("#USUARIOPXE").value + "&SENHANOVA=" + senhaNova + "&CPF=" + document.querySelector("#CGCE").value
+                + "&SENHANOVA=" + senhaNova + "&CPF=" + document.querySelector("#CGCE").value
                 + "&CEP=" + document.querySelector("#CEPE").value + "&ENDERECO=" + document.querySelector("#ENDERECOE").value
                 + "&NUMERO=" + document.querySelector("#NUMEROE").value + "&BAIRRO=" + document.querySelector("#BAIRROE").value
-                + "&FONE=" + document.querySelector("#FONEE").value + "&CELULAR=" + document.querySelector("#CELULARE").value
+                + "&DATANASCIMENTO=" + document.querySelector("#DATANASCIMENTOE").value.split("-").reverse().join("/")
+                + "&CELULAR=" + document.querySelector("#CELULARE").value
                 + "&NCIDADE1=" + document.querySelector("#NCIDADE1E").value + "&NUF1=" + document.querySelector("#NUF1E").value
-                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOE").value + "&SENHAPX=" + senhaAntiga);
+                + "&COMPLEMENTO=" + document.querySelector("#COMPLEMENTOE").value);
 
     }
 }

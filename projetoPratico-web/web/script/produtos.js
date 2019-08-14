@@ -456,12 +456,16 @@ function listarCarrinho() {
         td = document.createElement('td');
         tr.appendChild(td);
         td.setAttribute('class', 'endPadraoCep');
-        td.innerText = (logon ? 'Endereço Padrão' : 'Informe o CEP');
+        td.innerText = (logon ? 'Padrão' : 'Informe o CEP');
 
         td = document.createElement('td');
         input = document.createElement('input');
         input.setAttribute('type', 'number');
         input.setAttribute('id', 'CEPC');
+        if (logon)
+        {
+            input.setAttribute('readOnly', 'true');
+        }
         input.setAttribute('class', 'campoCep');
         td.appendChild(input);
 
@@ -615,7 +619,9 @@ function alterarEnd() {
                 form.appendChild(input);
 
                 label = document.createElement("label");
-                label.innerText = end["linhas"][i]["CEP"] + " - " + end["linhas"][i]["CIDADE"] + " / " + end["linhas"][i]["UF"];
+                label.setAttribute('for', end["linhas"][i]["PADRAO"]);
+                label.setAttribute('name', "endLabel");
+                label.innerText = end["linhas"][i]["APELIDO"];
                 form.appendChild(label);
 
                 br = document.createElement("br");
@@ -629,13 +635,15 @@ function alterarEnd() {
             button.addEventListener("click", selecionarEnd);
         }
 
+        document.querySelector('.radioEnd').checked = true;
+
     }, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]);
 }
 
 function selecionarEnd(e) {
 
     var end = document.getElementsByName("end");
-    var selecionado, cEndereco;
+    var selecionado, cEndereco, label;
 
     for (var i = 0; i < end.length; i++) {
         if (end[i].checked) {
@@ -644,9 +652,12 @@ function selecionarEnd(e) {
         }
     }
 
+    label = document.querySelector('label[for="' + cEndereco + '"]').textContent;
     document.querySelector("#CEPC").setAttribute("value", selecionado);
     document.querySelector("#CEPC").end = cEndereco;
     calcularFreteCarrinho();
+
+    document.querySelector(".endPadraoCep").innerText = label;
 
     e.target.parentNode.parentNode.removeChild(document.querySelector("#divBack"));
     e.target.parentNode.parentNode.removeChild(document.querySelector("#divAlteraEnds"));
@@ -908,7 +919,7 @@ function finalizarDebitoPS() {
         params.push('shippingAddressPostalCode=' + '');
         params.push('shippingAddressComplement=' + '');
         params.push('reference=' + '');
-        params.push('shippingCost=' + frete);
+        params.push('shippingCost=' + (frete.length > 0 && !isNaN(frete) ? frete : '0.00'));
         params.push('shippingType=3');
 
         params.push('bankName=' + document.querySelector('#bancoBrasilPS').name);
@@ -1080,7 +1091,7 @@ function gotTransaction(cardToken) {
     params.push('shippingAddressPostalCode=' + '');
     params.push('shippingAddressComplement=' + '');
     params.push('reference=' + '');
-    params.push('shippingCost=' + frete);
+    params.push('shippingCost=' + (frete.length > 0 && !isNaN(frete) ? frete : "0.00"));
     params.push('shippingType=3');
 
 
