@@ -77,6 +77,9 @@ public class venda {
             pedido.fieldByName("CVENDEDOR").asInteger(17);
             pedido.fieldByName("CFILIAL").asInteger(1);
             pedido.fieldByName("FRETE").asDouble(Funcoes.strToDouble(vs.getParameter("FRETE")));
+            if (Funcoes.validaVSCampo(vs, "CENDERECO") && !vs.getParameter("CENDERECO").equals("0")) {
+                pedido.fieldByName("SCLIENDENT").asInteger(Funcoes.strToInt(vs.getParameter("CENDERECO")));
+            }
 
             lote.close();
             lote.commandText("SELECT CONTATO, EMAIL "
@@ -279,7 +282,7 @@ public class venda {
                 TSQLDataSetEmp numeroNF = TSQLDataSetEmp.create(vs);
                 numeroNF.commandText("SELECT MAX(NFSAIDA.NF) NUMERO "
                         + " FROM NFSAIDA "
-                        + " WHERE CMODELONF = 31 ");
+                        + " WHERE CMODELONF = 35 ");
                 numeroNF.open();
 
                 int nf = numeroNF.fieldByName("NUMERO").asInteger() + 1;
@@ -310,7 +313,7 @@ public class venda {
                 nfs.fieldByName("CFOP").asString("5101");
                 nfs.fieldByName("CCUSTO").asInteger(pedido.fieldByName("CCUSTO").asInteger());
                 nfs.fieldByName("CLOCAL").asInteger(pedido.fieldByName("CLOCAL").asInteger());
-                nfs.fieldByName("CMODELONF").asString("31");
+                nfs.fieldByName("CMODELONF").asString("35");
                 nfs.fieldByName("NF").asInteger(nf);
                 nfs.fieldByName("NF1").asInteger(nf);
                 nfs.fieldByName("VALOR_TOTAL").asDouble(0d);
@@ -545,6 +548,7 @@ public class venda {
                 params.append("&installmentQuantity=").append(URLEncoder.encode(vs.getParameter("installmentQuantity")));
                 params.append("&installmentValue=").append(URLEncoder.encode(
                         Funcoes.formatFloat("#0.00", Funcoes.strToDouble(vs.getParameter("installmentValue"))).replace(".", "").replace(",", ".")));
+                params.append("&noInterestInstallmentQuantity=").append(URLEncoder.encode(vs.getParameter("noInterestInstallmentQuantity")));
                 params.append("&creditCardHolderName=").append(URLEncoder.encode(vs.getParameter("creditCardHolderName")));
                 params.append("&creditCardHolderCPF=").append(URLEncoder.encode(vs.getParameter("creditCardHolderCPF")));
                 params.append("&creditCardHolderBirthDate=").append(URLEncoder.encode(vs.getParameter("creditCardHolderBirthDate")));
@@ -700,7 +704,7 @@ public class venda {
             TSQLDataSetEmp numeroNF = TSQLDataSetEmp.create(vs);
             numeroNF.commandText("SELECT MAX(NFSAIDA.NF) NUMERO "
                     + " FROM NFSAIDA "
-                    + " WHERE CMODELONF = 31 ");
+                    + " WHERE CMODELONF = 35 ");
             numeroNF.open();
 
             int nf = numeroNF.fieldByName("NUMERO").asInteger() + 1;
@@ -726,7 +730,7 @@ public class venda {
             nfs.fieldByName("CFOP").asString("5101");
             nfs.fieldByName("CCUSTO").asInteger(pedido.fieldByName("CCUSTO").asInteger());
             nfs.fieldByName("CLOCAL").asInteger(pedido.fieldByName("CLOCAL").asInteger());
-            nfs.fieldByName("CMODELONF").asString("31");
+            nfs.fieldByName("CMODELONF").asString("35");
             nfs.fieldByName("NF").asInteger(nf);
             nfs.fieldByName("NF1").asInteger(nf);
             nfs.fieldByName("VALOR_TOTAL").asDouble(0d);
@@ -815,6 +819,8 @@ public class venda {
             cartaoCobranca.commandText("SELECT OBS, NFS FROM CARTAOCOBRANCA WHERE SCARTAOCOBRANCA = " + sCartaoCobranca[1]);
             cartaoCobranca.open();
 
+             TSQLDataSetEmp sql = TSQLDataSetEmp.create(vs);
+            
             String xmlRet = sendPost("https://ws.sandbox.pagseguro.uol.com.br/v2/transactions/cancels",
                     vs.getParameter("EMAIL"), vs.getParameter("TOKEN"), cartaoCobranca.fieldByName("OBS").asString());
 
@@ -837,14 +843,20 @@ public class venda {
             nfsItem.createDataSet();
             nfsItem.condicao("WHERE NFSITEM.NFS = " + cartaoCobranca.fieldByName("NFS").asString());
             nfsItem.open();
+            
+            StringBuilder nfsItens = new StringBuilder();
 
             while (!nfsItem.eof()) {
                 nfsItem.edit();
                 nfsItem.fieldByName("CIOF").asString(pf.retornaRegraNegocio(vs, vs.getValor("filial"), 1377));
                 nfsItem.post();
                 nfsItem.next();
+                
+                nfsItens.append(nfsItem.fieldByName("NFSITEM").asString()).append(",");
             }
 
+            sql.execSQL("DELETE FROM NFSITEMLOTE WHERE NFSITEM IN (" + nfsItens.toString().substring(0, nfsItens.length() - 1) + ")");
+            
             return "Compra cancelada com sucesso!";
 
 //            Document doc = new UtilsRequest().strToDoc(xmlRet);

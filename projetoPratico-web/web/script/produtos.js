@@ -842,7 +842,8 @@ function finalizarBoleto() {
         requisicaoHTTP("projetoPratico", "venda", "inserirPedido", compraConcluida, alert, "&CCLIFOR=" + logon["cliente"][0]["codigo"]
                 + "&ITENS=" + encodeURIComponent(JSON.stringify(todosItens))
                 + "&FRETE=" + (frete.length > 0 && !isNaN(frete) ? frete : 0)
-                + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/"));
+                + "&DTPREV=" + document.querySelector('#dataEntrega').value.split("-").reverse().join("/")
+                + '&CENDERECO=' + document.querySelector("#CEPC").end);
     }
 }
 
@@ -1130,6 +1131,7 @@ function gotTransaction(cardToken) {
 
 
 function compraConcluida(data) {
+    document.querySelector("#CEPC").end = "";
     alert(data);
     localStorage.removeItem("carrinho");
     irCarrinho();

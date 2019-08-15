@@ -169,14 +169,13 @@ public class cliente {
             cliForEndUser.open();
 
             if (!cliForEndUser.isEmpty()) {
-               String senha = gerarSenhaAleatoria();
+                String senha = gerarSenhaAleatoria();
 
                 vs.addParametros("CUSUARIO", cliForEndUser.fieldByName("CUSUARIO").asString());
                 TClassLoader.execMethod("TecniconSecurity/CliforEndUser", "checkUsuario", vs);
-                
+
 //                if (true)
 //                    throw new ExcecaoMsg(vs, cliForEndUser.fieldByName("SCLIFORENDUSER").asString()+ "- " + senha);
-
                 vs.addParametros("novasenha", senha);
                 vs.addParametros("scliforenduser", cliForEndUser.fieldByName("SCLIFORENDUSER").asString());
                 vs.addParametros("master", "true");
@@ -348,23 +347,29 @@ public class cliente {
 
     public String listarMinhasCompras(VariavelSessao vs) throws ExcecaoTecnicon {
         TSQLDataSetEmp comprasSql = TSQLDataSetEmp.create(vs);
-        comprasSql.commandText("SELECT FIRST 10 PEDIDO.PEDIDO, "
+        comprasSql.commandText("SELECT LASTTEN.PEDIDO, LASTTEN.DATA, LASTTEN.PREVDT, LASTTEN.FRETE, LASTTEN.STATUS, "
+                + " SUM(LASTTEN.QTDE) AS QTDE, SUM(LASTTEN.TOTAL) + COALESCE(LASTTEN.FRETE, 0) AS TOTAL "
+                + " FROM(SELECT FIRST 10 PEDIDO.PEDIDO, "
                 + "         CASE WHEN TDAY(PEDIDO.DATA) < 10 THEN '0' #TCONC# TDAY(PEDIDO.DATA) ELSE TDAY(PEDIDO.DATA) END #TCONC# '/' #TCONC# "
                 + "         CASE WHEN TMONTH(PEDIDO.DATA) < 10 THEN '0' #TCONC# TMONTH(PEDIDO.DATA) ELSE TMONTH(PEDIDO.DATA) END #TCONC# '/' #TCONC# "
                 + "         TYEAR(PEDIDO.DATA) AS DATA, "
                 + "         CASE WHEN TDAY(PEDIDO.PREVDT) < 10 THEN '0' #TCONC# TDAY(PEDIDO.PREVDT) ELSE TDAY(PEDIDO.PREVDT) END #TCONC# '/' #TCONC# "
                 + "         CASE WHEN TMONTH(PEDIDO.PREVDT) < 10 THEN '0' #TCONC# TMONTH(PEDIDO.PREVDT) ELSE TMONTH(PEDIDO.PREVDT) END #TCONC# '/' #TCONC# "
                 + "         TYEAR(PEDIDO.PREVDT) AS PREVDT, "
-                + "         CASE WHEN (SELECT FIRST 1 RECEBER.SRECEBER FROM RECEBER "
-                + "                     INNER JOIN BXRECEBER ON (BXRECEBER.SRECEBER = RECEBER.SRECEBER) "
-                + "                     WHERE DUPLICATA = 'PX' #TCONC# PEDIDO.PEDIDO) IS NOT NULL THEN 'Confirmado' "
-                + "         ELSE 'Pendente' END AS STATUS,"
-                + "         SUM(PEDIDOITEM.QTDE) AS QTDE, SUM(PEDIDOITEM.TOTAL) + COALESCE(PEDIDO.FRETE, 0) AS TOTAL "
+                + "         CASE WHEN (SELECT FIRST 1 NFSITEM.NFSITEM FROM NFSITEM WHERE NFSITEM.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM) IS NOT NULL THEN "
+                + "             CASE WHEN (SELECT FIRST 1 CIOF.CIOF FROM NFSITEM "
+                + "             INNER JOIN CIOF ON (CIOF.CIOF = NFSITEM.CIOF) "
+                + "             WHERE NFSITEM.PEDIDOITEM = PEDIDOITEM.PEDIDOITEM"
+                + "             AND CIOF.NFCANC = 'S') IS NOT NULL THEN 'Cancelado' "
+                + "             ELSE 'Confirmado' END"
+                + "         ELSE 'Pendente' END AS STATUS, "
+                + "         PEDIDOITEM.QTDE, PEDIDOITEM.TOTAL, PEDIDO.FRETE "
                 + " FROM PEDIDO"
                 + " INNER JOIN PEDIDOITEM ON (PEDIDOITEM.PEDIDO = PEDIDO.PEDIDO)"
                 + " WHERE PEDIDO.CCLIFOR = " + vs.getParameter("CCLIFOR")
-                + " GROUP BY PEDIDO.PEDIDO, PEDIDO.DATA, PEDIDO.PREVDT, PEDIDO.FRETE"
-                + " ORDER BY PEDIDO.PEDIDO DESC");
+                + " ORDER BY PEDIDO.PEDIDO DESC) LASTTEN"
+                + " GROUP BY LASTTEN.PEDIDO, LASTTEN.DATA, LASTTEN.PREVDT, LASTTEN.FRETE, LASTTEN.STATUS"
+                + " ORDER BY LASTTEN.PEDIDO DESC");
         comprasSql.open();
         return comprasSql.jsonData();
     }
