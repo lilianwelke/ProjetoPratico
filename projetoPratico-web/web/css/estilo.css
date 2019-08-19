@@ -678,7 +678,7 @@ section {
     background-color: rgba(203, 209, 215, 0); 
     min-width: 37em;
 }
-.camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus, .campoCep:focus {
+.camposCriarConta:focus, .camposContinuarConta:focus, .camposMeusDados:focus, .campoCep:focus, .camposMeusPS:focus {
     border-color: rgba(11, 55, 103, .95);
 }
 
@@ -1008,6 +1008,17 @@ section {
 }
 .divCamposDadosPS3 label { 
     display: block;
+}
+.camposMeusPS {
+    border-style: solid;
+    border-width: 0.07em;
+    border-color: rgba(11, 55, 103, .5);
+    background-color:  rgba(239, 239, 239, 0.05);
+    outline: none;
+    line-height: 1.5em;
+    font-size: 1.1em;
+    color: #444;
+    padding: .2em;
 }
 .camposDadosPS1 {
     min-width: 12em;

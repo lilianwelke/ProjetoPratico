@@ -958,12 +958,6 @@ function finalizarDebitoPS() {
 }
 
 function getDadosPagSeguro() {
-    var campos = document.querySelector(".boxCreditCardPS").querySelectorAll(".camposMeusDados");
-    for (var i = 0; i < campos.length; i++)
-    {
-        campos[i].style.backgroundColor = "rgba(239, 239, 239, 0.05)";
-    }
-
     setInvisible();
     document.querySelector(".boxCreditCardPS").style.display = "block";
     setVisible(".boxCreditCardPS");

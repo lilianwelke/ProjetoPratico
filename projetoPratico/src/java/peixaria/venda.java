@@ -171,6 +171,7 @@ public class venda {
                 }
                 cartaoCobranca.fieldByName("NFS").asInteger(nfs);
                 cartaoCobranca.fieldByName("OBS").asString(vs.getParameter("codeTransaction"));
+                cartaoCobranca.fieldByName("NCONTROLE").asString(vs.getParameter("NF"));
                 cartaoCobranca.post();
             } else {
 
@@ -806,6 +807,8 @@ public class venda {
             nfs.fieldByName("CARTAO").asDouble(valorTotalNfs);
             nfs.post();
 
+            vs.addParametros("NF", nfs.fieldByName("NF").asString());
+
             return nfs.fieldByName("NFS").asInteger();
         } catch (Exception e) {
             throw new ExcecaoTecnicon(vs, e.getMessage());
@@ -819,8 +822,8 @@ public class venda {
             cartaoCobranca.commandText("SELECT OBS, NFS FROM CARTAOCOBRANCA WHERE SCARTAOCOBRANCA = " + sCartaoCobranca[1]);
             cartaoCobranca.open();
 
-             TSQLDataSetEmp sql = TSQLDataSetEmp.create(vs);
-            
+            TSQLDataSetEmp sql = TSQLDataSetEmp.create(vs);
+
             String xmlRet = sendPost("https://ws.sandbox.pagseguro.uol.com.br/v2/transactions/cancels",
                     vs.getParameter("EMAIL"), vs.getParameter("TOKEN"), cartaoCobranca.fieldByName("OBS").asString());
 
@@ -843,7 +846,7 @@ public class venda {
             nfsItem.createDataSet();
             nfsItem.condicao("WHERE NFSITEM.NFS = " + cartaoCobranca.fieldByName("NFS").asString());
             nfsItem.open();
-            
+
             StringBuilder nfsItens = new StringBuilder();
 
             while (!nfsItem.eof()) {
@@ -851,12 +854,12 @@ public class venda {
                 nfsItem.fieldByName("CIOF").asString(pf.retornaRegraNegocio(vs, vs.getValor("filial"), 1377));
                 nfsItem.post();
                 nfsItem.next();
-                
+
                 nfsItens.append(nfsItem.fieldByName("NFSITEM").asString()).append(",");
             }
 
             sql.execSQL("DELETE FROM NFSITEMLOTE WHERE NFSITEM IN (" + nfsItens.toString().substring(0, nfsItens.length() - 1) + ")");
-            
+
             return "Compra cancelada com sucesso!";
 
 //            Document doc = new UtilsRequest().strToDoc(xmlRet);
